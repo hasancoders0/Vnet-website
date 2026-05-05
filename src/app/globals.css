@@ -1,26 +1,166 @@
 @import "tailwindcss";
 
+/* ================= FONTS ================= */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --font-heading: "Sora", sans-serif;
+  --font-body: "DM Sans", sans-serif;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+/* ================= BASE ================= */
+body {
+  font-family: var(--font-body);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+/* ================= HEADINGS ================= */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+  letter-spacing: -0.02em;
+}
+
+/* ================= TYPOGRAPHY SCALE ================= */
+
+/* Hero Title */
+.text-hero {
+  font-size: 3rem;
+  line-height: 1.1;
+  font-weight: 700;
+}
+
+@media (min-width: 768px) {
+  .text-hero {
+    font-size: 4.5rem;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* Section Title */
+.text-title {
+  font-size: 2rem;
+  line-height: 1.2;
+  font-weight: 600;
+}
+
+/* Subtitle */
+.text-subtitle {
+  font-size: 1.125rem;
+  line-height: 1.6;
+  color: #cbd5f5;
+}
+
+/* Body Text */
+.text-body {
+  font-size: 1rem;
+  line-height: 1.7;
+  color: #94a3b8;
+}
+
+/* Small Text */
+.text-small {
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: #94a3b8;
+}
+
+/* ================= SPACING RHYTHM ================= */
+
+.section-padding {
+  padding-top: 6rem;
+  padding-bottom: 6rem;
+}
+
+.section-gap {
+  margin-bottom: 2rem;
+}
+
+.element-gap {
+  margin-bottom: 1.25rem;
+}
+.dark {
+  background: #020617;
+  color: white;
+}
+/* ================= BUTTON ================= */
+
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.75rem;
+  background: linear-gradient(to right, #3b82f6, #8b5cf6);
+  transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+  opacity: 0.9;
+}
+
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.75rem;
+  border: 1px solid #22d3ee;
+  color: #22d3ee;
+  transition: all 0.3s ease;
+}
+
+.btn-secondary:hover {
+  background: rgba(34, 211, 238, 0.1);
+}
+::-webkit-scrollbar {
+  display: none;
+}
+.footer-link {
+  @apply text-sm text-white/60 hover:text-white transition;
+}
+
+
+/* 🔥 Product Hero Gradient */
+.hero-gradient {
+  background: linear-gradient(
+    135deg,
+    #050816 0%,
+    #0b1a3a 50%,
+    #020617 100%
+  );
+}
+
+/* ✨ Optional glow layers (reusable) */
+.hero-glow-purple {
+  position: absolute;
+  width: 400px;
+  height: 400px;
+  background: rgba(168, 85, 247, 0.2);
+  filter: blur(140px);
+  border-radius: 9999px;
+}
+
+.hero-glow-blue {
+  position: absolute;
+  width: 300px;
+  height: 300px;
+  background: rgba(59, 130, 246, 0.2);
+  filter: blur(140px);
+  border-radius: 9999px;
+}
+
+.input {
+  @apply px-4 py-2.5 rounded-lg border border-gray-200 focus:ring-2 focus:ring-purple-500 outline-none text-sm;
+}
+@keyframes slide-in {
+  from {
+    opacity: 0;
+    transform: translateY(-10px) translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) translateX(0);
+  }
+}
+
+.animate-slide-in {
+  animation: slide-in 0.3s ease;
 }
