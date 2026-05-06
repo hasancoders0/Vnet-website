@@ -5,16 +5,8 @@ const { Schema } = mongoose;
 // ================= SUPPORT =================
 const SupportSchema = new Schema(
   {
-    duration: {
-      type: String,
-      required: true,
-      trim: true,
-    },
-    type: {
-      type: String,
-      required: true,
-      trim: true,
-    },
+    duration: { type: String, trim: true, default: "" },
+    type: { type: String, trim: true, default: "" },
   },
   { _id: false }
 );
@@ -22,15 +14,8 @@ const SupportSchema = new Schema(
 // ================= FEATURE =================
 const FeatureSchema = new Schema(
   {
-    label: {
-      type: String,
-      required: true,
-      trim: true,
-    },
-    icon: {
-      type: String,
-      default: "FaStar",
-    },
+    label: { type: String, trim: true, default: "" },
+    icon: { type: String, default: "FaStar" },
   },
   { _id: false }
 );
@@ -38,26 +23,21 @@ const FeatureSchema = new Schema(
 // ================= PRICING =================
 const PricingSchema = new Schema(
   {
-    title: {
-      type: String,
-      required: true,
-      trim: true,
-    },
+    title: { type: String, trim: true, default: "" },
+
     price: {
       type: Number,
-      required: true,
+      default: 0,
       min: 0,
     },
-    deliveryTime: {
-      type: String, // e.g. "3 days"
-      required: true,
-    },
-    features: [
-      {
-        type: String,
-        trim: true,
-      },
-    ],
+
+    deliveryTime: { type: String, default: "" },
+
+    description: { type: String, default: "" }, // ✅ added
+
+    features: [{ type: String, trim: true }],
+
+    highlighted: { type: Boolean, default: false }, // ✅ added
   },
   { _id: false }
 );
@@ -65,8 +45,9 @@ const PricingSchema = new Schema(
 // ================= PROCESS =================
 const ProcessSchema = new Schema(
   {
-    title: String,
-    description: String,
+    title: { type: String, default: "" },
+    description: { type: String, default: "" },
+    icon: { type: String, default: "FaRocket" }, // ✅ added
   },
   { _id: false }
 );
@@ -74,8 +55,8 @@ const ProcessSchema = new Schema(
 // ================= FAQ =================
 const FAQSchema = new Schema(
   {
-    question: String,
-    answer: String,
+    question: { type: String, default: "" },
+    answer: { type: String, default: "" },
   },
   { _id: false }
 );
@@ -98,15 +79,16 @@ const ServiceSchema = new Schema(
       trim: true,
     },
 
-    subtitle: String,
+    subtitle: { type: String, default: "" },
 
     shortDescription: {
       type: String,
       trim: true,
       maxlength: 300,
+      default: "",
     },
 
-    fullDescription: String,
+    fullDescription: { type: String, default: "" },
 
     badge: {
       type: String,
@@ -114,46 +96,39 @@ const ServiceSchema = new Schema(
       default: "",
     },
 
-    // CATEGORY (RELATION)
+    // CATEGORY
     category: {
       type: Schema.Types.ObjectId,
       ref: "Category",
       required: true,
     },
 
-    tags: [
-      {
-        type: String,
-        trim: true,
-      },
-    ],
+    tags: [{ type: String, trim: true }],
 
     // IMAGE
-    featuredImage: String,
+    featuredImage: { type: String, default: "" },
 
     // ================= SEO =================
-    metaTitle: String,
-    metaDescription: String,
-    metaImage: String,
+    metaTitle: { type: String, default: "" },
+    metaDescription: { type: String, default: "" },
+    metaImage: { type: String, default: "" },
 
     // ================= SUPPORT =================
-    support: SupportSchema,
+    support: {
+      type: SupportSchema,
+      default: () => ({}), // ✅ safe default
+    },
 
     // ================= CONTENT =================
-    features: [FeatureSchema],
+    features: { type: [FeatureSchema], default: [] },
 
-    whatYouGet: [
-      {
-        type: String,
-        trim: true,
-      },
-    ],
+    whatYouGet: [{ type: String, trim: true }],
 
-    pricing: [PricingSchema],
+    pricing: { type: [PricingSchema], default: [] },
 
-    process: [ProcessSchema],
+    process: { type: [ProcessSchema], default: [] },
 
-    faq: [FAQSchema],
+    faq: { type: [FAQSchema], default: [] },
 
     // ================= STATUS =================
     status: {

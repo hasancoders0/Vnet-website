@@ -16,7 +16,7 @@ export default function SeoStep({ data, setData }) {
         </p>
       </div>
 
-      {/* SEO FIELDS */}
+      {/* ✅ DIRECT PASS (IMPORTANT) */}
       <SeoFields
         data={data}
         setData={setData}
@@ -24,7 +24,6 @@ export default function SeoStep({ data, setData }) {
         descriptionSource={data.shortDescription}
         imageSource={data.featuredImage}
       />
-
     </div>
   );
 }

@@ -1,15 +1,22 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useRef } from "react";
+
 import TagInput from "@/components/ui/TagInput";
 import CategorySelector from "@/components/ui/CategorySelector";
 import ImagePicker from "@/components/ui/ImagePicker";
+
+import FormField from "@/components/ui/form/FormField";
+import Input from "@/components/ui/form/Input";
+import Textarea from "@/components/ui/form/Textarea";
+import RichTextEditor from "@/components/ui/form/RichTextEditor";
 
 export default function BasicInfoStep({
   data,
   setData,
   autoSlug,
   setAutoSlug,
+  errors = {}, // ✅ NEW
 }) {
   const initialized = useRef(false);
 
@@ -20,8 +27,7 @@ export default function BasicInfoStep({
     }));
   };
 
-  // ================= SAFE AUTO META (ONLY IMAGE SYNC) =================
-  // We no longer manage SEO here, but we keep image sync safe
+  // ================= INIT =================
   useEffect(() => {
     if (initialized.current) return;
 
@@ -49,30 +55,31 @@ export default function BasicInfoStep({
 
       {/* FORM */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        
         {/* TITLE */}
-        <div className="flex flex-col gap-2">
-          <label className="text-sm font-medium text-gray-700">
-            Service Title
-          </label>
-          <input
-            value={data.title || ""}
-            onChange={(e) => handleChange("title", e.target.value)}
-            className="h-11 px-4 rounded-lg border border-gray-300 text-sm focus:ring-2 focus:ring-purple-500 outline-none"
+        <FormField
+          label="Service Title"
+          required
+          error={errors?.title}
+        >
+          <Input
+            value={data.title}
+            onChange={(e) =>
+              handleChange("title", e.target.value)
+            }
+            error={errors?.title}
           />
-        </div>
+        </FormField>
 
         {/* SLUG */}
-        <div className="flex flex-col gap-2">
-          <label className="text-sm font-medium text-gray-700">Slug</label>
-
+        <FormField label="Slug">
           <div className="flex gap-2">
-            <input
-              value={data.slug || ""}
+            <Input
+              value={data.slug}
               onChange={(e) => {
                 setAutoSlug(false);
                 handleChange("slug", e.target.value);
               }}
-              className="flex-1 h-11 px-4 rounded-lg border border-gray-300 text-sm focus:ring-2 focus:ring-purple-500 outline-none"
             />
 
             <button
@@ -87,98 +94,119 @@ export default function BasicInfoStep({
               Auto
             </button>
           </div>
-        </div>
-        {/* CATEGORY */}
-        <div className="md:col-span-2 flex flex-col gap-2">
-          <CategorySelector
-            value={data.category}
-            onChange={(val) =>
-              setData((prev) => ({
-                ...prev,
-                category: val,
-              }))
-            }
-            type="service"
-          />
-        </div>
-        {/* BADGE */}
-        <div className="md:col-span-2 flex flex-col gap-3">
-          <label className="text-sm font-medium text-gray-700">Badge</label>
+        </FormField>
 
-          <div className="flex gap-2 flex-wrap">
-            {badgeOptions.map((b) => (
-              <button
-                key={b}
-                onClick={() => handleChange("badge", b)}
-                className={`px-4 py-2 rounded-lg text-sm transition ${
-                  data.badge === b
-                    ? "bg-purple-100 text-purple-600"
-                    : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-                }`}
-              >
-                {b}
-              </button>
-            ))}
-          </div>
+        {/* CATEGORY */}
+        <div className="md:col-span-2">
+          <FormField
+            label="Category"
+            required
+            error={errors?.category}
+          >
+            <CategorySelector
+              value={data.category}
+              onChange={(val) =>
+                handleChange("category", val)
+              }
+              type="service"
+            />
+          </FormField>
+        </div>
+
+        {/* BADGE */}
+        <div className="md:col-span-2">
+          <FormField label="Badge">
+            <div className="flex gap-2 flex-wrap">
+              {badgeOptions.map((b) => (
+                <button
+                  key={b}
+                  type="button"
+                  onClick={() => handleChange("badge", b)}
+                  className={`px-4 py-2 rounded-lg text-sm ${
+                    data.badge === b
+                      ? "bg-purple-100 text-purple-600"
+                      : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                  }`}
+                >
+                  {b}
+                </button>
+              ))}
+            </div>
+          </FormField>
         </div>
 
         {/* SUBTITLE */}
-        <div className="md:col-span-2 flex flex-col gap-2">
-          <label className="text-sm font-medium text-gray-700">Subtitle</label>
-          <textarea
-            value={data.subtitle || ""}
-            onChange={(e) => handleChange("subtitle", e.target.value)}
-            rows={2}
-            className="px-4 py-3 rounded-lg border border-gray-300 text-sm focus:ring-2 focus:ring-purple-500 outline-none"
-          />
+        <div className="md:col-span-2">
+          <FormField label="Subtitle">
+            <Textarea
+              value={data.subtitle}
+              onChange={(e) =>
+                handleChange("subtitle", e.target.value)
+              }
+            />
+          </FormField>
         </div>
 
         {/* SHORT DESCRIPTION */}
-        <div className="md:col-span-2 flex flex-col gap-2">
-          <label className="text-sm font-medium text-gray-700">
-            Short Description
-          </label>
-          <textarea
-            value={data.shortDescription || ""}
-            onChange={(e) => handleChange("shortDescription", e.target.value)}
-            rows={2}
-            className="px-4 py-3 rounded-lg border border-gray-300 text-sm focus:ring-2 focus:ring-purple-500 outline-none"
-          />
+        <div className="md:col-span-2">
+          <FormField label="Short Description">
+            <Textarea
+              value={data.shortDescription}
+              onChange={(e) =>
+                handleChange(
+                  "shortDescription",
+                  e.target.value
+                )
+              }
+            />
+          </FormField>
         </div>
 
         {/* FULL DESCRIPTION */}
-        <div className="md:col-span-2 flex flex-col gap-2">
-          <label className="text-sm font-medium text-gray-700">
-            Full Description
-          </label>
-          <textarea
-            value={data.fullDescription || ""}
-            onChange={(e) => handleChange("fullDescription", e.target.value)}
-            rows={5}
-            className="px-4 py-3 rounded-lg border border-gray-300 text-sm focus:ring-2 focus:ring-purple-500 outline-none"
-          />
+        <div className="md:col-span-2">
+          <FormField
+            label="Full Description"
+            required
+            error={errors?.fullDescription}
+          >
+            <RichTextEditor
+              value={data.fullDescription}
+              onChange={(val) =>
+                handleChange("fullDescription", val)
+              }
+              placeholder="Write full service details..."
+            />
+          </FormField>
         </div>
 
         {/* TAGS */}
         <div className="md:col-span-2">
-          <TagInput
-            value={data.tags || []}
-            onChange={(tags) => handleChange("tags", tags)}
-            max={15}
-          />
+          <FormField label="Tags">
+            <TagInput
+              value={data.tags || []}
+              onChange={(tags) =>
+                handleChange("tags", tags)
+              }
+              max={15}
+            />
+          </FormField>
         </div>
 
         {/* FEATURED IMAGE */}
-        <div className="md:col-span-2 flex flex-col gap-2">
-          <label className="text-sm font-medium text-gray-700">
-            Featured Image
-          </label>
-
-          <ImagePicker
-            value={data.featuredImage}
-            onChange={(url) => handleChange("featuredImage", url)}
-            folder="services"
-          />
+        <div className="md:col-span-2">
+          <FormField
+            label="Featured Image"
+            required
+            error={errors?.featuredImage}
+          >
+            <ImagePicker
+              value={data.featuredImage}
+              onChange={(url) =>
+                handleChange("featuredImage", url)
+              }
+              folder="services"
+            />
+          </FormField>
         </div>
       </div>
     </div>

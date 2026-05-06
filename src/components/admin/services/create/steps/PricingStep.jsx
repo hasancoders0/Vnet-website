@@ -4,10 +4,14 @@ import { FaCheck, FaTrash, FaStar, FaPlus } from "react-icons/fa";
 
 const PLAN_NAMES = ["Basic", "Standard", "Premium"];
 
-export default function PricingStep({ data, setData }) {
+export default function PricingStep({
+  data,
+  setData,
+  errors = {}, // ✅ NEW
+}) {
   const plans = data.pricing || [];
 
-  // ➕ ADD PLAN (MAX 3)
+  // ================= ADD PLAN =================
   const addPlan = () => {
     if (plans.length >= 3) return;
 
@@ -20,7 +24,7 @@ export default function PricingStep({ data, setData }) {
         {
           title: PLAN_NAMES[newIndex] || "",
           price: "",
-          deliveryTime: "", // ✅ NEW FIELD
+          deliveryTime: "",
           description: "",
           features: [""],
           highlighted: newIndex === 1,
@@ -29,66 +33,98 @@ export default function PricingStep({ data, setData }) {
     }));
   };
 
+  // ================= REMOVE PLAN =================
   const removePlan = (index) => {
     setData((prev) => {
-      const updated = prev.pricing.filter((_, i) => i !== index);
+      const updated = (prev.pricing || []).filter(
+        (_, i) => i !== index
+      );
 
-      const renamed = updated.map((p, i) => ({
-        ...p,
-        title: PLAN_NAMES[i] || p.title,
-      }));
-
-      return { ...prev, pricing: renamed };
+      return {
+        ...prev,
+        pricing: updated.map((p, i) => ({
+          ...p,
+          title: PLAN_NAMES[i] || p.title,
+        })),
+      };
     });
   };
 
+  // ================= UPDATE =================
   const updatePlan = (index, key, value) => {
     setData((prev) => {
-      const updated = [...prev.pricing];
-      updated[index][key] = value;
+      const updated = [...(prev.pricing || [])];
+
+      updated[index] = {
+        ...updated[index],
+        [key]: value,
+      };
+
       return { ...prev, pricing: updated };
     });
   };
 
+  // ================= FEATURES =================
   const addFeature = (planIndex) => {
     setData((prev) => {
-      const updated = [...prev.pricing];
-      updated[planIndex].features.push("");
+      const updated = [...(prev.pricing || [])];
+
+      updated[planIndex] = {
+        ...updated[planIndex],
+        features: [
+          ...(updated[planIndex].features || []),
+          "",
+        ],
+      };
+
       return { ...prev, pricing: updated };
     });
   };
 
   const removeFeature = (planIndex, featureIndex) => {
     setData((prev) => {
-      const updated = [...prev.pricing];
-      updated[planIndex].features = updated[planIndex].features.filter(
-        (_, i) => i !== featureIndex
-      );
+      const updated = [...(prev.pricing || [])];
+
+      updated[planIndex] = {
+        ...updated[planIndex],
+        features: updated[planIndex].features.filter(
+          (_, i) => i !== featureIndex
+        ),
+      };
+
       return { ...prev, pricing: updated };
     });
   };
 
   const updateFeature = (planIndex, featureIndex, value) => {
     setData((prev) => {
-      const updated = [...prev.pricing];
-      updated[planIndex].features[featureIndex] = value;
+      const updated = [...(prev.pricing || [])];
+
+      const features = [...(updated[planIndex].features || [])];
+      features[featureIndex] = value;
+
+      updated[planIndex] = {
+        ...updated[planIndex],
+        features,
+      };
+
       return { ...prev, pricing: updated };
     });
   };
 
+  // ================= HIGHLIGHT =================
   const setHighlight = (index) => {
-    setData((prev) => {
-      const updated = prev.pricing.map((p, i) => ({
+    setData((prev) => ({
+      ...prev,
+      pricing: (prev.pricing || []).map((p, i) => ({
         ...p,
         highlighted: i === index,
-      }));
-      return { ...prev, pricing: updated };
-    });
+      })),
+    }));
   };
 
   return (
     <div className="space-y-6">
-
       {/* HEADER */}
       <div>
         <h3 className="text-lg font-semibold text-gray-800">
@@ -99,7 +135,14 @@ export default function PricingStep({ data, setData }) {
         </p>
       </div>
 
-      {/* EMPTY STATE */}
+      {/* GLOBAL ERROR */}
+      {errors?.pricing && (
+        <p className="text-sm text-red-500">
+          {errors.pricing}
+        </p>
+      )}
+
+      {/* EMPTY */}
       {plans.length === 0 && (
         <div className="border border-dashed rounded-xl p-6 text-center text-sm text-gray-400">
           No plans yet. Add your first pricing plan.
@@ -111,62 +154,94 @@ export default function PricingStep({ data, setData }) {
         {plans.map((plan, i) => (
           <div
             key={i}
-            className={`relative rounded-2xl border p-5 transition-all shadow-sm
+            className={`relative rounded-xl border p-5 transition shadow-sm
             ${
               plan.highlighted
-                ? "border-purple-500 bg-white shadow-lg scale-[1.02]"
+                ? "border-purple-500 bg-white shadow-md"
                 : "border-gray-200 bg-white"
             }`}
           >
-
             {/* BADGE */}
             {plan.highlighted && (
-              <span className="absolute -top-3 right-4 text-xs px-3 py-1 rounded-full text-white bg-gradient-to-r from-blue-500 to-purple-600">
+              <span className="absolute -top-3 right-4 text-xs px-3 py-1 rounded-full text-white bg-purple-600">
                 Best Value
               </span>
             )}
 
-            {/* PLAN NAME */}
+            {/* TITLE */}
             <input
               value={plan.title}
-              onChange={(e) => updatePlan(i, "title", e.target.value)}
-              className="w-full text-lg font-semibold outline-none mb-2 border-b pb-1"
+              onChange={(e) =>
+                updatePlan(i, "title", e.target.value)
+              }
+              className={`w-full text-lg font-semibold border-b pb-1 outline-none
+              ${
+                errors[`pricing.${i}.title`]
+                  ? "border-red-400"
+                  : "border-gray-200"
+              }`}
             />
+            {errors[`pricing.${i}.title`] && (
+              <p className="text-xs text-red-500 mt-1">
+                {errors[`pricing.${i}.title`]}
+              </p>
+            )}
 
             {/* DESCRIPTION */}
             <input
               placeholder="Short description"
-              value={plan.description || ""}
+              value={plan.description}
               onChange={(e) =>
                 updatePlan(i, "description", e.target.value)
               }
-              className="w-full text-sm text-gray-500 outline-none mb-4"
+              className="w-full text-sm text-gray-500 mt-2 outline-none"
             />
 
             {/* PRICE */}
-            <div className="flex items-center gap-1 mb-3">
+            <div className="flex items-center gap-1 mt-4">
               <span className="text-gray-500 text-lg">$</span>
               <input
                 type="number"
-                placeholder="99"
                 value={plan.price}
-                onChange={(e) => updatePlan(i, "price", e.target.value)}
-                className="w-full text-3xl font-bold outline-none"
+                onChange={(e) =>
+                  updatePlan(i, "price", e.target.value)
+                }
+                className={`w-full text-3xl font-bold outline-none
+                ${
+                  errors[`pricing.${i}.price`]
+                    ? "border-b border-red-400"
+                    : ""
+                }`}
               />
             </div>
+            {errors[`pricing.${i}.price`] && (
+              <p className="text-xs text-red-500">
+                {errors[`pricing.${i}.price`]}
+              </p>
+            )}
 
-            {/* 🔥 DELIVERY TIME (NEW) */}
+            {/* DELIVERY */}
             <input
-              placeholder="Delivery time (e.g. 3 days)"
-              value={plan.deliveryTime || ""}
+              placeholder="Delivery time"
+              value={plan.deliveryTime}
               onChange={(e) =>
                 updatePlan(i, "deliveryTime", e.target.value)
               }
-              className="w-full text-sm mb-4 px-3 py-2 rounded-lg border border-gray-200 focus:ring-2 focus:ring-purple-500 outline-none"
+              className={`w-full mt-3 px-3 py-2 rounded-lg border text-sm outline-none
+              ${
+                errors[`pricing.${i}.delivery`]
+                  ? "border-red-400"
+                  : "border-gray-200"
+              }`}
             />
+            {errors[`pricing.${i}.delivery`] && (
+              <p className="text-xs text-red-500">
+                {errors[`pricing.${i}.delivery`]}
+              </p>
+            )}
 
             {/* FEATURES */}
-            <div className="space-y-2 mb-4">
+            <div className="mt-4 space-y-2">
               {plan.features.map((f, fi) => (
                 <div key={fi} className="flex items-center gap-2">
                   <FaCheck className="text-green-500 text-xs" />
@@ -177,12 +252,12 @@ export default function PricingStep({ data, setData }) {
                       updateFeature(i, fi, e.target.value)
                     }
                     placeholder="Feature"
-                    className="flex-1 text-sm outline-none border-b"
+                    className="flex-1 text-sm border-b border-gray-200 outline-none"
                   />
 
                   <button
                     onClick={() => removeFeature(i, fi)}
-                    className="p-1 rounded hover:bg-red-100"
+                    className="p-1 hover:bg-red-100 rounded"
                   >
                     <FaTrash className="text-red-400 text-xs" />
                   </button>
@@ -193,14 +268,13 @@ export default function PricingStep({ data, setData }) {
             {/* ADD FEATURE */}
             <button
               onClick={() => addFeature(i)}
-              className="text-xs text-purple-600 hover:underline mb-4"
+              className="text-xs text-purple-600 mt-2"
             >
               + Add Feature
             </button>
 
             {/* ACTIONS */}
-            <div className="flex justify-between items-center pt-3 border-t">
-
+            <div className="flex justify-between items-center pt-4 mt-4 border-t">
               <button
                 onClick={() => setHighlight(i)}
                 className={`flex items-center gap-1 text-xs ${
@@ -215,7 +289,7 @@ export default function PricingStep({ data, setData }) {
 
               <button
                 onClick={() => removePlan(i)}
-                className="text-red-400 text-xs hover:underline"
+                className="text-red-400 text-xs"
               >
                 Remove
               </button>

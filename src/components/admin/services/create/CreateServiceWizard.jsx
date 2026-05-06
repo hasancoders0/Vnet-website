@@ -1,6 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
+import { useRouter } from "next/navigation";
+
 import Stepper from "./Stepper";
 
 import BasicInfoStep from "./steps/BasicInfoStep";
@@ -9,12 +11,19 @@ import WhatYouGetStep from "./steps/WhatYouGetStep";
 import PricingStep from "./steps/PricingStep";
 import ProcessStep from "./steps/ProcessStep";
 import FAQStep from "./steps/FAQStep";
-import SeoStep from "./steps/SeoStep"; // ✅ NEW
+import SeoStep from "./steps/SeoStep";
 import ReviewStep from "./steps/ReviewStep";
 
 import { toast } from "@/hooks/useToast";
+import { validateStep, validateAll } from "@/lib/validateService";
 
-// 🔥 SLUG GENERATOR
+import {
+  FaArrowLeft,
+  FaArrowRight,
+  FaRocket,
+} from "react-icons/fa";
+
+// ================= SLUG =================
 const generateSlug = (text) =>
   text
     ?.toLowerCase()
@@ -23,9 +32,12 @@ const generateSlug = (text) =>
     .replace(/(^-|-$)/g, "");
 
 export default function CreateServiceWizard() {
+  const router = useRouter();
+
   const [step, setStep] = useState(0);
   const [loading, setLoading] = useState(false);
   const [autoSlug, setAutoSlug] = useState(true);
+  const [errors, setErrors] = useState({});
 
   const [formData, setFormData] = useState({
     slug: "",
@@ -34,16 +46,12 @@ export default function CreateServiceWizard() {
     shortDescription: "",
     fullDescription: "",
     badge: "",
-
     featuredImage: "",
-
     metaTitle: "",
     metaDescription: "",
     metaImage: "",
-
     tags: [],
     category: "",
-
     features: [],
     whatYouGet: [],
     pricing: [],
@@ -51,15 +59,15 @@ export default function CreateServiceWizard() {
     faq: [],
   });
 
-  // ✅ SAFE GLOBAL UPDATE FUNCTION
-  const updateFormData = (updater) => {
+  // ================= FIXED: STABLE FUNCTION =================
+  const updateFormData = useCallback((updater) => {
     setFormData((prev) => {
       let updated =
         typeof updater === "function"
           ? updater(prev)
           : { ...prev, ...updater };
 
-      // 🔥 AUTO SLUG
+      // 🔥 SLUG AUTO UPDATE
       if (autoSlug && updated.title) {
         const newSlug = generateSlug(updated.title);
 
@@ -70,9 +78,8 @@ export default function CreateServiceWizard() {
 
       return updated;
     });
-  };
+  }, [autoSlug]);
 
-  // 🔢 STEPS (SEO ADDED)
   const steps = [
     "Basic Info",
     "Features",
@@ -80,34 +87,47 @@ export default function CreateServiceWizard() {
     "Pricing",
     "Process",
     "FAQ",
-    "SEO",     // ✅ NEW STEP
+    "SEO",
     "Review",
   ];
 
-  // ================= NAVIGATION =================
   const next = () => {
-    if (step < steps.length - 1) {
-      setStep((p) => p + 1);
-    }
+    if (step < steps.length - 1) setStep((p) => p + 1);
   };
 
   const prev = () => {
-    if (step > 0) {
-      setStep((p) => p - 1);
-    }
+    if (step > 0) setStep((p) => p - 1);
   };
 
-  // ================= VALIDATION =================
-  const validateStep = () => {
-    if (step === 0 && !formData.title) {
-      toast("Title is required", "error");
-      return false;
+  // ================= NEXT =================
+  const handleNext = () => {
+    const stepErrors = validateStep(step, formData);
+
+    if (Object.keys(stepErrors).length > 0) {
+      setErrors(stepErrors);
+      toast("Please fix errors before continuing", "error");
+      return;
     }
-    return true;
+
+    setErrors({});
+
+    if (step === steps.length - 1) {
+      handleSubmit();
+    } else {
+      next();
+    }
   };
 
   // ================= SUBMIT =================
   const handleSubmit = async () => {
+    const allErrors = validateAll(formData);
+
+    if (Object.keys(allErrors).length > 0) {
+      setErrors(allErrors);
+      toast("Please complete all required fields", "error");
+      return;
+    }
+
     try {
       setLoading(true);
 
@@ -121,11 +141,15 @@ export default function CreateServiceWizard() {
 
       const result = await res.json();
 
-      if (!res.ok) {
-        throw new Error(result.message || "Failed");
-      }
+      if (!res.ok) throw new Error(result.message);
 
       toast("Service created successfully", "success");
+
+      // ✅ FIXED: REDIRECT
+      setTimeout(() => {
+        router.push("/administrator/services");
+      }, 800);
+
     } catch (err) {
       toast(err.message || "Something went wrong", "error");
     } finally {
@@ -133,22 +157,11 @@ export default function CreateServiceWizard() {
     }
   };
 
-  const handleNext = () => {
-    if (!validateStep()) return;
-
-    if (step === steps.length - 1) {
-      handleSubmit();
-    } else {
-      next();
-    }
-  };
-
-  // ================= RENDER =================
   return (
-    <div className="bg-white/70 backdrop-blur-xl border border-gray-200 rounded-2xl shadow-sm">
+    <div className="bg-white rounded-2xl shadow-sm border border-gray-200/70">
 
       {/* HEADER */}
-      <div className="p-6 border-b">
+      <div className="p-6 pb-4">
         <h2 className="text-lg font-semibold text-gray-800">
           Create New Service
         </h2>
@@ -162,7 +175,7 @@ export default function CreateServiceWizard() {
       </div>
 
       {/* BODY */}
-      <div className="p-6 min-h-[420px]">
+      <div className="px-6 py-4 min-h-[420px] border-t border-gray-100">
 
         {step === 0 && (
           <BasicInfoStep
@@ -170,6 +183,7 @@ export default function CreateServiceWizard() {
             setData={updateFormData}
             autoSlug={autoSlug}
             setAutoSlug={setAutoSlug}
+            errors={errors}
           />
         )}
 
@@ -177,6 +191,7 @@ export default function CreateServiceWizard() {
           <FeaturesStep
             data={formData}
             setData={updateFormData}
+            errors={errors}
           />
         )}
 
@@ -184,6 +199,7 @@ export default function CreateServiceWizard() {
           <WhatYouGetStep
             data={formData}
             setData={updateFormData}
+            errors={errors}
           />
         )}
 
@@ -191,6 +207,7 @@ export default function CreateServiceWizard() {
           <PricingStep
             data={formData}
             setData={updateFormData}
+            errors={errors}
           />
         )}
 
@@ -198,6 +215,7 @@ export default function CreateServiceWizard() {
           <ProcessStep
             data={formData}
             setData={updateFormData}
+            errors={errors}
           />
         )}
 
@@ -205,6 +223,7 @@ export default function CreateServiceWizard() {
           <FAQStep
             data={formData}
             setData={updateFormData}
+            errors={errors}
           />
         )}
 
@@ -212,21 +231,22 @@ export default function CreateServiceWizard() {
           <SeoStep
             data={formData}
             setData={updateFormData}
+            errors={errors}
           />
         )}
 
         {step === 7 && <ReviewStep data={formData} />}
-
       </div>
 
       {/* FOOTER */}
-      <div className="flex flex-col sm:flex-row justify-between items-center gap-4 p-6 border-t bg-gray-50/50">
+      <div className="flex flex-col sm:flex-row justify-between items-center gap-4 px-6 py-4 border-t border-gray-100 bg-gray-50/60 rounded-b-2xl">
 
         <button
           onClick={prev}
           disabled={step === 0 || loading}
-          className="px-5 py-2.5 rounded-lg border text-sm disabled:opacity-50"
+          className="flex items-center gap-2 px-4 py-2 rounded-lg border border-gray-300 text-sm text-gray-700 hover:bg-gray-100 transition disabled:opacity-50"
         >
+          <FaArrowLeft className="text-xs" />
           Back
         </button>
 
@@ -237,17 +257,23 @@ export default function CreateServiceWizard() {
         <button
           onClick={handleNext}
           disabled={loading}
-          className="flex items-center gap-2 px-6 py-2.5 rounded-lg bg-gradient-to-r from-blue-500 to-purple-600 text-white text-sm"
+          className="flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm text-white bg-gradient-to-r from-blue-500 to-purple-600 hover:opacity-90 transition disabled:opacity-70"
         >
           {loading && (
             <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
           )}
 
-          {step === steps.length - 1
-            ? loading
-              ? "Publishing..."
-              : "Publish Service"
-            : "Next"}
+          {step === steps.length - 1 ? (
+            <>
+              <FaRocket className="text-xs" />
+              {loading ? "Publishing..." : "Publish"}
+            </>
+          ) : (
+            <>
+              Next
+              <FaArrowRight className="text-xs" />
+            </>
+          )}
         </button>
       </div>
     </div>

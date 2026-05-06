@@ -4,26 +4,27 @@ export default function FormField({
   label,
   children,
   error,
-  hint,
   required = false,
 }) {
   return (
-    <div className="space-y-1.5">
+    <div className="flex flex-col gap-1">
+      
+      {/* LABEL */}
       {label && (
-        <label className="text-sm text-white/80 flex items-center gap-1">
+        <label className="text-sm font-medium text-gray-700">
           {label}
-          {required && <span className="text-red-400">*</span>}
+          {required && <span className="text-red-500 ml-1">*</span>}
         </label>
       )}
 
+      {/* INPUT */}
       {children}
 
-      {hint && !error && (
-        <p className="text-xs text-white/40">{hint}</p>
-      )}
-
+      {/* ERROR */}
       {error && (
-        <p className="text-xs text-red-400">{error}</p>
+        <p className="text-xs text-red-500 mt-1">
+          {error}
+        </p>
       )}
     </div>
   );

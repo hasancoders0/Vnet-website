@@ -14,25 +14,19 @@ export default function Select({
       value={value || ""}
       onChange={onChange}
       className={cn(
-        "w-full px-3 py-2 rounded-xl",
-        "bg-white/5 backdrop-blur-md",
-        "border border-white/10",
-        "text-sm text-white",
-        "focus:outline-none focus:ring-2 focus:ring-primary/40",
+        "w-full h-11 px-4 rounded-lg",
+        "bg-white",
+        "border border-gray-300",
+        "text-sm text-gray-800",
+        "focus:outline-none focus:ring-2 focus:ring-purple-500",
         "transition",
         className
       )}
     >
-      <option value="" className="bg-black">
-        {placeholder}
-      </option>
+      <option value="">{placeholder}</option>
 
       {options.map((opt) => (
-        <option
-          key={opt.value}
-          value={opt.value}
-          className="bg-black"
-        >
+        <option key={opt.value} value={opt.value}>
           {opt.label}
         </option>
       ))}

@@ -3,32 +3,54 @@
 import { useState } from "react";
 import { FaPlus, FaTrash, FaChevronDown } from "react-icons/fa";
 
+import Input from "@/components/ui/form/Input";
+import Textarea from "@/components/ui/form/Textarea";
+import FormField from "@/components/ui/form/FormField";
+
 export default function FAQStep({ data, setData }) {
   const faqs = data.faq || [];
   const [active, setActive] = useState(null);
 
+  // ================= ADD =================
   const addFAQ = () => {
-    setData({
-      ...data,
-      faq: [...faqs, { question: "", answer: "" }],
-    });
+    setData((prev) => ({
+      ...prev,
+      faq: [...(prev.faq || []), { question: "", answer: "" }],
+    }));
+
     setActive(faqs.length);
   };
 
+  // ================= REMOVE =================
   const removeFAQ = (index) => {
-    const updated = faqs.filter((_, i) => i !== index);
-    setData({ ...data, faq: updated });
+    setData((prev) => ({
+      ...prev,
+      faq: (prev.faq || []).filter((_, i) => i !== index),
+    }));
+
+    // fix active index
+    if (active === index) setActive(null);
   };
 
+  // ================= UPDATE =================
   const updateFAQ = (index, key, value) => {
-    const updated = [...faqs];
-    updated[index][key] = value;
-    setData({ ...data, faq: updated });
+    setData((prev) => {
+      const updated = [...(prev.faq || [])];
+
+      updated[index] = {
+        ...updated[index],
+        [key]: value,
+      };
+
+      return {
+        ...prev,
+        faq: updated,
+      };
+    });
   };
 
   return (
     <div className="space-y-6">
-
       {/* HEADER */}
       <div>
         <h3 className="text-lg font-semibold text-gray-800">
@@ -38,6 +60,13 @@ export default function FAQStep({ data, setData }) {
           Add common questions and answers
         </p>
       </div>
+
+      {/* EMPTY */}
+      {faqs.length === 0 && (
+        <div className="border border-dashed rounded-xl p-6 text-center text-sm text-gray-400">
+          No FAQs yet. Add your first question.
+        </div>
+      )}
 
       {/* LIST */}
       <div className="space-y-3">
@@ -49,9 +78,9 @@ export default function FAQStep({ data, setData }) {
               key={i}
               className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden"
             >
-
               {/* HEADER */}
               <button
+                type="button"
                 onClick={() => setActive(isOpen ? null : i)}
                 className="w-full flex justify-between items-center px-4 py-3 text-left hover:bg-gray-50 transition"
               >
@@ -68,42 +97,34 @@ export default function FAQStep({ data, setData }) {
 
               {/* CONTENT */}
               {isOpen && (
-                <div className="px-4 pb-4 pt-2 border-t space-y-4">
-
+                <div className="px-4 pb-4 pt-3 border-t space-y-4">
                   {/* QUESTION */}
-                  <div className="flex flex-col gap-1">
-                    <label className="text-xs text-gray-500">
-                      Question
-                    </label>
-                    <input
+                  <FormField label="Question" required>
+                    <Input
                       placeholder="Enter question..."
                       value={item.question}
                       onChange={(e) =>
                         updateFAQ(i, "question", e.target.value)
                       }
-                      className="w-full px-3 py-2 rounded-lg border border-gray-200 focus:ring-2 focus:ring-purple-500 outline-none text-sm"
                     />
-                  </div>
+                  </FormField>
 
                   {/* ANSWER */}
-                  <div className="flex flex-col gap-1">
-                    <label className="text-xs text-gray-500">
-                      Answer
-                    </label>
-                    <textarea
+                  <FormField label="Answer" required>
+                    <Textarea
                       placeholder="Enter answer..."
                       value={item.answer}
                       onChange={(e) =>
                         updateFAQ(i, "answer", e.target.value)
                       }
                       rows={3}
-                      className="w-full px-3 py-2 rounded-lg border border-gray-200 focus:ring-2 focus:ring-purple-500 outline-none text-sm resize-none"
                     />
-                  </div>
+                  </FormField>
 
                   {/* DELETE */}
                   <div className="flex justify-end">
                     <button
+                      type="button"
                       onClick={() => removeFAQ(i)}
                       className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-red-100 hover:bg-red-200 transition text-xs"
                     >
@@ -111,7 +132,6 @@ export default function FAQStep({ data, setData }) {
                       Remove
                     </button>
                   </div>
-
                 </div>
               )}
             </div>
@@ -121,6 +141,7 @@ export default function FAQStep({ data, setData }) {
 
       {/* ADD BUTTON */}
       <button
+        type="button"
         onClick={addFAQ}
         className="flex items-center justify-center gap-2 px-5 py-2.5 rounded-lg border border-gray-200 text-sm hover:bg-gray-100 transition"
       >

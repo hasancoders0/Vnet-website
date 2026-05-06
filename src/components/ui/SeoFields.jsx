@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import ImagePicker from "@/components/ui/ImagePicker";
 import SeoPreview from "@/components/ui/SeoPreview";
 
@@ -12,24 +12,38 @@ export default function SeoFields({
   imageSource = "",
 }) {
   const [auto, setAuto] = useState(true);
-  const initialized = useRef(false);
 
-  // ================= AUTO GENERATE (RUN ONCE ONLY) =================
+  // ================= AUTO GENERATE =================
   useEffect(() => {
-    if (!auto || initialized.current) return;
+    if (!auto) return;
 
-    setData((prev) => ({
-      ...prev,
-      metaTitle: prev.metaTitle || titleSource || "",
-      metaDescription:
-        prev.metaDescription ||
-        descriptionSource?.slice(0, 160) ||
-        "",
-      metaImage: prev.metaImage || imageSource || "",
-    }));
+    const nextTitle = titleSource || "";
+    const nextDesc = descriptionSource?.slice(0, 160) || "";
+    const nextImage = imageSource || "";
 
-    initialized.current = true;
-  }, [auto, titleSource, descriptionSource, imageSource, setData]);
+    setData((prev) => {
+      // جلوگیری از loop
+      if (
+        prev.metaTitle === nextTitle &&
+        prev.metaDescription === nextDesc &&
+        prev.metaImage === nextImage
+      ) {
+        return prev;
+      }
+
+      return {
+        ...prev,
+        metaTitle: nextTitle,
+        metaDescription: nextDesc,
+        metaImage: nextImage,
+      };
+    });
+  }, [auto, titleSource, descriptionSource, imageSource]);
+
+  // ================= TOGGLE AUTO =================
+  const handleToggleAuto = () => {
+    setAuto((prev) => !prev);
+  };
 
   // ================= SEO SCORE =================
   const calculateSEOScore = () => {
@@ -44,10 +58,16 @@ export default function SeoFields({
     if (title.length >= 50 && title.length <= 60) score += 20;
     if (desc.length >= 120 && desc.length <= 160) score += 20;
 
-    if (keyword && title.toLowerCase().includes(keyword.toLowerCase()))
+    if (
+      keyword &&
+      title.toLowerCase().includes(keyword.toLowerCase())
+    )
       score += 15;
 
-    if (keyword && desc.toLowerCase().includes(keyword.toLowerCase()))
+    if (
+      keyword &&
+      desc.toLowerCase().includes(keyword.toLowerCase())
+    )
       score += 15;
 
     if (image) score += 10;
@@ -94,7 +114,6 @@ export default function SeoFields({
 
   return (
     <div className="space-y-6 border-t pt-6">
-
       {/* HEADER */}
       <div className="flex items-center justify-between">
         <div>
@@ -106,9 +125,10 @@ export default function SeoFields({
           </p>
         </div>
 
+        {/* TOGGLE */}
         <button
           type="button"
-          onClick={() => setAuto((p) => !p)}
+          onClick={handleToggleAuto}
           className={`px-3 py-1.5 text-xs rounded-lg transition ${
             auto
               ? "bg-purple-100 text-purple-600"
@@ -138,18 +158,18 @@ export default function SeoFields({
 
       {/* META TITLE */}
       <div className="space-y-1">
-        <label className="text-sm text-gray-600">Meta Title</label>
+        <label className="text-sm text-gray-600">
+          Meta Title
+        </label>
 
         <input
-          value={data.metaTitle || ""}
+          value={data.metaTitle ?? ""}
           onChange={(e) => {
-            const value = e.target.value;
-
             setAuto(false);
 
             setData((prev) => ({
               ...prev,
-              metaTitle: value,
+              metaTitle: e.target.value,
             }));
           }}
           className="w-full h-11 px-4 rounded-lg border border-gray-300 text-sm focus:ring-2 focus:ring-purple-500 outline-none"
@@ -172,15 +192,13 @@ export default function SeoFields({
         </label>
 
         <textarea
-          value={data.metaDescription || ""}
+          value={data.metaDescription ?? ""}
           onChange={(e) => {
-            const value = e.target.value;
-
             setAuto(false);
 
             setData((prev) => ({
               ...prev,
-              metaDescription: value,
+              metaDescription: e.target.value,
             }));
           }}
           rows={3}
@@ -219,19 +237,12 @@ export default function SeoFields({
         </p>
       </div>
 
-      {/* GOOGLE PREVIEW */}
-      <div className="space-y-2">
-        <label className="text-sm text-gray-600">
-          Search Preview
-        </label>
-
-        <SeoPreview
-          title={data.metaTitle}
-          description={data.metaDescription}
-          url={`yourdomain.com/${data.slug || "your-page"}`}
-        />
-      </div>
-
+      {/* PREVIEW */}
+      <SeoPreview
+        title={data.metaTitle}
+        description={data.metaDescription}
+        url={`yourdomain.com/${data.slug || "your-page"}`}
+      />
     </div>
   );
 }

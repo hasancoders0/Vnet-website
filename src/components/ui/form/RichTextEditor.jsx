@@ -3,8 +3,11 @@
 import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Placeholder from "@tiptap/extension-placeholder";
+import TextAlign from "@tiptap/extension-text-align";
+import Heading from "@tiptap/extension-heading";
 import { useEffect } from "react";
 import { cn } from "@/utils/cn";
+
 import {
   FiBold,
   FiItalic,
@@ -20,19 +23,26 @@ export default function RichTextEditor({
 }) {
   const editor = useEditor({
     extensions: [
-      StarterKit,
-      Placeholder.configure({
-        placeholder,
+      StarterKit.configure({
+        bulletList: { keepMarks: true },
+        orderedList: { keepMarks: true },
+      }),
+      Placeholder.configure({ placeholder }),
+      TextAlign.configure({
+        types: ["heading", "paragraph"],
+      }),
+      Heading.configure({
+        levels: [1, 2, 3],
       }),
     ],
     content: value || "",
+    immediatelyRender: false,
     onUpdate: ({ editor }) => {
-      const html = editor.getHTML();
-      onChange?.(html);
+      onChange?.(editor.getHTML());
     },
   });
 
-  // Prevent overwrite bug (VERY IMPORTANT)
+  // prevent overwrite
   useEffect(() => {
     if (!editor) return;
     if (value !== editor.getHTML()) {
@@ -43,64 +53,97 @@ export default function RichTextEditor({
   if (!editor) return null;
 
   return (
-    <div className="w-full rounded-xl border border-white/10 bg-white/5 backdrop-blur-md">
+    <div className="w-full border border-gray-300 rounded-lg overflow-hidden bg-white">
       
       {/* Toolbar */}
-      <div className="flex items-center gap-2 border-b border-white/10 p-2">
-        <button
+      <div className="flex flex-wrap items-center gap-1 border-b border-gray-200 p-2 bg-gray-50">
+        
+        {/* Heading */}
+        <select
+          onChange={(e) => {
+            const level = Number(e.target.value);
+            if (level === 0) {
+              editor.chain().focus().setParagraph().run();
+            } else {
+              editor.chain().focus().toggleHeading({ level }).run();
+            }
+          }}
+          className="text-sm border border-gray-200 rounded px-2 py-1"
+        >
+          <option value={0}>Paragraph</option>
+          <option value={1}>H1</option>
+          <option value={2}>H2</option>
+          <option value={3}>H3</option>
+        </select>
+
+        <ToolbarButton
           onClick={() => editor.chain().focus().toggleBold().run()}
-          className={btn(editor.isActive("bold"))}
+          active={editor.isActive("bold")}
         >
           <FiBold />
-        </button>
+        </ToolbarButton>
 
-        <button
+        <ToolbarButton
           onClick={() => editor.chain().focus().toggleItalic().run()}
-          className={btn(editor.isActive("italic"))}
+          active={editor.isActive("italic")}
         >
           <FiItalic />
-        </button>
+        </ToolbarButton>
 
-        <button
+        <ToolbarButton
           onClick={() => editor.chain().focus().toggleBulletList().run()}
-          className={btn(editor.isActive("bulletList"))}
+          active={editor.isActive("bulletList")}
         >
           <FiList />
-        </button>
+        </ToolbarButton>
 
-        <button
+        <ToolbarButton
           onClick={() =>
             editor.chain().focus().setTextAlign("left").run()
           }
-          className={btn(editor.isActive({ textAlign: "left" }))}
+          active={editor.isActive({ textAlign: "left" })}
         >
           <FiAlignLeft />
-        </button>
+        </ToolbarButton>
 
-        <button
+        <ToolbarButton
           onClick={() =>
             editor.chain().focus().setTextAlign("center").run()
           }
-          className={btn(editor.isActive({ textAlign: "center" }))}
+          active={editor.isActive({ textAlign: "center" })}
         >
           <FiAlignCenter />
-        </button>
+        </ToolbarButton>
       </div>
 
       {/* Editor */}
       <EditorContent
         editor={editor}
-        className="p-3 min-h-[200px] text-sm text-white prose prose-invert max-w-none focus:outline-none"
+        className={cn(
+          "p-3 min-h-[200px] text-sm text-gray-800",
+          "focus:outline-none",
+          "[&_.ProseMirror]:outline-none",
+          "[&_.ProseMirror]:min-h-[150px]"
+        )}
       />
     </div>
   );
 }
 
-function btn(active) {
-  return cn(
-    "p-2 rounded-lg text-sm transition",
-    active
-      ? "bg-white/20 text-white"
-      : "text-white/60 hover:bg-white/10"
+/* Toolbar Button */
+function ToolbarButton({ children, onClick, active }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={cn(
+        "p-2 rounded text-sm transition",
+        active
+          ? "bg-purple-100 text-purple-600"
+          : "text-gray-600 hover:bg-gray-100"
+      )}
+    >
+      {children}
+    </button>
   );
 }

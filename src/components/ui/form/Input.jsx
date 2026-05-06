@@ -9,6 +9,7 @@ export default function Input({
   placeholder,
   className,
   disabled = false,
+  error = false, // ✅ NEW
 }) {
   return (
     <input
@@ -18,14 +19,23 @@ export default function Input({
       placeholder={placeholder}
       disabled={disabled}
       className={cn(
-        "w-full px-3 py-2 rounded-xl",
-        "bg-white/5 backdrop-blur-md",
-        "border border-white/10",
-        "text-sm text-white",
-        "placeholder:text-white/40",
-        "focus:outline-none focus:ring-2 focus:ring-primary/40",
-        "transition",
+        "w-full h-11 px-4 rounded-lg",
+        "bg-white",
+        "text-sm text-gray-800",
+        "placeholder:text-gray-400",
+        "outline-none transition",
+
+        // ✅ NORMAL
+        !error &&
+          "border border-gray-300 focus:ring-2 focus:ring-purple-500",
+
+        // ❌ ERROR STATE
+        error &&
+          "border border-red-400 focus:ring-2 focus:ring-red-200",
+
+        // DISABLED
         disabled && "opacity-50 cursor-not-allowed",
+
         className
       )}
     />

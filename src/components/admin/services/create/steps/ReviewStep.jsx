@@ -1,16 +1,42 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import * as FaIcons from "react-icons/fa";
 
 export default function ReviewStep({ data }) {
+  const [categories, setCategories] = useState([]);
+
+  // ================= FETCH ALL CATEGORIES =================
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const res = await fetch("/api/categories", {
+          cache: "no-store",
+        });
+
+        const result = await res.json();
+        setCategories(result.data || []);
+      } catch (err) {
+        console.error("Category fetch failed");
+      }
+    };
+
+    fetchCategories();
+  }, []);
+
+  // ================= FIND CATEGORY NAME =================
+  const categoryName =
+    categories.find((c) => c._id === data.category)?.name || "-";
+
   const Icon = (name) => {
     const I = FaIcons[name] || FaIcons.FaStar;
     return <I className="text-purple-500 text-sm" />;
   };
 
+  const safe = (val) => val || "-";
+
   return (
     <div className="space-y-8">
-
       {/* HEADER */}
       <div>
         <h3 className="text-lg font-semibold text-gray-800">
@@ -22,37 +48,35 @@ export default function ReviewStep({ data }) {
       </div>
 
       {/* BASIC INFO */}
-      <div className="bg-white rounded-xl p-5 shadow-sm">
-        <h4 className="font-semibold text-gray-800 mb-3">
-          Basic Info
-        </h4>
+      <Section title="Basic Info">
+        <Row label="Title" value={safe(data.title)} />
+        <Row label="Slug" value={safe(data.slug)} />
 
-        <div className="space-y-2 text-sm text-gray-600">
-          <p><b>Title:</b> {data.title}</p>
-          <p><b>Slug:</b> {data.slug}</p>
-          <p><b>Category:</b> {data.category}</p>
-          <p><b>Badge:</b> {data.badge || "-"}</p>
-        </div>
-      </div>
+        {/* ✅ FIXED CATEGORY */}
+        <Row label="Category" value={categoryName} />
+
+        <Row label="Badge" value={safe(data.badge)} />
+      </Section>
 
       {/* DESCRIPTION */}
-      <div className="bg-white rounded-xl p-5 shadow-sm">
-        <h4 className="font-semibold text-gray-800 mb-3">
-          Description
-        </h4>
-
+      <Section title="Description">
         <p className="text-sm text-gray-600">
-          {data.shortDescription}
+          {safe(data.shortDescription)}
         </p>
-      </div>
+
+        {data.fullDescription && (
+          <div
+            className="prose prose-sm mt-3 max-w-none"
+            dangerouslySetInnerHTML={{
+              __html: data.fullDescription,
+            }}
+          />
+        )}
+      </Section>
 
       {/* FEATURES */}
       {data.features?.length > 0 && (
-        <div className="bg-white rounded-xl p-5 shadow-sm">
-          <h4 className="font-semibold text-gray-800 mb-3">
-            Features
-          </h4>
-
+        <Section title="Features">
           <div className="grid grid-cols-2 gap-3 text-sm">
             {data.features.map((f, i) => (
               <div key={i} className="flex items-center gap-2">
@@ -61,27 +85,20 @@ export default function ReviewStep({ data }) {
               </div>
             ))}
           </div>
-        </div>
+        </Section>
       )}
 
       {/* SUPPORT */}
-      <div className="bg-white rounded-xl p-5 shadow-sm">
-        <h4 className="font-semibold text-gray-800 mb-3">
-          Support
-        </h4>
-
+      <Section title="Support">
         <p className="text-sm text-gray-600">
-          {data.support?.duration} • {data.support?.type}
+          {safe(data.support?.duration)} •{" "}
+          {safe(data.support?.type)}
         </p>
-      </div>
+      </Section>
 
       {/* WHAT YOU GET */}
       {data.whatYouGet?.length > 0 && (
-        <div className="bg-white rounded-xl p-5 shadow-sm">
-          <h4 className="font-semibold text-gray-800 mb-3">
-            What You Get
-          </h4>
-
+        <Section title="What You Get">
           <ul className="space-y-2 text-sm text-gray-600">
             {data.whatYouGet.map((item, i) => (
               <li key={i} className="flex gap-2">
@@ -90,16 +107,12 @@ export default function ReviewStep({ data }) {
               </li>
             ))}
           </ul>
-        </div>
+        </Section>
       )}
 
       {/* PRICING */}
       {data.pricing?.length > 0 && (
-        <div className="bg-white rounded-xl p-5 shadow-sm">
-          <h4 className="font-semibold text-gray-800 mb-4">
-            Pricing Plans
-          </h4>
-
+        <Section title="Pricing Plans">
           <div className="grid md:grid-cols-3 gap-4">
             {data.pricing.map((plan, i) => (
               <div
@@ -113,11 +126,11 @@ export default function ReviewStep({ data }) {
                 <h5 className="font-semibold">{plan.title}</h5>
 
                 <p className="text-2xl font-bold mt-1">
-                  ${plan.price}
+                  ${plan.price || 0}
                 </p>
 
                 <p className="text-xs text-gray-500 mb-3">
-                  {plan.deliveryTime}
+                  {safe(plan.deliveryTime)}
                 </p>
 
                 <ul className="text-sm space-y-1">
@@ -128,16 +141,12 @@ export default function ReviewStep({ data }) {
               </div>
             ))}
           </div>
-        </div>
+        </Section>
       )}
 
       {/* PROCESS */}
       {data.process?.length > 0 && (
-        <div className="bg-white rounded-xl p-5 shadow-sm">
-          <h4 className="font-semibold text-gray-800 mb-3">
-            Process
-          </h4>
-
+        <Section title="Process">
           <div className="space-y-2 text-sm text-gray-600">
             {data.process.map((p, i) => (
               <p key={i}>
@@ -145,16 +154,12 @@ export default function ReviewStep({ data }) {
               </p>
             ))}
           </div>
-        </div>
+        </Section>
       )}
 
       {/* FAQ */}
       {data.faq?.length > 0 && (
-        <div className="bg-white rounded-xl p-5 shadow-sm">
-          <h4 className="font-semibold text-gray-800 mb-3">
-            FAQ
-          </h4>
-
+        <Section title="FAQ">
           <div className="space-y-3 text-sm text-gray-600">
             {data.faq.map((f, i) => (
               <div key={i}>
@@ -163,21 +168,38 @@ export default function ReviewStep({ data }) {
               </div>
             ))}
           </div>
-        </div>
+        </Section>
       )}
 
       {/* SEO */}
-      <div className="bg-white rounded-xl p-5 shadow-sm">
-        <h4 className="font-semibold text-gray-800 mb-3">
-          SEO
-        </h4>
-
-        <div className="text-sm text-gray-600 space-y-1">
-          <p><b>Title:</b> {data.metaTitle}</p>
-          <p><b>Description:</b> {data.metaDescription}</p>
-        </div>
-      </div>
-
+      <Section title="SEO">
+        <Row label="Title" value={safe(data.metaTitle)} />
+        <Row
+          label="Description"
+          value={safe(data.metaDescription)}
+        />
+      </Section>
     </div>
+  );
+}
+
+/* ================= UI HELPERS ================= */
+
+function Section({ title, children }) {
+  return (
+    <div className="bg-white rounded-xl p-5 shadow-sm border border-gray-100">
+      <h4 className="font-semibold text-gray-800 mb-3">
+        {title}
+      </h4>
+      {children}
+    </div>
+  );
+}
+
+function Row({ label, value }) {
+  return (
+    <p className="text-sm text-gray-600">
+      <b>{label}:</b> {value}
+    </p>
   );
 }

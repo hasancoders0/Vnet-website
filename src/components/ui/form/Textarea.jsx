@@ -8,6 +8,7 @@ export default function Textarea({
   placeholder,
   rows = 4,
   className,
+  error = false,
 }) {
   return (
     <textarea
@@ -16,13 +17,18 @@ export default function Textarea({
       placeholder={placeholder}
       rows={rows}
       className={cn(
-        "w-full px-3 py-2 rounded-xl",
-        "bg-white/5 backdrop-blur-md",
-        "border border-white/10",
-        "text-sm text-white",
-        "placeholder:text-white/40",
-        "focus:outline-none focus:ring-2 focus:ring-primary/40",
-        "transition resize-none",
+        "w-full px-4 py-3 rounded-lg",
+        "bg-white",
+        "text-sm text-gray-800",
+        "placeholder:text-gray-400",
+        "outline-none transition resize-none",
+
+        !error &&
+          "border border-gray-300 focus:ring-2 focus:ring-purple-500",
+
+        error &&
+          "border border-red-400 focus:ring-2 focus:ring-red-200",
+
         className
       )}
     />

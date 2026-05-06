@@ -7,149 +7,290 @@ import {
   FaPlus,
 } from "react-icons/fa";
 
-export default function WhatYouGetStep({ data, setData }) {
+import { useRef, useState } from "react";
+
+import {
+  DndContext,
+  closestCenter,
+} from "@dnd-kit/core";
+
+import {
+  SortableContext,
+  verticalListSortingStrategy,
+  useSortable,
+  arrayMove,
+} from "@dnd-kit/sortable";
+
+import { CSS } from "@dnd-kit/utilities";
+
+import FormField from "@/components/ui/form/FormField";
+import Input from "@/components/ui/form/Input";
+
+// ================= SORTABLE ITEM =================
+function SortableItem({
+  id,
+  item,
+  i,
+  updateItem,
+  removeItem,
+  errors,
+  setInputRef,
+  handleKeyDown,
+}) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  };
+
+  const fieldError = errors?.[`whatYouGet.${i}`];
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      className={`flex items-center gap-3 px-3 py-2 rounded-lg transition
+        ${isDragging ? "bg-white shadow-md scale-[0.98]" : "hover:bg-gray-50"}
+      `}
+    >
+      {/* DRAG HANDLE */}
+      <div
+        {...attributes}
+        {...listeners}
+        className="cursor-grab active:cursor-grabbing p-1"
+      >
+        <FaGripLines className="text-gray-300 text-sm" />
+      </div>
+
+      {/* ICON */}
+      <div className="w-7 h-7 flex items-center justify-center rounded-md bg-green-50">
+        <FaCheckCircle className="text-green-500 text-xs" />
+      </div>
+
+      {/* INPUT */}
+      <div className="flex-1">
+        <Input
+          ref={setInputRef(i)} // ✅ FIXED
+          value={item}
+          onChange={(e) => updateItem(i, e.target.value)}
+          onKeyDown={(e) => handleKeyDown(e, i)}
+          placeholder="e.g. Lifetime access"
+          className="h-9"
+          error={fieldError}
+        />
+
+        {fieldError && (
+          <p className="text-xs text-red-500 mt-1">
+            {fieldError}
+          </p>
+        )}
+      </div>
+
+      {/* DELETE */}
+      <button
+        type="button"
+        onClick={() => removeItem(i)}
+        className="p-1.5 rounded hover:bg-red-50 transition"
+      >
+        <FaTrash className="text-red-400 text-xs" />
+      </button>
+    </div>
+  );
+}
+
+// ================= MAIN =================
+export default function WhatYouGetStep({
+  data,
+  setData,
+  errors = {},
+}) {
   const items = data.whatYouGet || [];
   const support = data.support || { duration: "", type: "" };
+
+  const inputRefs = useRef([]);
+  const [activeId, setActiveId] = useState(null);
+
+  // ✅ FIXED REF HANDLER (NO WARNING)
+  const setInputRef = (index) => (el) => {
+    if (el) {
+      inputRefs.current[index] = el;
+    }
+  };
 
   // ================= SUPPORT =================
   const updateSupport = (key, value) => {
     setData((prev) => ({
       ...prev,
       support: {
-        ...prev.support,
+        ...(prev.support || {}),
         [key]: value,
       },
     }));
   };
 
-  // ================= WHAT YOU GET =================
-  const addItem = () => {
+  // ================= ITEMS =================
+  const addItem = (focusIndex = null) => {
     setData((prev) => ({
       ...prev,
       whatYouGet: [...(prev.whatYouGet || []), ""],
     }));
+
+    setTimeout(() => {
+      const index =
+        focusIndex !== null
+          ? focusIndex + 1
+          : items.length;
+
+      inputRefs.current[index]?.focus();
+    }, 50);
   };
 
   const removeItem = (index) => {
-    setData((prev) => {
-      const updated = prev.whatYouGet.filter((_, i) => i !== index);
-      return { ...prev, whatYouGet: updated };
-    });
+    setData((prev) => ({
+      ...prev,
+      whatYouGet: prev.whatYouGet.filter((_, i) => i !== index),
+    }));
+
+    setTimeout(() => {
+      inputRefs.current[index - 1]?.focus();
+    }, 50);
   };
 
   const updateItem = (index, value) => {
     setData((prev) => {
-      const updated = [...prev.whatYouGet];
+      const updated = [...(prev.whatYouGet || [])];
       updated[index] = value;
       return { ...prev, whatYouGet: updated };
     });
   };
 
+  // ================= KEY UX =================
+  const handleKeyDown = (e, index) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      addItem(index);
+    }
+
+    if (e.key === "Backspace" && !items[index]) {
+      if (items.length > 1) {
+        e.preventDefault();
+        removeItem(index);
+      }
+    }
+  };
+
+  // ================= DRAG =================
+  const handleDragEnd = (event) => {
+    const { active, over } = event;
+    setActiveId(null);
+
+    if (!over || active.id === over.id) return;
+
+    const oldIndex = Number(active.id);
+    const newIndex = Number(over.id);
+
+    setData((prev) => ({
+      ...prev,
+      whatYouGet: arrayMove(
+        prev.whatYouGet,
+        oldIndex,
+        newIndex
+      ),
+    }));
+
+    // 🔥 focus moved item
+    setTimeout(() => {
+      inputRefs.current[newIndex]?.focus();
+    }, 50);
+  };
+
   return (
     <div className="space-y-8">
-
-      {/* ================= SUPPORT SECTION ================= */}
+      {/* SUPPORT */}
       <div className="space-y-4">
-
         <div>
           <h3 className="text-lg font-semibold text-gray-800">
             Support
           </h3>
-          <p className="text-sm text-gray-500">
-            Define support details for this service
-          </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <FormField label="Support Duration">
+            <Input
+              value={support.duration}
+              onChange={(e) =>
+                updateSupport("duration", e.target.value)
+              }
+            />
+          </FormField>
 
-          {/* SUPPORT DURATION */}
-          <input
-            placeholder="Support duration (e.g. 30 days)"
-            value={support.duration || ""}
-            onChange={(e) =>
-              updateSupport("duration", e.target.value)
-            }
-            className="h-11 px-4 rounded-lg border border-gray-300 text-sm focus:ring-2 focus:ring-purple-500 outline-none"
-          />
-
-          {/* SUPPORT TYPE */}
-          <input
-            placeholder="Support type (e.g. Free bug fixing)"
-            value={support.type || ""}
-            onChange={(e) =>
-              updateSupport("type", e.target.value)
-            }
-            className="h-11 px-4 rounded-lg border border-gray-300 text-sm focus:ring-2 focus:ring-purple-500 outline-none"
-          />
-
+          <FormField label="Support Type">
+            <Input
+              value={support.type}
+              onChange={(e) =>
+                updateSupport("type", e.target.value)
+              }
+            />
+          </FormField>
         </div>
       </div>
 
-      {/* ================= WHAT YOU GET ================= */}
-      <div className="space-y-6">
+      {/* WHAT YOU GET */}
+      <div className="space-y-5">
+        <h3 className="text-lg font-semibold text-gray-800">
+          What You Get
+        </h3>
 
-        {/* HEADER */}
-        <div>
-          <h3 className="text-lg font-semibold text-gray-800">
-            What You Get
-          </h3>
-          <p className="text-sm text-gray-500">
-            Add benefits your client will receive
+        {errors?.whatYouGet && (
+          <p className="text-sm text-red-500">
+            {errors.whatYouGet}
           </p>
-        </div>
-
-        {/* EMPTY STATE */}
-        {items.length === 0 && (
-          <div className="border border-dashed rounded-xl p-6 text-center text-sm text-gray-400">
-            No benefits added yet. Click below to add your first one.
-          </div>
         )}
 
-        {/* LIST */}
-        <div className="space-y-3">
-          {items.map((item, i) => (
-            <div
-              key={i}
-              className="flex items-center gap-3 bg-white border border-gray-200 rounded-xl px-4 py-3 shadow-sm hover:shadow-md transition group"
-            >
-              {/* DRAG */}
-              <FaGripLines className="text-gray-300 text-sm cursor-grab group-hover:text-gray-400" />
-
-              {/* ICON */}
-              <div className="w-8 h-8 flex items-center justify-center rounded-lg bg-green-50">
-                <FaCheckCircle className="text-green-500 text-sm" />
-              </div>
-
-              {/* INPUT */}
-              <input
-                value={item}
-                onChange={(e) =>
-                  updateItem(i, e.target.value)
-                }
-                placeholder="e.g. Lifetime access"
-                className="flex-1 h-10 px-3 rounded-md border border-transparent focus:border-purple-400 focus:ring-2 focus:ring-purple-500/20 outline-none text-sm transition"
-              />
-
-              {/* DELETE */}
-              <button
-                onClick={() => removeItem(i)}
-                className="p-2 rounded-lg bg-red-50 hover:bg-red-100 transition"
-              >
-                <FaTrash className="text-red-500 text-sm" />
-              </button>
-            </div>
-          ))}
-        </div>
-
-        {/* ADD BUTTON */}
-        <button
-          onClick={addItem}
-          className="flex items-center justify-center gap-2 w-full px-5 py-3 rounded-xl border border-gray-200 text-sm font-medium hover:bg-gray-50 transition"
+        <DndContext
+          collisionDetection={closestCenter}
+          onDragEnd={handleDragEnd}
+          onDragStart={(e) => setActiveId(e.active.id)}
         >
-          <FaPlus className="text-xs" />
+          <SortableContext
+            items={items.map((_, i) => i.toString())}
+            strategy={verticalListSortingStrategy}
+          >
+            <div className="space-y-2">
+              {items.map((item, i) => (
+                <SortableItem
+                  key={i}
+                  id={i.toString()}
+                  item={item}
+                  i={i}
+                  updateItem={updateItem}
+                  removeItem={removeItem}
+                  errors={errors}
+                  setInputRef={setInputRef}
+                  handleKeyDown={handleKeyDown}
+                />
+              ))}
+            </div>
+          </SortableContext>
+        </DndContext>
+
+        {/* ADD */}
+        <button
+          type="button"
+          onClick={() => addItem()}
+          className="w-full px-4 py-2.5 rounded-lg border border-gray-300 text-sm hover:bg-gray-50 transition"
+        >
+          <FaPlus className="inline mr-2 text-xs" />
           Add Benefit
         </button>
-
       </div>
     </div>
   );
