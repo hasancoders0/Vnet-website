@@ -31,7 +31,31 @@ const generateSlug = (text) =>
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/(^-|-$)/g, "");
 
-export default function CreateServiceWizard() {
+// ================= DEFAULT =================
+const defaultData = {
+  slug: "",
+  title: "",
+  subtitle: "",
+  shortDescription: "",
+  fullDescription: "",
+  badge: "",
+  featuredImage: "",
+  metaTitle: "",
+  metaDescription: "",
+  metaImage: "",
+  tags: [],
+  category: "",
+  features: [],
+  whatYouGet: [],
+  pricing: [],
+  process: [],
+  faq: [],
+};
+
+export default function CreateServiceWizard({
+  initialData = null,
+  mode = "create",
+}) {
   const router = useRouter();
 
   const [step, setStep] = useState(0);
@@ -39,46 +63,45 @@ export default function CreateServiceWizard() {
   const [autoSlug, setAutoSlug] = useState(true);
   const [errors, setErrors] = useState({});
 
-  const [formData, setFormData] = useState({
-    slug: "",
-    title: "",
-    subtitle: "",
-    shortDescription: "",
-    fullDescription: "",
-    badge: "",
-    featuredImage: "",
-    metaTitle: "",
-    metaDescription: "",
-    metaImage: "",
-    tags: [],
-    category: "",
-    features: [],
-    whatYouGet: [],
-    pricing: [],
-    process: [],
-    faq: [],
+  // ✅ FIXED INITIAL DATA (CATEGORY FIX HERE)
+  const [formData, setFormData] = useState(() => {
+    if (!initialData) return defaultData;
+
+    return {
+      ...defaultData,
+      ...initialData,
+
+      // ✅ FIX: category must be ID not object
+      category:
+        initialData.category?._id ||
+        initialData.category ||
+        "",
+    };
   });
 
-  // ================= FIXED: STABLE FUNCTION =================
-  const updateFormData = useCallback((updater) => {
-    setFormData((prev) => {
-      let updated =
-        typeof updater === "function"
-          ? updater(prev)
-          : { ...prev, ...updater };
+  // ================= SAFE UPDATE =================
+  const updateFormData = useCallback(
+    (updater) => {
+      setFormData((prev) => {
+        let updated =
+          typeof updater === "function"
+            ? updater(prev)
+            : { ...prev, ...updater };
 
-      // 🔥 SLUG AUTO UPDATE
-      if (autoSlug && updated.title) {
-        const newSlug = generateSlug(updated.title);
+        // AUTO SLUG
+        if (autoSlug && updated.title) {
+          const newSlug = generateSlug(updated.title);
 
-        if (updated.slug !== newSlug) {
-          updated = { ...updated, slug: newSlug };
+          if (updated.slug !== newSlug) {
+            updated = { ...updated, slug: newSlug };
+          }
         }
-      }
 
-      return updated;
-    });
-  }, [autoSlug]);
+        return updated;
+      });
+    },
+    [autoSlug]
+  );
 
   const steps = [
     "Basic Info",
@@ -131,8 +154,15 @@ export default function CreateServiceWizard() {
     try {
       setLoading(true);
 
-      const res = await fetch("/api/services", {
-        method: "POST",
+      const endpoint =
+        mode === "edit"
+          ? `/api/services/${formData._id}`
+          : `/api/services`;
+
+      const method = mode === "edit" ? "PUT" : "POST";
+
+      const res = await fetch(endpoint, {
+        method,
         headers: {
           "Content-Type": "application/json",
         },
@@ -143,13 +173,17 @@ export default function CreateServiceWizard() {
 
       if (!res.ok) throw new Error(result.message);
 
-      toast("Service created successfully", "success");
+      toast(
+        mode === "edit"
+          ? "Service updated successfully"
+          : "Service created successfully",
+        "success"
+      );
 
-      // ✅ FIXED: REDIRECT
+      // redirect
       setTimeout(() => {
         router.push("/administrator/services");
-      }, 800);
-
+      }, 600);
     } catch (err) {
       toast(err.message || "Something went wrong", "error");
     } finally {
@@ -163,10 +197,15 @@ export default function CreateServiceWizard() {
       {/* HEADER */}
       <div className="p-6 pb-4">
         <h2 className="text-lg font-semibold text-gray-800">
-          Create New Service
+          {mode === "edit"
+            ? "Edit Service"
+            : "Create New Service"}
         </h2>
+
         <p className="text-sm text-gray-500 mt-1">
-          Build your service step-by-step
+          {mode === "edit"
+            ? "Update your service details"
+            : "Build your service step-by-step"}
         </p>
 
         <div className="mt-6">
@@ -266,7 +305,13 @@ export default function CreateServiceWizard() {
           {step === steps.length - 1 ? (
             <>
               <FaRocket className="text-xs" />
-              {loading ? "Publishing..." : "Publish"}
+              {loading
+                ? mode === "edit"
+                  ? "Updating..."
+                  : "Publishing..."
+                : mode === "edit"
+                ? "Update"
+                : "Publish"}
             </>
           ) : (
             <>

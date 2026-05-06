@@ -16,7 +16,7 @@ export default function BasicInfoStep({
   setData,
   autoSlug,
   setAutoSlug,
-  errors = {}, // ✅ NEW
+  errors = {},
 }) {
   const initialized = useRef(false);
 
@@ -27,7 +27,6 @@ export default function BasicInfoStep({
     }));
   };
 
-  // ================= INIT =================
   useEffect(() => {
     if (initialized.current) return;
 
@@ -57,17 +56,12 @@ export default function BasicInfoStep({
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         
         {/* TITLE */}
-        <FormField
-          label="Service Title"
-          required
-          error={errors?.title}
-        >
+        <FormField label="Service Title" required error={errors?.title}>
           <Input
             value={data.title}
             onChange={(e) =>
               handleChange("title", e.target.value)
             }
-            error={errors?.title}
           />
         </FormField>
 
@@ -98,16 +92,10 @@ export default function BasicInfoStep({
 
         {/* CATEGORY */}
         <div className="md:col-span-2">
-          <FormField
-            label="Category"
-            required
-            error={errors?.category}
-          >
+          <FormField label="Category" required error={errors?.category}>
             <CategorySelector
               value={data.category}
-              onChange={(val) =>
-                handleChange("category", val)
-              }
+              onChange={(val) => handleChange("category", val)}
               type="service"
             />
           </FormField>
@@ -147,34 +135,14 @@ export default function BasicInfoStep({
           </FormField>
         </div>
 
-        {/* SHORT DESCRIPTION */}
-        <div className="md:col-span-2">
-          <FormField label="Short Description">
-            <Textarea
-              value={data.shortDescription}
-              onChange={(e) =>
-                handleChange(
-                  "shortDescription",
-                  e.target.value
-                )
-              }
-            />
-          </FormField>
-        </div>
-
         {/* FULL DESCRIPTION */}
         <div className="md:col-span-2">
-          <FormField
-            label="Full Description"
-            required
-            error={errors?.fullDescription}
-          >
+          <FormField label="Full Description" required error={errors?.fullDescription}>
             <RichTextEditor
               value={data.fullDescription}
               onChange={(val) =>
                 handleChange("fullDescription", val)
               }
-              placeholder="Write full service details..."
             />
           </FormField>
         </div>
@@ -192,13 +160,9 @@ export default function BasicInfoStep({
           </FormField>
         </div>
 
-        {/* FEATURED IMAGE */}
+        {/* IMAGE */}
         <div className="md:col-span-2">
-          <FormField
-            label="Featured Image"
-            required
-            error={errors?.featuredImage}
-          >
+          <FormField label="Featured Image" required error={errors?.featuredImage}>
             <ImagePicker
               value={data.featuredImage}
               onChange={(url) =>

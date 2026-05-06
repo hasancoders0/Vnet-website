@@ -24,20 +24,11 @@ const FeatureSchema = new Schema(
 const PricingSchema = new Schema(
   {
     title: { type: String, trim: true, default: "" },
-
-    price: {
-      type: Number,
-      default: 0,
-      min: 0,
-    },
-
+    price: { type: Number, default: 0, min: 0 },
     deliveryTime: { type: String, default: "" },
-
-    description: { type: String, default: "" }, // ✅ added
-
+    description: { type: String, default: "" },
     features: [{ type: String, trim: true }],
-
-    highlighted: { type: Boolean, default: false }, // ✅ added
+    highlighted: { type: Boolean, default: false },
   },
   { _id: false }
 );
@@ -47,7 +38,7 @@ const ProcessSchema = new Schema(
   {
     title: { type: String, default: "" },
     description: { type: String, default: "" },
-    icon: { type: String, default: "FaRocket" }, // ✅ added
+    icon: { type: String, default: "FaRocket" },
   },
   { _id: false }
 );
@@ -61,10 +52,18 @@ const FAQSchema = new Schema(
   { _id: false }
 );
 
+// ================= WHAT YOU GET (🔥 NEW STRUCTURE) =================
+const WhatYouGetSchema = new Schema(
+  {
+    description: { type: String, default: "" },
+    items: [{ type: String, trim: true }],
+  },
+  { _id: false }
+);
+
 // ================= MAIN =================
 const ServiceSchema = new Schema(
   {
-    // BASIC
     title: {
       type: String,
       required: true,
@@ -74,19 +73,12 @@ const ServiceSchema = new Schema(
     slug: {
       type: String,
       required: true,
-      unique: true,
+      unique: true, // ✅ KEEP THIS ONLY
       lowercase: true,
       trim: true,
     },
 
     subtitle: { type: String, default: "" },
-
-    shortDescription: {
-      type: String,
-      trim: true,
-      maxlength: 300,
-      default: "",
-    },
 
     fullDescription: { type: String, default: "" },
 
@@ -108,21 +100,25 @@ const ServiceSchema = new Schema(
     // IMAGE
     featuredImage: { type: String, default: "" },
 
-    // ================= SEO =================
+    // SEO
     metaTitle: { type: String, default: "" },
     metaDescription: { type: String, default: "" },
     metaImage: { type: String, default: "" },
 
-    // ================= SUPPORT =================
+    // SUPPORT
     support: {
       type: SupportSchema,
-      default: () => ({}), // ✅ safe default
+      default: () => ({}),
     },
 
-    // ================= CONTENT =================
+    // CONTENT
     features: { type: [FeatureSchema], default: [] },
 
-    whatYouGet: [{ type: String, trim: true }],
+    // 🔥 FIXED STRUCTURE
+    whatYouGet: {
+      type: WhatYouGetSchema,
+      default: () => ({ description: "", items: [] }),
+    },
 
     pricing: { type: [PricingSchema], default: [] },
 
@@ -130,7 +126,7 @@ const ServiceSchema = new Schema(
 
     faq: { type: [FAQSchema], default: [] },
 
-    // ================= STATUS =================
+    // STATUS
     status: {
       type: String,
       enum: ["draft", "active", "archived"],
@@ -153,7 +149,7 @@ const ServiceSchema = new Schema(
 );
 
 // ================= INDEXES =================
-ServiceSchema.index({ slug: 1 });
+// ❌ REMOVE slug index (important fix)
 ServiceSchema.index({ category: 1 });
 ServiceSchema.index({ status: 1 });
 

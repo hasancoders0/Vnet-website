@@ -1,20 +1,27 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { FaEdit, FaEye, FaTrash } from "react-icons/fa";
+import { useEffect, useState, useCallback } from "react";
+import {
+  FaEdit,
+  FaEye,
+  FaTrash,
+  FaCircle,
+} from "react-icons/fa";
 import { useRouter } from "next/navigation";
 import { toast } from "@/hooks/useToast";
+
+import DataTable from "@/components/ui/DataTable";
+import ConfirmModal from "@/components/ui/ConfirmModal";
 
 export default function ServiceTable() {
   const router = useRouter();
 
   const [services, setServices] = useState([]);
   const [loading, setLoading] = useState(true);
-
   const [deleteId, setDeleteId] = useState(null);
 
   // ================= FETCH =================
-  const fetchServices = async () => {
+  const fetchServices = useCallback(async () => {
     try {
       setLoading(true);
 
@@ -24,20 +31,25 @@ export default function ServiceTable() {
 
       const data = await res.json();
 
+      if (!res.ok) {
+        throw new Error(data.message || "Fetch failed");
+      }
+
       setServices(data.data || []);
-    } catch {
-      toast("Failed to load services", "error");
+    } catch (err) {
+      toast(err.message || "Failed to load services", "error");
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
+  // ================= EFFECT =================
   useEffect(() => {
     const load = async () => {
       await fetchServices();
     };
     load();
-  }, []);
+  }, [fetchServices]);
 
   // ================= DELETE =================
   const handleDelete = async () => {
@@ -46,152 +58,176 @@ export default function ServiceTable() {
         method: "DELETE",
       });
 
-      if (!res.ok) throw new Error();
+      const data = await res.json();
 
-      setServices((prev) => prev.filter((s) => s._id !== deleteId));
+      if (!res.ok) {
+        throw new Error(data.message || "Delete failed");
+      }
 
-      toast("Service deleted", "success");
-    } catch {
-      toast("Delete failed", "error");
+      setServices((prev) =>
+        prev.filter((s) => s._id !== deleteId)
+      );
+
+      toast("Service deleted successfully", "success");
+    } catch (err) {
+      toast(err.message || "Delete failed", "error");
     } finally {
       setDeleteId(null);
     }
   };
 
-  // ================= LOADING =================
-  if (loading) {
-    return (
-      <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-        <p className="text-sm text-gray-400">Loading services...</p>
-      </div>
-    );
-  }
+  // ================= STATUS TOGGLE =================
+  const toggleStatus = async (id, currentStatus) => {
+    const newStatus =
+      currentStatus === "active" ? "draft" : "active";
 
-  // ================= EMPTY =================
-  if (!services.length) {
-    return (
-      <div className="bg-white rounded-2xl p-10 text-center shadow-sm border border-gray-100">
-        <p className="text-gray-500 text-sm">
-          No services found. Create your first service 🚀
-        </p>
-      </div>
-    );
-  }
+    try {
+      // optimistic update
+      setServices((prev) =>
+        prev.map((s) =>
+          s._id === id ? { ...s, status: newStatus } : s
+        )
+      );
+
+      const res = await fetch(`/api/services/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: newStatus }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.message || "Update failed");
+      }
+
+      toast("Status updated", "success");
+    } catch (err) {
+      toast(err.message || "Failed to update", "error");
+
+      // rollback
+      setServices((prev) =>
+        prev.map((s) =>
+          s._id === id
+            ? { ...s, status: currentStatus }
+            : s
+        )
+      );
+    }
+  };
+
+  // ================= COLUMNS =================
+  const columns = [
+    {
+      label: "Service",
+      accessor: "title",
+      render: (value, row) => (
+        <div>
+          <p className="font-medium text-gray-800">
+            {value || "Untitled"}
+          </p>
+          <p className="text-xs text-gray-400">
+            /{row.slug}
+          </p>
+        </div>
+      ),
+    },
+    {
+      label: "Category",
+      accessor: "category",
+      render: (value) => value?.name || "—",
+    },
+    {
+      label: "Status",
+      accessor: "status",
+      render: (value, row) => {
+        const isActive = value === "active";
+
+        return (
+          <button
+            onClick={() => toggleStatus(row._id, value)}
+            className={`flex items-center gap-2 px-3 py-1 rounded-full text-xs transition
+              ${
+                isActive
+                  ? "bg-green-50 text-green-600 hover:bg-green-100"
+                  : "bg-yellow-50 text-yellow-600 hover:bg-yellow-100"
+              }`}
+          >
+            <FaCircle className="text-[8px]" />
+            {isActive ? "Active" : "Draft"}
+          </button>
+        );
+      },
+    },
+    {
+      label: "Features",
+      accessor: "features",
+      render: (value) => value?.length || 0,
+    },
+    {
+      label: "Date",
+      accessor: "createdAt",
+      render: (value) =>
+        value
+          ? new Date(value).toLocaleDateString()
+          : "—",
+    },
+    {
+      label: "Actions",
+      accessor: "_id",
+      className: "text-right",
+      render: (_, row) => (
+        <div className="flex justify-end gap-2">
+          {/* VIEW */}
+          <button
+            onClick={() =>
+              router.push(`/services/${row.slug}`)
+            }
+            className="p-2 rounded-md hover:bg-gray-100 transition"
+          >
+            <FaEye className="text-gray-500" />
+          </button>
+
+          {/* EDIT */}
+          <button
+            onClick={() =>
+              router.push(
+                `/administrator/services/edit/${row._id}`
+              )
+            }
+            className="p-2 rounded-md hover:bg-gray-100 transition"
+          >
+            <FaEdit className="text-gray-500" />
+          </button>
+
+          {/* DELETE */}
+          <button
+            onClick={() => setDeleteId(row._id)}
+            className="p-2 rounded-md hover:bg-red-50 transition"
+          >
+            <FaTrash className="text-red-500" />
+          </button>
+        </div>
+      ),
+    },
+  ];
 
   return (
     <>
-      {/* ================= TABLE ================= */}
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+      <DataTable
+        columns={columns}
+        data={services}
+        loading={loading}
+        emptyText="No services found"
+      />
 
-        {/* HEADER */}
-        <div className="grid grid-cols-7 px-6 py-4 text-xs font-semibold text-gray-400 uppercase tracking-wider border-b border-gray-100">
-          <span>Service</span>
-          <span>Category</span>
-          <span>Status</span>
-          <span>Features</span>
-          <span>Date</span>
-          <span className="text-right col-span-2">Actions</span>
-        </div>
-
-        {/* ROWS */}
-        {services.map((item) => (
-          <div
-            key={item._id}
-            className="grid grid-cols-7 px-6 py-5 items-center text-sm border-b last:border-0 border-gray-50 hover:bg-gray-50/40 transition"
-          >
-            <div className="font-medium text-gray-800">
-              {item.title || "Untitled"}
-            </div>
-
-            <span className="px-3 py-1 bg-purple-50 text-purple-600 rounded-full text-xs w-fit">
-              {item.badge || "General"}
-            </span>
-
-            <span className="px-3 py-1 bg-green-50 text-green-600 rounded-full text-xs w-fit">
-              Active
-            </span>
-
-            <span className="text-gray-500">
-              {item.features?.length || 0}
-            </span>
-
-            <span className="text-gray-400 text-sm">
-              {new Date(item.createdAt).toLocaleDateString()}
-            </span>
-
-            {/* ACTIONS */}
-            <div className="flex justify-end gap-2 col-span-2">
-
-              {/* VIEW */}
-              <button
-                onClick={() => router.push(`/services/${item.slug}`)}
-                className="p-2 rounded-md hover:bg-gray-100 transition"
-              >
-                <FaEye className="text-gray-500" />
-              </button>
-
-              {/* EDIT */}
-              <button
-                onClick={() =>
-                  router.push(`/administrator/services/edit/${item._id}`)
-                }
-                className="p-2 rounded-md hover:bg-gray-100 transition"
-              >
-                <FaEdit className="text-gray-500" />
-              </button>
-
-              {/* DELETE */}
-              <button
-                onClick={() => setDeleteId(item._id)}
-                className="p-2 rounded-md hover:bg-red-50 transition"
-              >
-                <FaTrash className="text-red-500" />
-              </button>
-
-            </div>
-          </div>
-        ))}
-
-        {/* FOOTER */}
-        <div className="px-6 py-4 text-sm text-gray-400 bg-gray-50/40">
-          {services.length} services
-        </div>
-      </div>
-
-      {/* ================= DELETE MODAL ================= */}
-      {deleteId && (
-        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
-
-          <div className="bg-white rounded-xl p-6 w-full max-w-sm shadow-lg">
-
-            <h3 className="text-lg font-semibold text-gray-800 mb-2">
-              Delete Service
-            </h3>
-
-            <p className="text-sm text-gray-500 mb-6">
-              Are you sure you want to delete this service? This action cannot be undone.
-            </p>
-
-            <div className="flex justify-end gap-3">
-
-              <button
-                onClick={() => setDeleteId(null)}
-                className="px-4 py-2 text-sm rounded-lg border hover:bg-gray-100"
-              >
-                Cancel
-              </button>
-
-              <button
-                onClick={handleDelete}
-                className="px-4 py-2 text-sm rounded-lg bg-red-500 text-white hover:bg-red-600"
-              >
-                Delete
-              </button>
-
-            </div>
-          </div>
-        </div>
-      )}
+      <ConfirmModal
+        open={!!deleteId}
+        title="Delete Service"
+        description="Are you sure you want to delete this service? This action cannot be undone."
+        onCancel={() => setDeleteId(null)}
+        onConfirm={handleDelete}
+      />
     </>
   );
 }

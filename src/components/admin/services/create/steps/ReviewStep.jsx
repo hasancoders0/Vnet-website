@@ -6,7 +6,7 @@ import * as FaIcons from "react-icons/fa";
 export default function ReviewStep({ data }) {
   const [categories, setCategories] = useState([]);
 
-  // ================= FETCH ALL CATEGORIES =================
+  // ================= FETCH CATEGORIES =================
   useEffect(() => {
     const fetchCategories = async () => {
       try {
@@ -16,7 +16,7 @@ export default function ReviewStep({ data }) {
 
         const result = await res.json();
         setCategories(result.data || []);
-      } catch (err) {
+      } catch {
         console.error("Category fetch failed");
       }
     };
@@ -24,16 +24,22 @@ export default function ReviewStep({ data }) {
     fetchCategories();
   }, []);
 
-  // ================= FIND CATEGORY NAME =================
+  // ================= CATEGORY NAME =================
   const categoryName =
     categories.find((c) => c._id === data.category)?.name || "-";
 
+  // ================= HELPERS =================
   const Icon = (name) => {
     const I = FaIcons[name] || FaIcons.FaStar;
     return <I className="text-purple-500 text-sm" />;
   };
 
   const safe = (val) => val || "-";
+
+  const whatYouGet = data.whatYouGet || {
+    description: "",
+    items: [],
+  };
 
   return (
     <div className="space-y-8">
@@ -47,34 +53,29 @@ export default function ReviewStep({ data }) {
         </p>
       </div>
 
-      {/* BASIC INFO */}
+      {/* ================= BASIC INFO ================= */}
       <Section title="Basic Info">
         <Row label="Title" value={safe(data.title)} />
         <Row label="Slug" value={safe(data.slug)} />
-
-        {/* ✅ FIXED CATEGORY */}
         <Row label="Category" value={categoryName} />
-
         <Row label="Badge" value={safe(data.badge)} />
       </Section>
 
-      {/* DESCRIPTION */}
+      {/* ================= DESCRIPTION ================= */}
       <Section title="Description">
-        <p className="text-sm text-gray-600">
-          {safe(data.shortDescription)}
-        </p>
-
-        {data.fullDescription && (
+        {data.fullDescription ? (
           <div
-            className="prose prose-sm mt-3 max-w-none"
+            className="prose prose-sm max-w-none"
             dangerouslySetInnerHTML={{
               __html: data.fullDescription,
             }}
           />
+        ) : (
+          <p className="text-sm text-gray-500">No description</p>
         )}
       </Section>
 
-      {/* FEATURES */}
+      {/* ================= FEATURES ================= */}
       {data.features?.length > 0 && (
         <Section title="Features">
           <div className="grid grid-cols-2 gap-3 text-sm">
@@ -88,29 +89,38 @@ export default function ReviewStep({ data }) {
         </Section>
       )}
 
-      {/* SUPPORT */}
+      {/* ================= SUPPORT ================= */}
       <Section title="Support">
         <p className="text-sm text-gray-600">
-          {safe(data.support?.duration)} •{" "}
-          {safe(data.support?.type)}
+          {safe(data.support?.duration)} • {safe(data.support?.type)}
         </p>
       </Section>
 
-      {/* WHAT YOU GET */}
-      {data.whatYouGet?.length > 0 && (
+      {/* ================= WHAT YOU GET ================= */}
+      {(whatYouGet.description || whatYouGet.items?.length > 0) && (
         <Section title="What You Get">
-          <ul className="space-y-2 text-sm text-gray-600">
-            {data.whatYouGet.map((item, i) => (
-              <li key={i} className="flex gap-2">
-                <span>✔</span>
-                <span>{item}</span>
-              </li>
-            ))}
-          </ul>
+          {/* DESCRIPTION */}
+          {whatYouGet.description && (
+            <p className="text-sm text-gray-600 mb-3">
+              {whatYouGet.description}
+            </p>
+          )}
+
+          {/* ITEMS */}
+          {whatYouGet.items?.length > 0 && (
+            <ul className="space-y-2 text-sm text-gray-600">
+              {whatYouGet.items.map((item, i) => (
+                <li key={i} className="flex gap-2">
+                  <span>✔</span>
+                  <span>{item}</span>
+                </li>
+              ))}
+            </ul>
+          )}
         </Section>
       )}
 
-      {/* PRICING */}
+      {/* ================= PRICING ================= */}
       {data.pricing?.length > 0 && (
         <Section title="Pricing Plans">
           <div className="grid md:grid-cols-3 gap-4">
@@ -129,9 +139,16 @@ export default function ReviewStep({ data }) {
                   ${plan.price || 0}
                 </p>
 
-                <p className="text-xs text-gray-500 mb-3">
-                  {safe(plan.deliveryTime)}
+                <p className="text-xs text-gray-500 mb-2">
+                  {plan.deliveryTime || "-"}
                 </p>
+
+                {/* ✅ DESCRIPTION FIX */}
+                {plan.description && (
+                  <p className="text-sm text-gray-600 mb-3">
+                    {plan.description}
+                  </p>
+                )}
 
                 <ul className="text-sm space-y-1">
                   {plan.features?.map((f, j) => (
@@ -144,7 +161,7 @@ export default function ReviewStep({ data }) {
         </Section>
       )}
 
-      {/* PROCESS */}
+      {/* ================= PROCESS ================= */}
       {data.process?.length > 0 && (
         <Section title="Process">
           <div className="space-y-2 text-sm text-gray-600">
@@ -157,7 +174,7 @@ export default function ReviewStep({ data }) {
         </Section>
       )}
 
-      {/* FAQ */}
+      {/* ================= FAQ ================= */}
       {data.faq?.length > 0 && (
         <Section title="FAQ">
           <div className="space-y-3 text-sm text-gray-600">
@@ -171,13 +188,10 @@ export default function ReviewStep({ data }) {
         </Section>
       )}
 
-      {/* SEO */}
+      {/* ================= SEO ================= */}
       <Section title="SEO">
         <Row label="Title" value={safe(data.metaTitle)} />
-        <Row
-          label="Description"
-          value={safe(data.metaDescription)}
-        />
+        <Row label="Description" value={safe(data.metaDescription)} />
       </Section>
     </div>
   );
