@@ -13,65 +13,77 @@ export default function PricingStep({ data, setData }) {
 
     const newIndex = plans.length;
 
-    setData({
-      ...data,
+    setData((prev) => ({
+      ...prev,
       pricing: [
-        ...plans,
+        ...(prev.pricing || []),
         {
-          name: PLAN_NAMES[newIndex] || "",
+          title: PLAN_NAMES[newIndex] || "",
           price: "",
+          deliveryTime: "", // ✅ NEW FIELD
           description: "",
           features: [""],
-          highlighted: newIndex === 1, // default middle plan highlight
+          highlighted: newIndex === 1,
         },
       ],
-    });
+    }));
   };
 
   const removePlan = (index) => {
-    const updated = plans.filter((_, i) => i !== index);
+    setData((prev) => {
+      const updated = prev.pricing.filter((_, i) => i !== index);
 
-    // reassign names
-    const renamed = updated.map((p, i) => ({
-      ...p,
-      name: PLAN_NAMES[i] || p.name,
-    }));
+      const renamed = updated.map((p, i) => ({
+        ...p,
+        title: PLAN_NAMES[i] || p.title,
+      }));
 
-    setData({ ...data, pricing: renamed });
+      return { ...prev, pricing: renamed };
+    });
   };
 
   const updatePlan = (index, key, value) => {
-    const updated = [...plans];
-    updated[index][key] = value;
-    setData({ ...data, pricing: updated });
+    setData((prev) => {
+      const updated = [...prev.pricing];
+      updated[index][key] = value;
+      return { ...prev, pricing: updated };
+    });
   };
 
   const addFeature = (planIndex) => {
-    const updated = [...plans];
-    updated[planIndex].features.push("");
-    setData({ ...data, pricing: updated });
+    setData((prev) => {
+      const updated = [...prev.pricing];
+      updated[planIndex].features.push("");
+      return { ...prev, pricing: updated };
+    });
   };
 
   const removeFeature = (planIndex, featureIndex) => {
-    const updated = [...plans];
-    updated[planIndex].features = updated[planIndex].features.filter(
-      (_, i) => i !== featureIndex
-    );
-    setData({ ...data, pricing: updated });
+    setData((prev) => {
+      const updated = [...prev.pricing];
+      updated[planIndex].features = updated[planIndex].features.filter(
+        (_, i) => i !== featureIndex
+      );
+      return { ...prev, pricing: updated };
+    });
   };
 
   const updateFeature = (planIndex, featureIndex, value) => {
-    const updated = [...plans];
-    updated[planIndex].features[featureIndex] = value;
-    setData({ ...data, pricing: updated });
+    setData((prev) => {
+      const updated = [...prev.pricing];
+      updated[planIndex].features[featureIndex] = value;
+      return { ...prev, pricing: updated };
+    });
   };
 
   const setHighlight = (index) => {
-    const updated = plans.map((p, i) => ({
-      ...p,
-      highlighted: i === index,
-    }));
-    setData({ ...data, pricing: updated });
+    setData((prev) => {
+      const updated = prev.pricing.map((p, i) => ({
+        ...p,
+        highlighted: i === index,
+      }));
+      return { ...prev, pricing: updated };
+    });
   };
 
   return (
@@ -116,15 +128,15 @@ export default function PricingStep({ data, setData }) {
 
             {/* PLAN NAME */}
             <input
-              value={plan.name}
-              onChange={(e) => updatePlan(i, "name", e.target.value)}
+              value={plan.title}
+              onChange={(e) => updatePlan(i, "title", e.target.value)}
               className="w-full text-lg font-semibold outline-none mb-2 border-b pb-1"
             />
 
             {/* DESCRIPTION */}
             <input
               placeholder="Short description"
-              value={plan.description}
+              value={plan.description || ""}
               onChange={(e) =>
                 updatePlan(i, "description", e.target.value)
               }
@@ -132,7 +144,7 @@ export default function PricingStep({ data, setData }) {
             />
 
             {/* PRICE */}
-            <div className="flex items-center gap-1 mb-4">
+            <div className="flex items-center gap-1 mb-3">
               <span className="text-gray-500 text-lg">$</span>
               <input
                 type="number"
@@ -142,6 +154,16 @@ export default function PricingStep({ data, setData }) {
                 className="w-full text-3xl font-bold outline-none"
               />
             </div>
+
+            {/* 🔥 DELIVERY TIME (NEW) */}
+            <input
+              placeholder="Delivery time (e.g. 3 days)"
+              value={plan.deliveryTime || ""}
+              onChange={(e) =>
+                updatePlan(i, "deliveryTime", e.target.value)
+              }
+              className="w-full text-sm mb-4 px-3 py-2 rounded-lg border border-gray-200 focus:ring-2 focus:ring-purple-500 outline-none"
+            />
 
             {/* FEATURES */}
             <div className="space-y-2 mb-4">

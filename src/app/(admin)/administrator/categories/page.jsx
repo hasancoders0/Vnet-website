@@ -8,20 +8,20 @@ import {
   FaBox,
   FaBlog,
   FaTools,
-  FaSearch,
   FaTrash,
   FaCubes,
 } from "react-icons/fa";
 
+// ✅ IMPORT GLOBAL PICKER
+import IconPicker from "@/components/ui/IconPicker";
+
 const TYPES = [
   { label: "Services", value: "service", icon: FaLayerGroup },
   { label: "Products", value: "product", icon: FaBox },
-  { label: "Templates", value: "template", icon: FaCubes }, // ✅ NEW
+  { label: "Templates", value: "template", icon: FaCubes },
   { label: "Blog", value: "blog", icon: FaBlog },
   { label: "Tools", value: "tool", icon: FaTools },
 ];
-
-const iconKeys = Object.keys(FaIcons).slice(0, 200);
 
 export default function CategoriesPage() {
   const [categories, setCategories] = useState([]);
@@ -33,9 +33,6 @@ export default function CategoriesPage() {
 
   const [loading, setLoading] = useState(false);
   const [deleteId, setDeleteId] = useState(null);
-
-  const [showPicker, setShowPicker] = useState(false);
-  const [search, setSearch] = useState("");
 
   // ================= FETCH =================
   useEffect(() => {
@@ -73,7 +70,6 @@ export default function CategoriesPage() {
         },
         body: JSON.stringify({
           name,
-          slug: name.toLowerCase().replace(/\s+/g, "-"),
           type,
           icon,
         }),
@@ -81,12 +77,11 @@ export default function CategoriesPage() {
 
       if (!res.ok) throw new Error();
 
-      toast("Category created", "success");
+      const newCategory = await res.json();
 
-      setCategories((prev) => [
-        { _id: Date.now(), name, slug: name, type, icon },
-        ...prev,
-      ]);
+      setCategories((prev) => [newCategory, ...prev]);
+
+      toast("Category created", "success");
 
       setName("");
     } catch {
@@ -114,13 +109,6 @@ export default function CategoriesPage() {
       setDeleteId(null);
     }
   };
-
-  // ================= ICON FILTER =================
-  const filteredIcons = iconKeys.filter((i) =>
-    i.toLowerCase().includes(search.toLowerCase())
-  );
-
-  const SelectedIcon = FaIcons[icon] || FaIcons.FaFolder;
 
   return (
     <div className="space-y-6">
@@ -161,11 +149,10 @@ export default function CategoriesPage() {
         })}
       </div>
 
-      {/* CREATE (ONE LINE) */}
+      {/* CREATE (ONE LINE CLEAN) */}
       <div className="bg-white rounded-xl border border-gray-100 p-4 shadow-sm">
         <div className="flex flex-col md:flex-row items-stretch md:items-center gap-3">
 
-          {/* INPUT */}
           <input
             value={name}
             onChange={(e) => setName(e.target.value)}
@@ -176,18 +163,9 @@ export default function CategoriesPage() {
             className="flex-1 h-11 px-4 rounded-lg border border-gray-200 text-sm focus:ring-2 focus:ring-purple-500 outline-none"
           />
 
-          {/* ICON BUTTON */}
-          <button
-            onClick={() => setShowPicker(true)}
-            className="h-11 px-3 flex items-center gap-2 rounded-lg border border-gray-200 bg-gray-50 hover:bg-gray-100 transition"
-          >
-            <SelectedIcon className="text-purple-600" />
-            <span className="text-sm text-gray-600 hidden sm:block">
-              Icon
-            </span>
-          </button>
+          {/* ✅ GLOBAL ICON PICKER */}
+          <IconPicker value={icon} onChange={setIcon} />
 
-          {/* ADD BUTTON */}
           <button
             onClick={handleCreate}
             disabled={!name.trim()}
@@ -199,113 +177,85 @@ export default function CategoriesPage() {
         </div>
       </div>
 
-      {/* LIST */}
-      <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
+      {/* MODERN LIST */}
+      <div className="space-y-3">
 
         {loading ? (
-          <div className="p-6 text-gray-400 text-sm">
+          <div className="bg-white rounded-xl p-6 text-gray-400 text-sm border">
             Loading...
           </div>
         ) : !categories.length ? (
-          <div className="p-10 text-center text-gray-400">
+          <div className="bg-white rounded-xl p-10 text-center text-gray-400 border">
             No categories yet
           </div>
         ) : (
-          <div className="divide-y">
-            {categories.map((cat) => {
-              const Icon =
-                FaIcons[cat.icon] || FaIcons.FaFolder;
+          categories.map((cat) => {
+            const Icon =
+              FaIcons[cat.icon] || FaIcons.FaFolder;
 
-              return (
-                <div
-                  key={cat._id}
-                  className="flex items-center justify-between px-6 py-4 hover:bg-gray-50"
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="w-9 h-9 rounded-lg bg-purple-100 text-purple-600 flex items-center justify-center">
-                      <Icon />
-                    </div>
+            return (
+              <div
+                key={cat._id}
+                className="flex items-center justify-between px-5 py-4 bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-md hover:-translate-y-[1px] transition-all"
+              >
 
-                    <div>
-                      <p className="text-sm font-medium">
-                        {cat.name}
-                      </p>
-                      <p className="text-xs text-gray-400">
-                        /{cat.slug}
-                      </p>
-                    </div>
+                {/* LEFT */}
+                <div className="flex items-center gap-4">
+
+                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-100 to-purple-200 text-purple-600 flex items-center justify-center shadow-sm">
+                    <Icon className="text-sm" />
                   </div>
 
-                  <button
-                    onClick={() => setDeleteId(cat._id)}
-                    className="p-2 rounded-lg hover:bg-red-50"
-                  >
-                    <FaTrash className="text-red-500 text-sm" />
-                  </button>
+                  <div>
+                    <p className="text-sm font-semibold text-gray-800">
+                      {cat.name}
+                    </p>
+                    <p className="text-xs text-gray-400">
+                      /{cat.slug}
+                    </p>
+                  </div>
                 </div>
-              );
-            })}
-          </div>
+
+                {/* DELETE */}
+                <button
+                  onClick={() => setDeleteId(cat._id)}
+                  className="p-2 rounded-lg bg-gray-50 hover:bg-red-50 transition group"
+                >
+                  <FaTrash className="text-gray-400 group-hover:text-red-500 text-sm transition" />
+                </button>
+
+              </div>
+            );
+          })
         )}
+
       </div>
-
-      {/* ICON PICKER */}
-      {showPicker && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-          <div className="bg-white w-full max-w-md rounded-xl p-4">
-
-            <div className="flex items-center gap-2 mb-3 border rounded-lg px-3 py-2">
-              <FaSearch className="text-gray-400" />
-              <input
-                placeholder="Search icon..."
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                className="flex-1 outline-none text-sm"
-              />
-            </div>
-
-            <div className="grid grid-cols-6 gap-3 max-h-[250px] overflow-y-auto">
-              {filteredIcons.map((ic) => {
-                const I = FaIcons[ic];
-
-                return (
-                  <button
-                    key={ic}
-                    onClick={() => {
-                      setIcon(ic);
-                      setShowPicker(false);
-                    }}
-                    className="p-2 border rounded-lg hover:bg-gray-100"
-                  >
-                    <I className="text-sm" />
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* DELETE MODAL */}
       {deleteId && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center">
-          <div className="bg-white p-6 rounded-xl">
-            <p className="mb-4 text-sm">
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-xl w-full max-w-sm">
+
+            <p className="mb-4 text-sm text-gray-700">
               Delete this category?
             </p>
 
             <div className="flex gap-3 justify-end">
-              <button onClick={() => setDeleteId(null)}>
+              <button
+                onClick={() => setDeleteId(null)}
+                className="text-sm px-3 py-1.5 rounded-lg border"
+              >
                 Cancel
               </button>
 
               <button
                 onClick={handleDelete}
-                className="bg-red-500 text-white px-4 py-2 rounded"
+                className="bg-red-500 text-white px-4 py-2 rounded-lg text-sm"
               >
                 Delete
               </button>
             </div>
+
           </div>
         </div>
       )}

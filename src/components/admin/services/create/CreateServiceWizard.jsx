@@ -9,6 +9,7 @@ import WhatYouGetStep from "./steps/WhatYouGetStep";
 import PricingStep from "./steps/PricingStep";
 import ProcessStep from "./steps/ProcessStep";
 import FAQStep from "./steps/FAQStep";
+import SeoStep from "./steps/SeoStep"; // ✅ NEW
 import ReviewStep from "./steps/ReviewStep";
 
 import { toast } from "@/hooks/useToast";
@@ -34,13 +35,14 @@ export default function CreateServiceWizard() {
     fullDescription: "",
     badge: "",
 
-    imageType: "url",
-    heroImage: "",
+    featuredImage: "",
 
     metaTitle: "",
     metaDescription: "",
+    metaImage: "",
 
     tags: [],
+    category: "",
 
     features: [],
     whatYouGet: [],
@@ -49,29 +51,20 @@ export default function CreateServiceWizard() {
     faq: [],
   });
 
-  const steps = [
-    "Basic Info",
-    "Features",
-    "What You Get",
-    "Pricing",
-    "Process",
-    "FAQ",
-    "Review",
-  ];
-
-  // ✅ SAFE UPDATE HANDLER (NO LOOP)
+  // ✅ SAFE GLOBAL UPDATE FUNCTION
   const updateFormData = (updater) => {
     setFormData((prev) => {
-      const updated =
+      let updated =
         typeof updater === "function"
           ? updater(prev)
           : { ...prev, ...updater };
 
-      // 🔥 Prevent unnecessary slug updates
+      // 🔥 AUTO SLUG
       if (autoSlug && updated.title) {
         const newSlug = generateSlug(updated.title);
+
         if (updated.slug !== newSlug) {
-          updated.slug = newSlug;
+          updated = { ...updated, slug: newSlug };
         }
       }
 
@@ -79,6 +72,19 @@ export default function CreateServiceWizard() {
     });
   };
 
+  // 🔢 STEPS (SEO ADDED)
+  const steps = [
+    "Basic Info",
+    "Features",
+    "What You Get",
+    "Pricing",
+    "Process",
+    "FAQ",
+    "SEO",     // ✅ NEW STEP
+    "Review",
+  ];
+
+  // ================= NAVIGATION =================
   const next = () => {
     if (step < steps.length - 1) {
       setStep((p) => p + 1);
@@ -91,6 +97,7 @@ export default function CreateServiceWizard() {
     }
   };
 
+  // ================= VALIDATION =================
   const validateStep = () => {
     if (step === 0 && !formData.title) {
       toast("Title is required", "error");
@@ -99,7 +106,7 @@ export default function CreateServiceWizard() {
     return true;
   };
 
-  // 🔥 SUBMIT
+  // ================= SUBMIT =================
   const handleSubmit = async () => {
     try {
       setLoading(true);
@@ -114,15 +121,11 @@ export default function CreateServiceWizard() {
 
       const result = await res.json();
 
-      if (!res.ok || !result.success) {
+      if (!res.ok) {
         throw new Error(result.message || "Failed");
       }
 
       toast("Service created successfully", "success");
-
-      // OPTIONAL RESET
-      // setFormData(initialState);
-
     } catch (err) {
       toast(err.message || "Something went wrong", "error");
     } finally {
@@ -140,6 +143,7 @@ export default function CreateServiceWizard() {
     }
   };
 
+  // ================= RENDER =================
   return (
     <div className="bg-white/70 backdrop-blur-xl border border-gray-200 rounded-2xl shadow-sm">
 
@@ -170,26 +174,49 @@ export default function CreateServiceWizard() {
         )}
 
         {step === 1 && (
-          <FeaturesStep data={formData} setData={updateFormData} />
+          <FeaturesStep
+            data={formData}
+            setData={updateFormData}
+          />
         )}
 
         {step === 2 && (
-          <WhatYouGetStep data={formData} setData={updateFormData} />
+          <WhatYouGetStep
+            data={formData}
+            setData={updateFormData}
+          />
         )}
 
         {step === 3 && (
-          <PricingStep data={formData} setData={updateFormData} />
+          <PricingStep
+            data={formData}
+            setData={updateFormData}
+          />
         )}
 
         {step === 4 && (
-          <ProcessStep data={formData} setData={updateFormData} />
+          <ProcessStep
+            data={formData}
+            setData={updateFormData}
+          />
         )}
 
         {step === 5 && (
-          <FAQStep data={formData} setData={updateFormData} />
+          <FAQStep
+            data={formData}
+            setData={updateFormData}
+          />
         )}
 
-        {step === 6 && <ReviewStep data={formData} />}
+        {step === 6 && (
+          <SeoStep
+            data={formData}
+            setData={updateFormData}
+          />
+        )}
+
+        {step === 7 && <ReviewStep data={formData} />}
+
       </div>
 
       {/* FOOTER */}

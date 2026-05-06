@@ -1,16 +1,13 @@
 "use client";
 
-import { useState } from "react";
 import * as FaIcons from "react-icons/fa";
-import { FaTrash, FaGripLines, FaSearch } from "react-icons/fa";
+import { FaTrash, FaGripLines } from "react-icons/fa";
 
-const iconKeys = Object.keys(FaIcons).slice(0, 300);
+// ✅ GLOBAL ICON PICKER
+import IconPicker from "@/components/ui/IconPicker";
 
 export default function ProcessStep({ data, setData }) {
   const steps = data.process || [];
-
-  const [activePicker, setActivePicker] = useState(null);
-  const [search, setSearch] = useState("");
 
   const addStep = () => {
     setData({
@@ -39,10 +36,6 @@ export default function ProcessStep({ data, setData }) {
     setData({ ...data, process: updated });
   };
 
-  const filteredIcons = iconKeys.filter((icon) =>
-    icon.toLowerCase().includes(search.toLowerCase())
-  );
-
   return (
     <div className="space-y-6">
 
@@ -56,7 +49,7 @@ export default function ProcessStep({ data, setData }) {
         </p>
       </div>
 
-      {/* EMPTY STATE */}
+      {/* EMPTY */}
       {steps.length === 0 && (
         <div className="border border-dashed rounded-xl p-6 text-center text-sm text-gray-400">
           No steps yet. Add your first process step.
@@ -74,7 +67,6 @@ export default function ProcessStep({ data, setData }) {
               {/* LEFT SIDE */}
               <div className="flex flex-col items-center">
 
-                {/* STEP NUMBER */}
                 <div className="w-10 h-10 rounded-xl bg-gradient-to-r from-blue-500 to-purple-600 text-white flex items-center justify-center text-sm font-semibold">
                   {i + 1}
                 </div>
@@ -85,22 +77,20 @@ export default function ProcessStep({ data, setData }) {
               </div>
 
               {/* CARD */}
-              <div className="flex-1 bg-white border border-gray-200 rounded-xl p-4 shadow-sm hover:shadow-md transition">
+              <div className="flex-1 bg-white border border-gray-100 rounded-xl p-4 shadow-sm hover:shadow-md transition">
 
-                <div className="flex flex-col gap-4">
+                <div className="space-y-4">
 
                   {/* TOP ROW */}
                   <div className="flex items-center gap-3">
 
-                    {/* ICON PICKER BUTTON */}
-                    <button
-                      onClick={() =>
-                        setActivePicker(i === activePicker ? null : i)
+                    {/* ✅ ONLY ONE ICON (FIXED) */}
+                    <IconPicker
+                      value={step.icon}
+                      onChange={(val) =>
+                        updateStep(i, "icon", val)
                       }
-                      className="w-10 h-10 rounded-lg bg-gray-100 flex items-center justify-center hover:bg-gray-200"
-                    >
-                      <Icon className="text-purple-600" />
-                    </button>
+                    />
 
                     {/* TITLE */}
                     <input
@@ -109,13 +99,13 @@ export default function ProcessStep({ data, setData }) {
                       onChange={(e) =>
                         updateStep(i, "title", e.target.value)
                       }
-                      className="flex-1 h-10 px-3 rounded-lg border border-gray-300 text-sm focus:ring-2 focus:ring-purple-500 outline-none"
+                      className="flex-1 h-10 px-3 rounded-lg border border-gray-200 text-sm focus:ring-2 focus:ring-purple-500 outline-none"
                     />
 
                     {/* DELETE */}
                     <button
                       onClick={() => removeStep(i)}
-                      className="p-2 rounded-lg bg-red-50 hover:bg-red-100"
+                      className="p-2 rounded-lg bg-red-50 hover:bg-red-100 transition"
                     >
                       <FaTrash className="text-red-500 text-sm" />
                     </button>
@@ -129,51 +119,8 @@ export default function ProcessStep({ data, setData }) {
                       updateStep(i, "description", e.target.value)
                     }
                     rows={2}
-                    className="w-full px-3 py-2 rounded-lg border border-gray-300 text-sm focus:ring-2 focus:ring-purple-500 outline-none resize-none"
+                    className="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm focus:ring-2 focus:ring-purple-500 outline-none resize-none"
                   />
-
-                  {/* ICON PICKER PANEL */}
-                  {activePicker === i && (
-                    <div className="border rounded-xl p-4 bg-gray-50">
-
-                      {/* SEARCH */}
-                      <div className="flex items-center gap-2 mb-3">
-                        <FaSearch className="text-gray-400" />
-                        <input
-                          placeholder="Search icon..."
-                          value={search}
-                          onChange={(e) => setSearch(e.target.value)}
-                          className="flex-1 bg-transparent outline-none text-sm"
-                        />
-                      </div>
-
-                      {/* ICON GRID */}
-                      <div className="grid grid-cols-6 md:grid-cols-8 gap-3 max-h-[200px] overflow-y-auto">
-                        {filteredIcons.map((iconName) => {
-                          const I = FaIcons[iconName];
-
-                          return (
-                            <button
-                              key={iconName}
-                              onClick={() => {
-                                updateStep(i, "icon", iconName);
-                                setActivePicker(null);
-                              }}
-                              className={`p-2 rounded-lg border flex items-center justify-center
-                              ${
-                                step.icon === iconName
-                                  ? "bg-purple-100 border-purple-400"
-                                  : "bg-white hover:bg-gray-100"
-                              }`}
-                            >
-                              <I className="text-sm" />
-                            </button>
-                          );
-                        })}
-                      </div>
-
-                    </div>
-                  )}
 
                   {/* DRAG ICON */}
                   <div className="flex justify-end">

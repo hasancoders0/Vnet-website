@@ -3,199 +3,180 @@
 import * as FaIcons from "react-icons/fa";
 
 export default function ReviewStep({ data }) {
+  const Icon = (name) => {
+    const I = FaIcons[name] || FaIcons.FaStar;
+    return <I className="text-purple-500 text-sm" />;
+  };
+
   return (
-    <div className="bg-gray-50 rounded-2xl p-6 md:p-10 space-y-20">
+    <div className="space-y-8">
 
-      {/* ================= HERO ================= */}
-      <section className="grid md:grid-cols-2 gap-10 items-center">
+      {/* HEADER */}
+      <div>
+        <h3 className="text-lg font-semibold text-gray-800">
+          Review Your Service
+        </h3>
+        <p className="text-sm text-gray-500">
+          Check everything before publishing
+        </p>
+      </div>
 
-        {/* LEFT CONTENT */}
-        <div>
-          {data.badge && (
-            <span className="inline-block mb-3 px-3 py-1 text-xs rounded-full bg-purple-100 text-purple-600">
-              {data.badge}
-            </span>
-          )}
+      {/* BASIC INFO */}
+      <div className="bg-white rounded-xl p-5 shadow-sm">
+        <h4 className="font-semibold text-gray-800 mb-3">
+          Basic Info
+        </h4>
 
-          <h1 className="text-3xl md:text-4xl font-bold text-gray-900 leading-tight">
-            {data.title || "Service Title"}
-          </h1>
-
-          <p className="text-gray-500 mt-3 text-lg">
-            {data.subtitle}
-          </p>
-
-          <p className="mt-4 text-gray-600 text-sm leading-relaxed">
-            {data.fullDescription || data.shortDescription}
-          </p>
-
-          {/* TAGS */}
-          {data.tags?.length > 0 && (
-            <div className="flex flex-wrap gap-2 mt-5">
-              {data.tags.map((tag, i) => (
-                <span
-                  key={i}
-                  className="px-3 py-1 rounded-full text-xs bg-gray-200 text-gray-700"
-                >
-                  {tag}
-                </span>
-              ))}
-            </div>
-          )}
+        <div className="space-y-2 text-sm text-gray-600">
+          <p><b>Title:</b> {data.title}</p>
+          <p><b>Slug:</b> {data.slug}</p>
+          <p><b>Category:</b> {data.category}</p>
+          <p><b>Badge:</b> {data.badge || "-"}</p>
         </div>
+      </div>
 
-        {/* IMAGE */}
-        {data.heroImage && (
-          <div className="bg-white rounded-2xl p-4 shadow-sm text-center text-sm text-gray-400">
-            Image Preview:
-            <div className="mt-2 text-xs break-all">
-              {data.heroImage}
-            </div>
+      {/* DESCRIPTION */}
+      <div className="bg-white rounded-xl p-5 shadow-sm">
+        <h4 className="font-semibold text-gray-800 mb-3">
+          Description
+        </h4>
+
+        <p className="text-sm text-gray-600">
+          {data.shortDescription}
+        </p>
+      </div>
+
+      {/* FEATURES */}
+      {data.features?.length > 0 && (
+        <div className="bg-white rounded-xl p-5 shadow-sm">
+          <h4 className="font-semibold text-gray-800 mb-3">
+            Features
+          </h4>
+
+          <div className="grid grid-cols-2 gap-3 text-sm">
+            {data.features.map((f, i) => (
+              <div key={i} className="flex items-center gap-2">
+                {Icon(f.icon)}
+                <span>{f.label}</span>
+              </div>
+            ))}
           </div>
-        )}
-      </section>
+        </div>
+      )}
 
-      {/* ================= FEATURES ================= */}
-      <section>
-        <h2 className="text-xl font-semibold text-gray-900 mb-8 text-center">
-          Features
-        </h2>
+      {/* SUPPORT */}
+      <div className="bg-white rounded-xl p-5 shadow-sm">
+        <h4 className="font-semibold text-gray-800 mb-3">
+          Support
+        </h4>
 
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-5">
-          {data.features?.map((f, i) => {
-            const Icon = FaIcons[f.icon] || FaIcons.FaStar;
+        <p className="text-sm text-gray-600">
+          {data.support?.duration} • {data.support?.type}
+        </p>
+      </div>
 
-            return (
+      {/* WHAT YOU GET */}
+      {data.whatYouGet?.length > 0 && (
+        <div className="bg-white rounded-xl p-5 shadow-sm">
+          <h4 className="font-semibold text-gray-800 mb-3">
+            What You Get
+          </h4>
+
+          <ul className="space-y-2 text-sm text-gray-600">
+            {data.whatYouGet.map((item, i) => (
+              <li key={i} className="flex gap-2">
+                <span>✔</span>
+                <span>{item}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {/* PRICING */}
+      {data.pricing?.length > 0 && (
+        <div className="bg-white rounded-xl p-5 shadow-sm">
+          <h4 className="font-semibold text-gray-800 mb-4">
+            Pricing Plans
+          </h4>
+
+          <div className="grid md:grid-cols-3 gap-4">
+            {data.pricing.map((plan, i) => (
               <div
                 key={i}
-                className="flex items-center gap-3 p-4 bg-white rounded-xl shadow-sm hover:shadow-md transition"
+                className={`p-4 rounded-xl border ${
+                  plan.highlighted
+                    ? "border-purple-500"
+                    : "border-gray-200"
+                }`}
               >
-                <Icon className="text-purple-600" />
-                <span className="text-sm text-gray-700">
-                  {f.label}
-                </span>
+                <h5 className="font-semibold">{plan.title}</h5>
+
+                <p className="text-2xl font-bold mt-1">
+                  ${plan.price}
+                </p>
+
+                <p className="text-xs text-gray-500 mb-3">
+                  {plan.deliveryTime}
+                </p>
+
+                <ul className="text-sm space-y-1">
+                  {plan.features?.map((f, j) => (
+                    <li key={j}>✔ {f}</li>
+                  ))}
+                </ul>
               </div>
-            );
-          })}
+            ))}
+          </div>
         </div>
-      </section>
+      )}
 
-      {/* ================= WHAT YOU GET ================= */}
-      <section>
-        <h2 className="text-xl font-semibold text-gray-900 mb-6 text-center">
-          What You Get
-        </h2>
+      {/* PROCESS */}
+      {data.process?.length > 0 && (
+        <div className="bg-white rounded-xl p-5 shadow-sm">
+          <h4 className="font-semibold text-gray-800 mb-3">
+            Process
+          </h4>
 
-        <div className="grid md:grid-cols-2 gap-4 max-w-3xl mx-auto">
-          {data.whatYouGet?.map((item, i) => (
-            <div
-              key={i}
-              className="flex items-center gap-3 text-sm text-gray-700"
-            >
-              <span className="text-green-500 text-lg">✔</span>
-              {item}
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* ================= PRICING ================= */}
-      <section>
-        <h2 className="text-xl font-semibold text-gray-900 mb-10 text-center">
-          Pricing Plans
-        </h2>
-
-        <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-6">
-          {data.pricing?.map((plan, i) => (
-            <div
-              key={i}
-              className={`relative rounded-2xl p-6 transition-all
-              ${
-                plan.highlighted
-                  ? "bg-white shadow-2xl scale-[1.05] border border-purple-500"
-                  : "bg-white shadow-sm border border-gray-100"
-              }`}
-            >
-              {plan.highlighted && (
-                <span className="absolute -top-3 right-4 text-xs text-white bg-gradient-to-r from-blue-500 to-purple-600 px-3 py-1 rounded-full">
-                  Best Value
-                </span>
-              )}
-
-              <h3 className="text-lg font-semibold text-gray-900">
-                {plan.name}
-              </h3>
-
-              <p className="text-sm text-gray-500">
-                {plan.description}
+          <div className="space-y-2 text-sm text-gray-600">
+            {data.process.map((p, i) => (
+              <p key={i}>
+                <b>{p.title}:</b> {p.description}
               </p>
-
-              <h2 className="text-3xl font-bold mt-4 text-gray-900">
-                ${plan.price}
-              </h2>
-
-              <ul className="mt-6 space-y-2 text-sm text-gray-600">
-                {plan.features?.map((f, idx) => (
-                  <li key={idx}>✔ {f}</li>
-                ))}
-              </ul>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
-      </section>
+      )}
 
-      {/* ================= PROCESS ================= */}
-      <section>
-        <h2 className="text-xl font-semibold text-gray-900 mb-8 text-center">
-          Process
-        </h2>
+      {/* FAQ */}
+      {data.faq?.length > 0 && (
+        <div className="bg-white rounded-xl p-5 shadow-sm">
+          <h4 className="font-semibold text-gray-800 mb-3">
+            FAQ
+          </h4>
 
-        <div className="space-y-6 max-w-3xl mx-auto">
-          {data.process?.map((step, i) => {
-            const Icon = FaIcons[step.icon] || FaIcons.FaRocket;
-
-            return (
-              <div key={i} className="flex gap-4">
-                <div className="w-10 h-10 rounded-xl bg-purple-100 flex items-center justify-center">
-                  <Icon className="text-purple-600 text-sm" />
-                </div>
-
-                <div>
-                  <p className="font-medium text-gray-900">
-                    {step.title}
-                  </p>
-                  <p className="text-sm text-gray-500">
-                    {step.description}
-                  </p>
-                </div>
+          <div className="space-y-3 text-sm text-gray-600">
+            {data.faq.map((f, i) => (
+              <div key={i}>
+                <p className="font-medium">{f.question}</p>
+                <p>{f.answer}</p>
               </div>
-            );
-          })}
+            ))}
+          </div>
         </div>
-      </section>
+      )}
 
-      {/* ================= FAQ ================= */}
-      <section>
-        <h2 className="text-xl font-semibold text-gray-900 mb-8 text-center">
-          FAQ
-        </h2>
+      {/* SEO */}
+      <div className="bg-white rounded-xl p-5 shadow-sm">
+        <h4 className="font-semibold text-gray-800 mb-3">
+          SEO
+        </h4>
 
-        <div className="space-y-4 max-w-3xl mx-auto">
-          {data.faq?.map((f, i) => (
-            <div
-              key={i}
-              className="bg-white rounded-xl p-4 shadow-sm border border-gray-100"
-            >
-              <p className="font-medium text-gray-900">
-                {f.question}
-              </p>
-              <p className="text-gray-500 text-sm mt-2">
-                {f.answer}
-              </p>
-            </div>
-          ))}
+        <div className="text-sm text-gray-600 space-y-1">
+          <p><b>Title:</b> {data.metaTitle}</p>
+          <p><b>Description:</b> {data.metaDescription}</p>
         </div>
-      </section>
+      </div>
 
     </div>
   );
