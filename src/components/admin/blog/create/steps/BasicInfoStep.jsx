@@ -10,7 +10,7 @@ import Textarea from "@/components/ui/form/Textarea";
 export default function BasicInfoStep({
   data,
   setData,
-  errors = {},
+  errors = {}, 
 }) {
   const handleChange = (key, value) => {
     setData((prev) => ({
