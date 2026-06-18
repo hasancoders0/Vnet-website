@@ -143,7 +143,10 @@ const BlogSchema = new Schema(
       default: "",
       trim: true,
     },
-
+    tags: {
+      type: [String],
+      default: [],
+    },
     score: {
       type: Number,
       default: 0,

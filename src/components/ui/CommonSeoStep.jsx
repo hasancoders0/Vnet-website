@@ -1,5 +1,6 @@
 "use client";
-
+import FormField from "@/components/ui/form/FormField";
+import TagInput from "@/components/ui/TagInput";
 import SeoFields from "@/components/ui/seo/SeoFields";
 import SeoScorePanel from "@/components/ui/seo/SeoScorePanel";
 import SeoSuggestions from "@/components/ui/seo/SeoSuggestions";
@@ -7,11 +8,7 @@ import SerpPreview from "@/components/ui/seo/SerpPreview";
 
 import useSlugCheck from "@/hooks/useSlugCheck";
 
-import {
-  FaCheckCircle,
-  FaTimesCircle,
-  FaSpinner,
-} from "react-icons/fa";
+import { FaCheckCircle, FaTimesCircle, FaSpinner } from "react-icons/fa";
 
 // ================= CLEAN HTML =================
 const stripHtml = (html = "") => {
@@ -56,21 +53,15 @@ export default function CommonSeoStep({
     });
   };
 
-  const cleanDescription = stripHtml(
-    data.fullDescription || ""
-  );
+  const cleanDescription = stripHtml(data.fullDescription || "");
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-
       {/* ================= LEFT ================= */}
       <div className="lg:col-span-2 space-y-8">
-
         {/* HEADER */}
         <div>
-          <h3 className="text-lg font-semibold text-gray-900">
-            SEO Settings
-          </h3>
+          <h3 className="text-lg font-semibold text-gray-900">SEO Settings</h3>
           <p className="text-sm text-gray-400">
             Optional optimization for search engines
           </p>
@@ -78,12 +69,9 @@ export default function CommonSeoStep({
 
         {/* ================= SLUG + KEYWORD ================= */}
         <div className="bg-white/60 backdrop-blur rounded-2xl p-6 space-y-6 shadow-sm border border-gray-100">
-
           {/* SLUG */}
           <div className="space-y-2">
-            <label className="text-sm text-gray-500">
-              URL Slug
-            </label>
+            <label className="text-sm text-gray-500">URL Slug</label>
 
             <div className="flex items-center gap-2">
               <input
@@ -152,9 +140,7 @@ export default function CommonSeoStep({
 
             <input
               value={seo.focusKeyword || ""}
-              onChange={(e) =>
-                updateSeo({ focusKeyword: e.target.value })
-              }
+              onChange={(e) => updateSeo({ focusKeyword: e.target.value })}
               placeholder="Leave empty if not needed"
               className="w-full h-11 px-4 rounded-xl bg-gray-50 border border-gray-100 text-sm focus:ring-2 focus:ring-purple-500 outline-none transition"
             />
@@ -164,6 +150,18 @@ export default function CommonSeoStep({
             </p>
           </div>
 
+          <FormField label="Tags">
+            <TagInput
+              value={data.tags || []}
+              onChange={(tags) =>
+                setData((prev) => ({
+                  ...prev,
+                  tags,
+                }))
+              }
+              max={15}
+            />
+          </FormField>
         </div>
 
         {/* ================= SEO FIELDS ================= */}
@@ -176,12 +174,10 @@ export default function CommonSeoStep({
             imageSource={data.featuredImage || ""}
           />
         </div>
-
       </div>
 
       {/* ================= RIGHT ================= */}
       <div className="space-y-4 sticky top-6 h-fit">
-
         <SeoScorePanel
           metaTitle={seo.metaTitle}
           metaDescription={seo.metaDescription}
@@ -203,7 +199,6 @@ export default function CommonSeoStep({
           description={seo.metaDescription}
           slug={seo.slug}
         />
-
       </div>
     </div>
   );

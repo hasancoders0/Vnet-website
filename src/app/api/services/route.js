@@ -2,6 +2,7 @@
 
 import { connectDB } from "@/lib/db";
 import Service from "@/models/Service";
+import "@/models/Category";
 import { NextResponse } from "next/server";
 
 // ================= SLUG =================

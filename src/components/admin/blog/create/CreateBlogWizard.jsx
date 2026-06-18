@@ -22,8 +22,7 @@ const generateSlug = (text = "") =>
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/(^-|-$)/g, "");
 
-const stripHtml = (html = "") =>
-  html.replace(/<[^>]*>/g, "");
+const stripHtml = (html = "") => html.replace(/<[^>]*>/g, "");
 
 // ================= DEFAULT =================
 const defaultData = {
@@ -32,7 +31,11 @@ const defaultData = {
   shortDescription: "",
   featuredImage: "",
   category: "",
+
+  tags: [],
+
   content: [],
+
   seo: {
     slug: "",
     metaTitle: "",
@@ -56,75 +59,50 @@ export default function CreateBlogWizard({
   const [autoSlug, setAutoSlug] = useState(true);
   const [errors, setErrors] = useState({});
 
-  const [isMounted, setIsMounted] = useState(false);
-
-  const [formData, setFormData] = useState(defaultData);
-
-  // ================= MOUNT =================
-  useEffect(() => {
-    setIsMounted(true);
-
-    // LOAD EDIT DATA
+  // ================= FORM DATA =================
+  const [formData, setFormData] = useState(() => {
     if (initialData) {
-      setFormData({
+      return {
         ...defaultData,
         ...initialData,
-        category:
-          initialData.category?._id ||
-          initialData.category ||
-          "",
+
+        tags: initialData.tags || [],
+
+        category: initialData.category?._id || initialData.category || "",
+
         seo: {
           slug: initialData.slug || "",
           metaTitle: initialData.metaTitle || "",
-          metaDescription:
-            initialData.metaDescription || "",
+          metaDescription: initialData.metaDescription || "",
           metaImage: initialData.metaImage || "",
-          focusKeyword:
-            initialData.focusKeyword || "",
-          score: initialData.score || 0,
+          focusKeyword: initialData.focusKeyword || "",
         },
-      });
-      return;
+      };
     }
 
-    // LOAD DRAFT (CLIENT ONLY)
-    if (mode === "create") {
-      try {
-        const saved = localStorage.getItem(draftKey);
-        if (saved) {
-          const parsed = JSON.parse(saved);
-          setFormData((prev) => ({
-            ...prev,
-            ...parsed,
-          }));
-        }
-      } catch (err) {
-        console.warn("Draft load failed", err);
-      }
-    }
-  }, [initialData, mode]);
+    return defaultData;
+  });
 
   // ================= SAVE DRAFT =================
   useEffect(() => {
-    if (!isMounted || mode !== "create") return;
+    if (mode !== "create") return;
 
     const timer = setTimeout(() => {
       try {
-        localStorage.setItem(
-          draftKey,
-          JSON.stringify(formData)
-        );
+        localStorage.setItem(draftKey, JSON.stringify(formData));
       } catch (err) {
         console.warn("Draft save failed", err);
       }
     }, 500);
 
     return () => clearTimeout(timer);
-  }, [formData, isMounted, mode]);
+  }, [formData, mode]);
 
   // ================= CLEAR DRAFT =================
   const clearDraft = () => {
-    localStorage.removeItem(draftKey);
+    try {
+      localStorage.removeItem(draftKey);
+    } catch {}
   };
 
   // ================= UPDATE =================
@@ -139,7 +117,7 @@ export default function CreateBlogWizard({
         if (autoSlug && updated.title) {
           const newSlug = generateSlug(updated.title);
 
-          if (updated.seo.slug !== newSlug) {
+          if (updated.seo?.slug !== newSlug) {
             updated = {
               ...updated,
               seo: {
@@ -153,24 +131,22 @@ export default function CreateBlogWizard({
         return updated;
       });
     },
-    [autoSlug]
+    [autoSlug],
   );
 
   // ================= STEPS =================
-  const steps = [
-    "Basic Info",
-    "Content",
-    "SEO",
-    "Review",
-  ];
+  const steps = ["Basic Info", "Content", "SEO", "Review"];
 
   const next = () => {
-    if (step < steps.length - 1)
+    if (step < steps.length - 1) {
       setStep((p) => p + 1);
+    }
   };
 
   const prev = () => {
-    if (step > 0) setStep((p) => p - 1);
+    if (step > 0) {
+      setStep((p) => p - 1);
+    }
   };
 
   const handleNext = () => {
@@ -196,14 +172,11 @@ export default function CreateBlogWizard({
     const seo = formData.seo || {};
 
     const cleanContent = stripHtml(
-      formData.content
-        ?.map((c) => c.text || "")
-        .join(" ")
+      formData.content?.map((c) => c.text || "").join(" "),
     );
 
     const metaTitle =
-      seo.metaTitle ||
-      `${formData.title} | ${seo.focusKeyword || ""}`;
+      seo.metaTitle || `${formData.title} | ${seo.focusKeyword || ""}`;
 
     let metaDescription =
       seo.metaDescription ||
@@ -212,9 +185,7 @@ export default function CreateBlogWizard({
 
     if (
       seo.focusKeyword &&
-      !metaDescription
-        .toLowerCase()
-        .includes(seo.focusKeyword.toLowerCase())
+      !metaDescription.toLowerCase().includes(seo.focusKeyword.toLowerCase())
     ) {
       metaDescription += ` Learn more about ${seo.focusKeyword}.`;
     }
@@ -222,10 +193,7 @@ export default function CreateBlogWizard({
     return {
       metaTitle,
       metaDescription: metaDescription.slice(0, 160),
-      metaImage:
-        seo.metaImage ||
-        formData.featuredImage ||
-        "",
+      metaImage: seo.metaImage || formData.featuredImage || "",
     };
   };
 
@@ -235,9 +203,7 @@ export default function CreateBlogWizard({
       setLoading(true);
 
       const endpoint =
-        mode === "edit"
-          ? `/api/blogs/${formData._id}`
-          : `/api/blogs`;
+        mode === "edit" ? `/api/blogs/${formData._id}` : `/api/blogs`;
 
       const method = mode === "edit" ? "PUT" : "POST";
 
@@ -248,15 +214,28 @@ export default function CreateBlogWizard({
         },
         body: JSON.stringify({
           ...formData,
+
           slug: formData.seo.slug,
+
+          metaTitle: formData.seo.metaTitle,
+
+          metaDescription: formData.seo.metaDescription,
+
+          metaImage: formData.seo.metaImage,
+
+          focusKeyword: formData.seo.focusKeyword,
+
+          tags: formData.tags || [],
+
           status: "published",
-          ...generateSeoData(),
         }),
       });
 
       const result = await res.json();
 
-      if (!res.ok) throw new Error(result.message);
+      if (!res.ok) {
+        throw new Error(result.message);
+      }
 
       clearDraft();
 
@@ -264,7 +243,7 @@ export default function CreateBlogWizard({
         mode === "edit"
           ? "Blog updated successfully"
           : "Blog created successfully",
-        "success"
+        "success",
       );
 
       router.push("/administrator/blog");
@@ -275,18 +254,12 @@ export default function CreateBlogWizard({
     }
   };
 
-  // ✅ FIX HYDRATION
-  if (!isMounted) return null;
-
   return (
     <div className="bg-white rounded-2xl shadow-sm border border-gray-200/70">
-
       {/* HEADER */}
       <div className="p-6 pb-4">
         <h2 className="text-lg font-semibold text-gray-800">
-          {mode === "edit"
-            ? "Edit Blog"
-            : "Create New Blog"}
+          {mode === "edit" ? "Edit Blog" : "Create New Blog"}
         </h2>
 
         <p className="text-sm text-gray-500 mt-1">
@@ -301,7 +274,6 @@ export default function CreateBlogWizard({
       {/* BODY */}
       <div className="px-6 py-4 min-h-[420px] border-t border-gray-100">
         <div className="mx-auto w-full max-w-6xl py-8">
-
           {step === 0 && (
             <BasicInfoStep
               data={formData}
@@ -311,10 +283,7 @@ export default function CreateBlogWizard({
           )}
 
           {step === 1 && (
-            <BlogContentStep
-              data={formData}
-              setData={updateFormData}
-            />
+            <BlogContentStep data={formData} setData={updateFormData} />
           )}
 
           {step === 2 && (
@@ -328,22 +297,19 @@ export default function CreateBlogWizard({
             />
           )}
 
-          {step === 3 && (
-            <ReviewStep data={formData} />
-          )}
-
+          {step === 3 && <ReviewStep data={formData} />}
         </div>
       </div>
 
       {/* FOOTER */}
       <div className="flex justify-between items-center px-6 py-4 border-t bg-gray-50/60 rounded-b-2xl">
-
         <button
           onClick={prev}
           disabled={step === 0 || loading}
           className="flex items-center gap-2 px-4 py-2 rounded-lg border text-sm text-gray-700 hover:bg-gray-100 transition"
         >
-          <FaArrowLeft /> Back
+          <FaArrowLeft />
+          Back
         </button>
 
         <button
@@ -354,17 +320,15 @@ export default function CreateBlogWizard({
           {step === steps.length - 1 ? (
             <>
               <FaRocket />
-              {loading
-                ? "Publishing..."
-                : "Publish"}
+              {loading ? "Publishing..." : "Publish"}
             </>
           ) : (
             <>
-              Next <FaArrowRight />
+              Next
+              <FaArrowRight />
             </>
           )}
         </button>
-
       </div>
     </div>
   );
