@@ -3,7 +3,7 @@
 import { useState, useCallback, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 
-import Stepper from "@/components/ui/Stepper";
+import WizardLayout from "@/components/ui/WizardLayout";
 import CommonSeoStep from "@/components/ui/CommonSeoStep";
 
 import BasicInfoStep from "./steps/BasicInfoStep";
@@ -16,8 +16,6 @@ import ReviewStep from "./steps/ReviewStep";
 
 import { toast } from "@/hooks/useToast";
 import { validateStep, validateAll } from "@/lib/validateService";
-
-import { FaArrowLeft, FaArrowRight, FaRocket } from "react-icons/fa";
 
 // ================= SLUG =================
 const generateSlug = (text = "") =>
@@ -305,129 +303,70 @@ export default function CreateServiceWizard({
   };
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-gray-200/70">
-      {/* HEADER */}
-      <div className="p-6 pb-4">
-        <h2 className="text-lg font-semibold text-gray-800">
-          {mode === "edit" ? "Edit Service" : "Create New Service"}
-        </h2>
+    <WizardLayout
+      title={mode === "edit" ? "Edit Service" : "Create New Service"}
+      description={
+        mode === "edit"
+          ? "Update your service details"
+          : "Build your service step-by-step"
+      }
+      steps={steps}
+      currentStep={step}
+      loading={loading}
+      onPrev={prev}
+      onNext={handleNext}
+      mode={mode}
+      submitText="Publish"
+      updateText="Update"
+    >
+      {step === 0 && (
+        <BasicInfoStep
+          data={formData}
+          setData={updateFormData}
+          errors={errors}
+        />
+      )}
 
-        <p className="text-sm text-gray-500 mt-1">
-          {mode === "edit"
-            ? "Update your service details"
-            : "Build your service step-by-step"}
-        </p>
+      {step === 1 && (
+        <FeaturesStep
+          data={formData}
+          setData={updateFormData}
+          errors={errors}
+        />
+      )}
 
-        <div className="mt-6">
-          <Stepper steps={steps} current={step} />
-        </div>
-      </div>
+      {step === 2 && (
+        <WhatYouGetStep
+          data={formData}
+          setData={updateFormData}
+          errors={errors}
+        />
+      )}
 
-      {/* BODY */}
-      <div className="px-6 py-4 min-h-[420px] border-t border-gray-100">
-        <div className="mx-auto w-full max-w-7xl py-10">
-          {step === 0 && (
-            <BasicInfoStep
-              data={formData}
-              setData={updateFormData}
-              errors={errors}
-            />
-          )}
+      {step === 3 && (
+        <PricingStep data={formData} setData={updateFormData} errors={errors} />
+      )}
 
-          {step === 1 && (
-            <FeaturesStep
-              data={formData}
-              setData={updateFormData}
-              errors={errors}
-            />
-          )}
+      {step === 4 && (
+        <ProcessStep data={formData} setData={updateFormData} errors={errors} />
+      )}
 
-          {step === 2 && (
-            <WhatYouGetStep
-              data={formData}
-              setData={updateFormData}
-              errors={errors}
-            />
-          )}
+      {step === 5 && (
+        <FAQStep data={formData} setData={updateFormData} errors={errors} />
+      )}
 
-          {step === 3 && (
-            <PricingStep
-              data={formData}
-              setData={updateFormData}
-              errors={errors}
-            />
-          )}
+      {step === 6 && (
+        <CommonSeoStep
+          data={formData}
+          setData={updateFormData}
+          autoSlug={autoSlug}
+          setAutoSlug={setAutoSlug}
+          type="service"
+          basePath="services"
+        />
+      )}
 
-          {step === 4 && (
-            <ProcessStep
-              data={formData}
-              setData={updateFormData}
-              errors={errors}
-            />
-          )}
-
-          {step === 5 && (
-            <FAQStep data={formData} setData={updateFormData} errors={errors} />
-          )}
-
-          {step === 6 && (
-            <CommonSeoStep
-              data={formData}
-              setData={updateFormData}
-              autoSlug={autoSlug}
-              setAutoSlug={setAutoSlug}
-              type="service"
-              basePath="services"
-            />
-          )}
-
-          {step === 7 && <ReviewStep data={formData} />}
-        </div>
-      </div>
-
-      {/* FOOTER */}
-      <div className="flex flex-col sm:flex-row justify-between items-center gap-4 px-6 py-4 border-t border-gray-100 bg-gray-50/60 rounded-b-2xl">
-        <button
-          onClick={prev}
-          disabled={step === 0 || loading}
-          className="flex items-center gap-2 px-4 py-2 rounded-lg border border-gray-300 text-sm text-gray-700 hover:bg-gray-100 transition disabled:opacity-50"
-        >
-          <FaArrowLeft className="text-xs" />
-          Back
-        </button>
-
-        <p className="text-sm text-gray-500">
-          Step {step + 1} of {steps.length}
-        </p>
-
-        <button
-          onClick={handleNext}
-          disabled={loading}
-          className="flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm text-white bg-gradient-to-r from-blue-500 to-purple-600 hover:opacity-90 transition disabled:opacity-70"
-        >
-          {loading && (
-            <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-          )}
-
-          {step === steps.length - 1 ? (
-            <>
-              <FaRocket className="text-xs" />
-              {loading
-                ? mode === "edit"
-                  ? "Updating..."
-                  : "Publishing..."
-                : mode === "edit"
-                  ? "Update"
-                  : "Publish"}
-            </>
-          ) : (
-            <>
-              Next
-              <FaArrowRight className="text-xs" />
-            </>
-          )}
-        </button>
-      </div>
-    </div>
+      {step === 7 && <ReviewStep data={formData} />}
+    </WizardLayout>
   );
 }

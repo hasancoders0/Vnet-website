@@ -1,6 +1,6 @@
 "use client";
 
-import TagInput from "@/components/ui/TagInput";
+
 import CategorySelector from "@/components/ui/CategorySelector";
 import ImagePicker from "@/components/ui/ImagePicker";
 
@@ -172,29 +172,6 @@ export default function BasicInfoStep({
             </p>
           )}
         </FormField>
-
-      </div>
-
-      {/* ================= SECTION: TAGS ================= */}
-      <div className="bg-white border border-gray-100 rounded-xl p-6 space-y-4">
-
-        <h4 className="text-sm font-semibold text-gray-800">
-          Tags
-        </h4>
-
-        <FormField label="Tags">
-          <TagInput
-            value={data.tags || []}
-            onChange={(tags) =>
-              updateField("tags", tags)
-            }
-            max={15}
-          />
-        </FormField>
-
-        <p className="text-xs text-gray-400">
-          Helps improve search and filtering
-        </p>
 
       </div>
 
