@@ -62,9 +62,7 @@ export default function BlogContentStep({ data, setData }) {
     setData((prev) => ({
       ...prev,
       content:
-        typeof updater === "function"
-          ? updater(prev.content || [])
-          : updater,
+        typeof updater === "function" ? updater(prev.content || []) : updater,
     }));
   };
 
@@ -75,7 +73,7 @@ export default function BlogContentStep({ data, setData }) {
 
   const updateSection = (id, key, value) => {
     updateContent((prev) =>
-      prev.map((s) => (s.id === id ? { ...s, [key]: value } : s))
+      prev.map((s) => (s.id === id ? { ...s, [key]: value } : s)),
     );
   };
 
@@ -99,8 +97,8 @@ export default function BlogContentStep({ data, setData }) {
       prev.map((s) =>
         s.id === sectionId
           ? { ...s, blocks: [...s.blocks, createBlock(type)] }
-          : s
-      )
+          : s,
+      ),
     );
   };
 
@@ -111,11 +109,11 @@ export default function BlogContentStep({ data, setData }) {
           ? {
               ...s,
               blocks: s.blocks.map((b) =>
-                b.id === blockId ? { ...b, [key]: value } : b
+                b.id === blockId ? { ...b, [key]: value } : b,
               ),
             }
-          : s
-      )
+          : s,
+      ),
     );
   };
 
@@ -127,8 +125,8 @@ export default function BlogContentStep({ data, setData }) {
               ...s,
               blocks: s.blocks.filter((b) => b.id !== blockId),
             }
-          : s
-      )
+          : s,
+      ),
     );
   };
 
@@ -144,21 +142,16 @@ export default function BlogContentStep({ data, setData }) {
 
         [arr[index], arr[target]] = [arr[target], arr[index]];
         return { ...s, blocks: arr };
-      })
+      }),
     );
   };
 
   return (
     <div className="space-y-10">
-
       {/* HEADER */}
       <div>
-        <h3 className="text-lg font-semibold text-gray-800">
-          Blog Content
-        </h3>
-        <p className="text-sm text-gray-500">
-          Build structured content
-        </p>
+        <h3 className="text-lg font-semibold text-gray-800">Blog Content</h3>
+        <p className="text-sm text-gray-500">Build structured content</p>
       </div>
 
       {/* SECTIONS */}
@@ -168,12 +161,9 @@ export default function BlogContentStep({ data, setData }) {
             key={section.id}
             className="bg-white border border-gray-200 rounded-2xl p-6 space-y-5 shadow-sm"
           >
-
             {/* HEADER */}
             <div className="flex justify-between items-center">
-              <h4 className="text-sm font-semibold">
-                Section {index + 1}
-              </h4>
+              <h4 className="text-sm font-semibold">Section {index + 1}</h4>
 
               <div className="flex gap-2 text-xs">
                 <button onClick={() => moveSection(index, -1)}>
@@ -224,7 +214,6 @@ export default function BlogContentStep({ data, setData }) {
                 key={block.id}
                 className="bg-gray-50 border border-gray-100 rounded-xl p-5 space-y-4"
               >
-
                 {/* HEADER */}
                 <div className="flex justify-between text-xs uppercase text-gray-400">
                   <span>{block.type}</span>
@@ -307,169 +296,167 @@ export default function BlogContentStep({ data, setData }) {
 
                 {/* SPLIT */}
 
-{block.type === "split" && (
-  <div className="space-y-5">
-    {/* LAYOUT SELECTOR */}
-    <div>
-      <label className="block text-xs font-medium text-gray-500 mb-2">
-        Layout
-      </label>
+                {block.type === "split" && (
+                  <div className="space-y-5">
+                    {/* LAYOUT SELECTOR */}
+                    <div>
+                      <label className="block text-xs font-medium text-gray-500 mb-2">
+                        Layout
+                      </label>
 
-      <div className="flex gap-3">
-        <button
-          type="button"
-          onClick={() =>
-            updateBlock(section.id, block.id, "layout", "left")
-          }
-          className={`flex items-center gap-3 px-4 py-3 rounded-xl border transition ${
-            block.layout === "left"
-              ? "border-purple-500 bg-purple-50"
-              : "border-gray-200 bg-white"
-          }`}
-        >
-          <div className="w-10 h-8 rounded bg-gray-200" />
-          <div className="w-12 h-8 flex flex-col gap-1">
-            <div className="h-2 bg-gray-300 rounded" />
-            <div className="h-2 bg-gray-300 rounded" />
-          </div>
+                      <div className="flex gap-3">
+                        <button
+                          type="button"
+                          onClick={() =>
+                            updateBlock(section.id, block.id, "layout", "left")
+                          }
+                          className={`flex items-center gap-3 px-4 py-3 rounded-xl border transition ${
+                            block.layout === "left"
+                              ? "border-purple-500 bg-purple-50"
+                              : "border-gray-200 bg-white"
+                          }`}
+                        >
+                          <div className="w-10 h-8 rounded bg-gray-200" />
+                          <div className="w-12 h-8 flex flex-col gap-1">
+                            <div className="h-2 bg-gray-300 rounded" />
+                            <div className="h-2 bg-gray-300 rounded" />
+                          </div>
 
-          <span className="text-sm">Image Left</span>
-        </button>
+                          <span className="text-sm">Image Left</span>
+                        </button>
 
-        <button
-          type="button"
-          onClick={() =>
-            updateBlock(section.id, block.id, "layout", "right")
-          }
-          className={`flex items-center gap-3 px-4 py-3 rounded-xl border transition ${
-            block.layout === "right"
-              ? "border-purple-500 bg-purple-50"
-              : "border-gray-200 bg-white"
-          }`}
-        >
-          <div className="w-12 h-8 flex flex-col gap-1">
-            <div className="h-2 bg-gray-300 rounded" />
-            <div className="h-2 bg-gray-300 rounded" />
-          </div>
+                        <button
+                          type="button"
+                          onClick={() =>
+                            updateBlock(section.id, block.id, "layout", "right")
+                          }
+                          className={`flex items-center gap-3 px-4 py-3 rounded-xl border transition ${
+                            block.layout === "right"
+                              ? "border-purple-500 bg-purple-50"
+                              : "border-gray-200 bg-white"
+                          }`}
+                        >
+                          <div className="w-12 h-8 flex flex-col gap-1">
+                            <div className="h-2 bg-gray-300 rounded" />
+                            <div className="h-2 bg-gray-300 rounded" />
+                          </div>
 
-          <div className="w-10 h-8 rounded bg-gray-200" />
+                          <div className="w-10 h-8 rounded bg-gray-200" />
 
-          <span className="text-sm">Image Right</span>
-        </button>
-      </div>
-    </div>
+                          <span className="text-sm">Image Right</span>
+                        </button>
+                      </div>
+                    </div>
 
-    {/* SPLIT EDITOR */}
-    <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
-      {/* IMAGE SIDE */}
-      <div className="lg:col-span-2">
-        <div className="bg-white border border-gray-200 rounded-xl p-4 h-full">
-          <h4 className="text-sm font-medium text-gray-700 mb-4">
-            Image
-          </h4>
+                    {/* SPLIT EDITOR */}
+                    <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
+                      {/* IMAGE SIDE */}
+                      <div className="lg:col-span-2">
+                        <div className="bg-white border border-gray-200 rounded-xl p-4 h-full">
+                          <h4 className="text-sm font-medium text-gray-700 mb-4">
+                            Image
+                          </h4>
 
-          <ImagePicker
-            value={block.image}
-            onChange={(url) =>
-              updateBlock(section.id, block.id, "image", url)
-            }
-            folder="blogs"
-          />
-        </div>
-      </div>
+                          <ImagePicker
+                            value={block.image}
+                            onChange={(url) =>
+                              updateBlock(section.id, block.id, "image", url)
+                            }
+                            folder="blogs"
+                          />
+                        </div>
+                      </div>
 
-      {/* CONTENT SIDE */}
-      <div className="lg:col-span-3">
-        <div className="bg-white border border-gray-200 rounded-xl p-4 space-y-4">
-          <Input
-            placeholder="Title"
-            value={block.title}
-            onChange={(e) =>
-              updateBlock(
-                section.id,
-                block.id,
-                "title",
-                e.target.value
-              )
-            }
-          />
+                      {/* CONTENT SIDE */}
+                      <div className="lg:col-span-3">
+                        <div className="bg-white border border-gray-200 rounded-xl p-4 space-y-4">
+                          <Input
+                            placeholder="Title"
+                            value={block.title}
+                            onChange={(e) =>
+                              updateBlock(
+                                section.id,
+                                block.id,
+                                "title",
+                                e.target.value,
+                              )
+                            }
+                          />
 
-          <RichTextEditor
-            value={block.description}
-            onChange={(val) =>
-              updateBlock(
-                section.id,
-                block.id,
-                "description",
-                val
-              )
-            }
-          />
+                          <RichTextEditor
+                            value={block.description}
+                            onChange={(val) =>
+                              updateBlock(
+                                section.id,
+                                block.id,
+                                "description",
+                                val,
+                              )
+                            }
+                          />
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-            <Input
-              placeholder="Button Text"
-              value={block.buttonText}
-              onChange={(e) =>
-                updateBlock(
-                  section.id,
-                  block.id,
-                  "buttonText",
-                  e.target.value
-                )
-              }
-            />
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <Input
+                              placeholder="Button Text"
+                              value={block.buttonText}
+                              onChange={(e) =>
+                                updateBlock(
+                                  section.id,
+                                  block.id,
+                                  "buttonText",
+                                  e.target.value,
+                                )
+                              }
+                            />
 
-            <Input
-              placeholder="Button Link"
-              value={block.buttonLink}
-              onChange={(e) =>
-                updateBlock(
-                  section.id,
-                  block.id,
-                  "buttonLink",
-                  e.target.value
-                )
-              }
-            />
-          </div>
+                            <Input
+                              placeholder="Button Link"
+                              value={block.buttonLink}
+                              onChange={(e) =>
+                                updateBlock(
+                                  section.id,
+                                  block.id,
+                                  "buttonLink",
+                                  e.target.value,
+                                )
+                              }
+                            />
+                          </div>
 
-          <div>
-            <label className="block text-xs font-medium text-gray-500 mb-2">
-              Button Style
-            </label>
+                          <div>
+                            <label className="block text-xs font-medium text-gray-500 mb-2">
+                              Button Style
+                            </label>
 
-            <div className="flex flex-wrap gap-2">
-              {BUTTON_TYPES.map((t) => (
-                <button
-                  key={t}
-                  type="button"
-                  onClick={() =>
-                    updateBlock(
-                      section.id,
-                      block.id,
-                      "buttonType",
-                      t
-                    )
-                  }
-                  className={`px-3 py-1.5 text-xs rounded-full capitalize transition ${
-                    block.buttonType === t
-                      ? "bg-purple-600 text-white"
-                      : "bg-gray-100 text-gray-600"
-                  }`}
-                >
-                  {t}
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-)}
- 
-
+                            <div className="flex flex-wrap gap-2">
+                              {BUTTON_TYPES.map((t) => (
+                                <button
+                                  key={t}
+                                  type="button"
+                                  onClick={() =>
+                                    updateBlock(
+                                      section.id,
+                                      block.id,
+                                      "buttonType",
+                                      t,
+                                    )
+                                  }
+                                  className={`px-3 py-1.5 text-xs rounded-full capitalize transition ${
+                                    block.buttonType === t
+                                      ? "bg-purple-600 text-white"
+                                      : "bg-gray-100 text-gray-600"
+                                  }`}
+                                >
+                                  {t}
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
 
                 {/* GALLERY */}
                 {block.type === "gallery" && (
@@ -517,7 +504,6 @@ export default function BlogContentStep({ data, setData }) {
                 {block.type === "divider" && (
                   <div className="h-px bg-gray-300" />
                 )}
-
               </div>
             ))}
 
@@ -533,7 +519,6 @@ export default function BlogContentStep({ data, setData }) {
                 </button>
               ))}
             </div>
-
           </div>
         ))}
 

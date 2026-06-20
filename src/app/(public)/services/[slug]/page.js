@@ -19,15 +19,18 @@ const mapService = (service) => ({
   subtitle: service.subtitle || service.shortDescription || "",
   badge: service.badge || "Service",
   description: service.fullDescription || service.shortDescription || "",
-  heroImage: service.featuredImage || "/website-components/services-right-img.png",
+  heroImage:
+    service.featuredImage || "/website-components/services-right-img.png",
   features: service.features || [],
   whatYouGet: service.whatYouGet?.items || [],
+  support: service.support || {},
   whatYouGetDescription:
     service.whatYouGet?.description ||
     "We follow the best practices and latest technologies to deliver high-performing websites.",
   pricing: (service.pricing || []).map((plan) => ({
-    name: plan.title,
+    title: plan.title,
     price: plan.price,
+    deliveryTime: plan.deliveryTime,
     description: plan.description,
     features: plan.features || [],
     highlighted: plan.highlighted,

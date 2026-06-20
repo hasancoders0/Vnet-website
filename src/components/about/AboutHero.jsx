@@ -7,7 +7,7 @@ export default function AboutHero() {
   return (
     <section className="relative w-full overflow-hidden">
 
-      {/* 🔥 BACKGROUND */}
+      {/*  BACKGROUND */}
       <div className="absolute inset-0 -z-10">
         <AppImage
           src="/website-components/tools-background.png"
