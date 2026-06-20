@@ -1,6 +1,5 @@
 "use client";
 
-
 import CategorySelector from "@/components/ui/CategorySelector";
 import ImagePicker from "@/components/ui/ImagePicker";
 
@@ -11,11 +10,7 @@ import RichTextEditor from "@/components/ui/form/RichTextEditor";
 
 import { useCallback } from "react";
 
-export default function BasicInfoStep({
-  data,
-  setData,
-  errors = {},
-}) {
+export default function BasicInfoStep({ data, setData, errors = {} }) {
   // ================= SAFE UPDATE =================
   const updateField = useCallback(
     (key, value) => {
@@ -28,79 +23,50 @@ export default function BasicInfoStep({
         };
       });
     },
-    [setData]
+    [setData],
   );
 
   const badgeOptions = ["Popular", "New", "Featured"];
 
   return (
     <div className="space-y-10">
-
       {/* HEADER */}
       <div>
         <h3 className="text-lg font-semibold text-gray-800">
           Basic Information
         </h3>
-        <p className="text-sm text-gray-500">
-          Core details about your service
-        </p>
+        <p className="text-sm text-gray-500">Core details about your service</p>
       </div>
 
       {/* ================= SECTION: CORE ================= */}
       <div className="bg-gray-50/60 border border-gray-100 rounded-xl p-6 space-y-6">
-
-        <h4 className="text-sm font-semibold text-gray-800">
-          Core Details
-        </h4>
+        <h4 className="text-sm font-semibold text-gray-800">Core Details</h4>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-
           {/* TITLE */}
           <div className="space-y-1">
-            <FormField
-              label="Service Title"
-              required
-              error={errors?.title}
-            >
+            <FormField label="Service Title" required error={errors?.title}>
               <Input
                 value={data.title || ""}
-                onChange={(e) =>
-                  updateField("title", e.target.value)
-                }
+                onChange={(e) => updateField("title", e.target.value)}
                 placeholder="e.g. Advanced SaaS Web Application Development"
                 className={`${
-                  errors?.title
-                    ? "border-red-300 focus:ring-red-500"
-                    : ""
+                  errors?.title ? "border-red-300 focus:ring-red-500" : ""
                 }`}
               />
             </FormField>
-
-            {/* Success feedback */}
-            {data.title && !errors?.title && (
-              <p className="text-xs text-green-600">
-                Looks good ✓
-              </p>
-            )}
           </div>
 
           {/* CATEGORY */}
           <div className="space-y-1">
-            <FormField
-              label="Category"
-              required
-              error={errors?.category}
-            >
+            <FormField label="Category" required error={errors?.category}>
               <CategorySelector
                 value={data.category || ""}
-                onChange={(val) =>
-                  updateField("category", val)
-                }
+                onChange={(val) => updateField("category", val)}
                 type="service"
               />
             </FormField>
           </div>
-
         </div>
 
         {/* BADGE */}
@@ -129,23 +95,17 @@ export default function BasicInfoStep({
             </p>
           </FormField>
         </div>
-
       </div>
 
       {/* ================= SECTION: DESCRIPTION ================= */}
       <div className="bg-white border border-gray-100 rounded-xl p-6 space-y-6">
-
-        <h4 className="text-sm font-semibold text-gray-800">
-          Description
-        </h4>
+        <h4 className="text-sm font-semibold text-gray-800">Description</h4>
 
         {/* SUBTITLE */}
         <FormField label="Subtitle">
           <Textarea
             value={data.subtitle || ""}
-            onChange={(e) =>
-              updateField("subtitle", e.target.value)
-            }
+            onChange={(e) => updateField("subtitle", e.target.value)}
             placeholder="Short supporting text..."
           />
           <p className="text-xs text-gray-400">
@@ -161,9 +121,7 @@ export default function BasicInfoStep({
         >
           <RichTextEditor
             value={data.fullDescription || ""}
-            onChange={(val) =>
-              updateField("fullDescription", val)
-            }
+            onChange={(val) => updateField("fullDescription", val)}
           />
 
           {errors?.fullDescription && (
@@ -172,15 +130,11 @@ export default function BasicInfoStep({
             </p>
           )}
         </FormField>
-
       </div>
 
       {/* ================= SECTION: IMAGE ================= */}
       <div className="bg-white border border-gray-100 rounded-xl p-6 space-y-4">
-
-        <h4 className="text-sm font-semibold text-gray-800">
-          Media
-        </h4>
+        <h4 className="text-sm font-semibold text-gray-800">Media</h4>
 
         <FormField
           label="Featured Image"
@@ -188,20 +142,24 @@ export default function BasicInfoStep({
           error={errors?.featuredImage}
         >
           <ImagePicker
-            value={data.featuredImage || ""}
-            onChange={(url) =>
-              updateField("featuredImage", url)
-            }
-            folder="services"
+            value={data.featuredImage}
+            onChange={(url) => {
+              handleChange("featuredImage", url);
+
+              setData((prev) => ({
+                ...prev,
+                seo: {
+                  ...prev.seo,
+                  metaImage: prev.seo?.metaImage || url,
+                },
+              }));
+            }}
+            folder="blogs"
           />
         </FormField>
 
-        <p className="text-xs text-gray-400">
-          Recommended size: 1200 × 800px
-        </p>
-
+        <p className="text-xs text-gray-400">Recommended size: 1200 × 800px</p>
       </div>
-
     </div>
   );
 }

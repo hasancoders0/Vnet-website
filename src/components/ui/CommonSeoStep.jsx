@@ -25,6 +25,12 @@ export default function CommonSeoStep({
   basePath = "",
 }) {
   const seo = data.seo || {};
+  if (
+  data.featuredImage &&
+  !seo.metaImage
+) {
+  seo.metaImage = data.featuredImage;
+}
 
   const slugStatus = useSlugCheck(seo.slug, data._id, type);
 

@@ -5,8 +5,7 @@ import { autoOptimizeSEO } from "@/lib/seo";
 import { SEO_CONFIG } from "@/config/seo.config";
 
 // ================= CLEAN TEXT =================
-const cleanText = (text = "") =>
-  text.replace(/<[^>]*>/g, "").trim();
+const cleanText = (text = "") => text.replace(/<[^>]*>/g, "").trim();
 
 export default function SeoFields({
   data,
@@ -22,8 +21,8 @@ export default function SeoFields({
     focusKeyword = "",
   } = data;
 
-  const cleanedDescription =
-    cleanText(descriptionSource);
+  const cleanedDescription = cleanText(descriptionSource);
+
 
   // ================= AUTO FIX =================
   const handleAutoFix = () => {
@@ -45,23 +44,16 @@ export default function SeoFields({
     const len = text.length;
 
     if (len === 0) return "poor";
-    if (len >= min && len <= max)
-      return "good";
-    if (
-      len >= min - 10 &&
-      len <= max + 20
-    )
-      return "ok";
+    if (len >= min && len <= max) return "good";
+    if (len >= min - 10 && len <= max + 20) return "ok";
 
     return "poor";
   };
 
   const getColor = (score) => {
-    if (score === "good")
-      return "text-green-600";
+    if (score === "good") return "text-green-600";
 
-    if (score === "ok")
-      return "text-yellow-500";
+    if (score === "ok") return "text-yellow-500";
 
     return "text-red-500";
   };
@@ -69,17 +61,17 @@ export default function SeoFields({
   const titleScore = getScore(
     metaTitle,
     SEO_CONFIG.title.min,
-    SEO_CONFIG.title.max
+    SEO_CONFIG.title.max,
   );
 
   const descScore = getScore(
     metaDescription,
     SEO_CONFIG.description.min,
-    SEO_CONFIG.description.max
+    SEO_CONFIG.description.max,
   );
 
   return (
-    <div className="space-y-6 border-t pt-6">
+    <div className="space-y-6">
       {/* HEADER */}
       <div className="flex items-center justify-between">
         <div>
@@ -103,9 +95,7 @@ export default function SeoFields({
 
       {/* META TITLE */}
       <div className="space-y-2">
-        <label className="text-sm font-medium text-gray-700">
-          Meta Title
-        </label>
+        <label className="text-sm font-medium text-gray-700">Meta Title</label>
 
         <input
           value={metaTitle}
@@ -120,13 +110,10 @@ export default function SeoFields({
 
         <div className="flex justify-between text-xs">
           <span className="text-gray-400">
-            {metaTitle.length}/
-            {SEO_CONFIG.title.max}
+            {metaTitle.length}/{SEO_CONFIG.title.max}
           </span>
 
-          <span
-            className={getColor(titleScore)}
-          >
+          <span className={getColor(titleScore)}>
             {titleScore.toUpperCase()}
           </span>
         </div>
@@ -143,8 +130,7 @@ export default function SeoFields({
           onChange={(e) =>
             setData((prev) => ({
               ...prev,
-              metaDescription:
-                e.target.value,
+              metaDescription: e.target.value,
             }))
           }
           rows={4}
@@ -153,15 +139,10 @@ export default function SeoFields({
 
         <div className="flex justify-between text-xs">
           <span className="text-gray-400">
-            {metaDescription.length}/
-            {SEO_CONFIG.description.max}
+            {metaDescription.length}/{SEO_CONFIG.description.max}
           </span>
 
-          <span
-            className={getColor(descScore)}
-          >
-            {descScore.toUpperCase()}
-          </span>
+          <span className={getColor(descScore)}>{descScore.toUpperCase()}</span>
         </div>
       </div>
 
@@ -182,9 +163,7 @@ export default function SeoFields({
           folder="services"
         />
 
-        <p className="text-xs text-gray-400">
-          Recommended: 1200 × 630 px
-        </p>
+        <p className="text-xs text-gray-400">Recommended: 1200 × 630 px</p>
       </div>
     </div>
   );

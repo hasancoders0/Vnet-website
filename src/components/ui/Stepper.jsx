@@ -6,8 +6,7 @@ export default function Stepper({
 steps = [],
 current = 0,
 }) {
-const progress =
-((current + 1) / steps.length) * 100;
+
 
 return ( <div className="space-y-5">
 <div className="flex items-center justify-between"> <div> <p className="text-xs uppercase tracking-wide text-gray-400">
@@ -17,20 +16,6 @@ Progress </p>
         Step {current + 1} of {steps.length}
       </h3>
     </div>
-
-    <div className="text-sm font-semibold text-purple-600">
-      {Math.round(progress)}%
-    </div>
-  </div>
-
-  {/* PROGRESS BAR */}
-  <div className="h-2 rounded-full bg-gray-100 overflow-hidden">
-    <div
-      className="h-full bg-gradient-to-r from-blue-500 to-purple-600 rounded-full transition-all duration-300"
-      style={{
-        width: `${progress}%`,
-      }}
-    />
   </div>
 
   {/* DESKTOP */}
