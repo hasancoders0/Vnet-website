@@ -1,7 +1,7 @@
 import BlogContent from "@/components/journal/blog/BlogContent";
 import BlogSidebar from "@/components/journal/blog/BlogSidebar";
 import { notFound } from "next/navigation";
-import AppImage from "@/components/ui/AppImage";
+import CommonBackground from "@/components/ui/CommonBackground";
 import { connectDB } from "@/lib/db";
 import Blog from "@/models/Blog";
 import "@/models/Category";
@@ -30,7 +30,10 @@ const flattenContent = (sections = []) =>
       ? [
           {
             type: "heading",
-            id: section.id || slugify(section.title) || `section-${sectionIndex + 1}`,
+            id:
+              section.id ||
+              slugify(section.title) ||
+              `section-${sectionIndex + 1}`,
             text: section.title,
           },
         ]
@@ -78,23 +81,32 @@ const estimateReadTime = (content) => {
 };
 
 const mapPost = (blog) => {
-  const content = flattenContent(blog.content || []);
+  const sections = blog.content || [];
 
   return {
     _id: blog._id.toString(),
+    categoryId: blog.category?._id?.toString(),
     slug: blog.slug,
     title: blog.title,
     description: blog.shortDescription || blog.metaDescription || "",
     category: blog.category?.name || "Journal",
     date: formatDate(blog.createdAt),
-    readTime: estimateReadTime(content),
+
+    readTime: estimateReadTime(flattenContent(blog.content || [])),
+
     views: "",
-    image: blog.featuredImage || blog.metaImage || "/website-components/default-image.png",
+
+    image:
+      blog.featuredImage ||
+      blog.metaImage ||
+      "/website-components/default-image.png",
+
     author: {
       name: "VNet Team",
       image: "/website-components/default-image.png",
     },
-    content,
+
+    sections,
   };
 };
 
@@ -102,44 +114,56 @@ async function getPost(slug) {
   await connectDB();
 
   const blog = await Blog.findOne({ slug, status: "published" })
-    .populate("category", "name")
+    .populate("category", "name _id")
     .lean();
 
   return blog ? mapPost(blog) : null;
 }
+async function getRelatedPosts(categoryId, currentSlug) {
+  await connectDB();
 
+  const posts = await Blog.find({
+    category: categoryId,
+    status: "published",
+    slug: { $ne: currentSlug },
+  })
+    .select("title slug featuredImage metaImage createdAt")
+    .limit(3)
+    .lean();
+
+  return posts.map((post) => ({
+    title: post.title,
+    slug: post.slug,
+    image:
+      post.featuredImage ||
+      post.metaImage ||
+      "/website-components/default-image.png",
+    date: formatDate(post.createdAt),
+  }));
+}
 export default async function SingleBlogPage({ params }) {
   const { slug } = await params;
   const post = await getPost(slug);
-
+  const relatedPosts = await getRelatedPosts(post.categoryId, post.slug);
   if (!post) return notFound();
 
   return (
-    <div className="relative">
-      <div className="absolute top-0 left-0 w-full -z-10">
-        <AppImage
-          src="/website-components/single-blog-top.png"
-          alt="background"
-          width={1920}
-          height={500}
-          priority
-          className="w-full h-auto object-cover object-top"
-        />
-      </div>
+    <>
+      <CommonBackground overlay>
+        <div className="h-160" />
+      </CommonBackground>
 
-      <section className="pt-28 pb-20">
+      <section className="-mt-120 pb-20 relative z-10">
         <div className="max-w-[1240px] mx-auto px-6 grid lg:grid-cols-3 gap-10">
           <div className="lg:col-span-2">
             <BlogContent post={post} />
           </div>
 
           <div className="sticky top-24 h-fit">
-            <BlogSidebar post={post} />
+            <BlogSidebar post={post} relatedPosts={relatedPosts} />
           </div>
         </div>
       </section>
-
-      <div className="bg-gray-50 h-20" />
-    </div>
+    </>
   );
 }
