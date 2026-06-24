@@ -1,24 +1,24 @@
-export default function BreadcrumbSchema({
-  items = [],
+export default function BlogCollectionSchema({
+  articles = [],
 }) {
-  if (!items.length) return null;
-
   const siteUrl =
     process.env.NEXT_PUBLIC_SITE_URL ||
     "https://vnet-it.com";
 
   const schema = {
     "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
+    "@type": "CollectionPage",
 
-    itemListElement: items.map((item, index) => ({
-      "@type": "ListItem",
+    name: "Visionary Network Journal",
 
-      position: index + 1,
+    url: `${siteUrl}/journal`,
 
-      name: item.name,
+    hasPart: articles.map((article) => ({
+      "@type": "BlogPosting",
 
-      item: `${siteUrl}${item.path}`,
+      headline: article.title,
+
+      url: `${siteUrl}/journal/${article.slug}`,
     })),
   };
 

@@ -1,263 +1,187 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import {
-FaUpload,
-FaSpinner,
-FaImage,
-FaTrash,
-FaSyncAlt,
-} from "react-icons/fa";
+import { FaUpload, FaSpinner, FaImage, FaTrash, FaLink } from "react-icons/fa";
 
-export default function ImagePicker({
-value,
-onChange,
-label = "Image",
-folder = "general",
-}) {
-const [mode, setMode] = useState("url");
-const [preview, setPreview] = useState(value || "");
-const [loading, setLoading] = useState(false);
+export default function ImagePicker({ value, onChange, folder = "general" }) {
+  const [mode, setMode] = useState("upload");
+  const [preview, setPreview] = useState(value || "");
+  const [loading, setLoading] = useState(false);
 
-useEffect(() => {
-setPreview(value || "");
-}, [value]);
+  useEffect(() => {
+    setPreview(value || "");
+  }, [value]);
 
-// ================= URL =================
-const handleUrlChange = (val) => {
-setPreview(val);
-onChange(val);
-};
+  const handleUrlChange = (url) => {
+    setPreview(url);
+    onChange(url);
+  };
 
-// ================= UPLOAD =================
-const handleUpload = async (file) => {
-if (!file) return;
+  const handleUpload = async (file) => {
+    if (!file) return;
 
- 
-try {
-  setLoading(true);
+    try {
+      setLoading(true);
 
-  const formData = new FormData();
-  formData.append("file", file);
-  formData.append("folder", folder);
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("folder", folder);
 
-  const res = await fetch("/api/upload", {
-    method: "POST",
-    body: formData,
-  });
+      const res = await fetch("/api/upload", {
+        method: "POST",
+        body: formData,
+      });
 
-  const data = await res.json();
+      const data = await res.json();
 
-  setPreview(data.url);
-  onChange(data.url);
-} catch (err) {
-  console.error(err);
-} finally {
-  setLoading(false);
-}
- 
+      if (!res.ok) {
+        throw new Error(data.message || "Upload failed");
+      }
 
-};
+      setPreview(data.url);
+      onChange(data.url);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-const removeImage = () => {
-setPreview("");
-onChange("");
-};
+  const removeImage = () => {
+    setPreview("");
+    onChange("");
+    setMode("upload");
+  };
 
-return ( <div className="space-y-4">
-{/* LABEL */} <label className="text-sm font-medium text-gray-700">
-{label} </label>
-
- 
-  <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-    {/* LEFT SIDE */}
-    <div className="space-y-4">
-      {/* TOGGLE */}
-      <div className="flex gap-2">
-        <button
-          type="button"
-          onClick={() => setMode("url")}
-          className={`px-4 py-2 rounded-lg text-sm transition ${
-            mode === "url"
-              ? "bg-purple-100 text-purple-600"
-              : "bg-gray-100 text-gray-600"
-          }`}
-        >
-          URL
-        </button>
-
-        <button
-          type="button"
-          onClick={() => setMode("upload")}
-          className={`px-4 py-2 rounded-lg text-sm transition ${
-            mode === "upload"
-              ? "bg-purple-100 text-purple-600"
-              : "bg-gray-100 text-gray-600"
-          }`}
-        >
-          Upload
-        </button>
-      </div>
-
-      {/* URL MODE */}
-      {mode === "url" ? (
-        <div className="space-y-2">
-          <input
-            placeholder="Enter image URL..."
-            value={
-              typeof value === "string"
-                ? value
-                : ""
-            }
-            onChange={(e) =>
-              handleUrlChange(
-                e.target.value
-              )
-            }
-            className="
-              w-full h-11 px-4
-              rounded-xl
-              border border-gray-200
-              text-sm
-              focus:ring-2
-              focus:ring-purple-500
-              outline-none
-            "
-          />
-
-          <p className="text-xs text-gray-400">
-            Paste any valid image URL
-          </p>
-        </div>
-      ) : (
-        <label
-          className="
-            flex flex-col
-            items-center
-            justify-center
-            gap-3
-            border border-dashed
-            border-gray-300
-            rounded-xl
-            p-10
-            text-center
-            cursor-pointer
-            hover:bg-gray-50
-            hover:border-purple-300
-            transition
-          "
-        >
-          {loading ? (
-            <>
-              <FaSpinner className="animate-spin text-purple-600 text-xl" />
-
-              <p className="text-sm text-gray-500">
-                Uploading image...
-              </p>
-            </>
-          ) : (
-            <>
-              <div className="w-14 h-14 rounded-full bg-purple-100 flex items-center justify-center">
-                {preview ? (
-                  <FaSyncAlt className="text-purple-600 text-lg" />
-                ) : (
-                  <FaUpload className="text-purple-600 text-lg" />
-                )}
-              </div>
-
-              <div>
-                <p className="text-base font-semibold text-gray-800">
-                  {preview
-                    ? "Change Image"
-                    : "Upload Image"}
-                </p>
-
-                <p className="text-sm text-gray-400 mt-1">
-                  {preview
-                    ? "Replace current image"
-                    : "JPG, PNG, WEBP"}
-                </p>
-              </div>
-            </>
-          )}
-
-          <input
-            type="file"
-            hidden
-            accept="image/*"
-            onChange={(e) =>
-              handleUpload(
-                e.target.files?.[0]
-              )
-            }
-          />
-        </label>
-      )}
-    </div>
-
-    {/* RIGHT SIDE */}
-    <div className="border border-gray-200 rounded-xl overflow-hidden bg-white">
+  return (
+    <div className="overflow-hidden rounded-xl border border-gray-200 bg-white">
+      {/* IMAGE EXISTS */}
       {preview ? (
         <>
-          <img
-            src={preview}
-            alt="preview"
-            className="
-              w-full
-              aspect-[4/3]
-              object-cover
-            "
-          />
+          <div className="relative aspect-[4/3] bg-gray-50">
+            <img
+              src={preview}
+              alt="Preview"
+              className="h-full w-full object-cover"
+            />
 
-          <div className="p-4 border-t border-gray-100">
-            <div className="flex items-center justify-between gap-3">
-              <div className="min-w-0">
-                <p className="text-sm font-semibold text-gray-800">
-                  Current Image
-                </p>
-
-                <p className="text-xs text-gray-400 truncate">
-                  {preview}
-                </p>
+            {loading && (
+              <div className="absolute inset-0 flex items-center justify-center bg-black/40 backdrop-blur-sm">
+                <div className="flex flex-col items-center gap-3 text-white">
+                  <FaSpinner className="animate-spin text-2xl" />
+                  <span className="text-sm">Uploading...</span>
+                </div>
               </div>
+            )}
+          </div>
 
-              <button
-                type="button"
-                onClick={removeImage}
-                className="
-                  flex items-center gap-2
-                  px-3 py-2
-                  rounded-lg
-                  bg-red-50
-                  text-red-600
-                  text-sm
-                  hover:bg-red-100
-                  transition
-                "
-              >
-                <FaTrash className="text-xs" />
-                Remove
-              </button>
-            </div>
+          <div className="p-3">
+            <button
+              type="button"
+              onClick={removeImage}
+              className="w-full flex items-center justify-center gap-2 rounded-lg bg-red-50 px-4 py-2 text-sm font-medium text-red-600 hover:bg-red-100 transition"
+            >
+              <FaTrash className="text-xs" />
+              Remove Image
+            </button>
           </div>
         </>
       ) : (
-        <div className="aspect-[4/3] flex flex-col items-center justify-center text-center p-6">
-          <FaImage className="text-5xl text-gray-300 mb-4" />
+        <>
+          {/* HEADER */}
+          <div className="flex gap-2 border-b border-gray-100 p-3">
+            <button
+              type="button"
+              onClick={() => setMode("upload")}
+              className={`rounded-lg px-3 py-2 text-sm transition ${
+                mode === "upload"
+                  ? "bg-purple-100 text-purple-600"
+                  : "bg-gray-100 text-gray-600"
+              }`}
+            >
+              Upload
+            </button>
 
-          <p className="text-sm font-medium text-gray-600">
-            No Image Selected
-          </p>
+            <button
+              type="button"
+              onClick={() => setMode("url")}
+              className={`rounded-lg px-3 py-2 text-sm transition ${
+                mode === "url"
+                  ? "bg-purple-100 text-purple-600"
+                  : "bg-gray-100 text-gray-600"
+              }`}
+            >
+              URL
+            </button>
+          </div>
 
-          <p className="text-xs text-gray-400 mt-1">
-            Preview will appear here
-          </p>
-        </div>
+          <div className="p-4">
+            {mode === "url" ? (
+              <div className="space-y-3">
+                <div className="relative">
+                  <FaLink className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+
+                  <input
+                    type="text"
+                    value={value || ""}
+                    onChange={(e) => handleUrlChange(e.target.value)}
+                    placeholder="https://example.com/image.webp"
+                    className="
+                      h-11
+                      w-full
+                      rounded-xl
+                      border
+                      border-gray-200
+                      pl-10
+                      pr-4
+                      text-sm
+                      outline-none
+                      focus:border-purple-500
+                    "
+                  />
+                </div>
+              </div>
+            ) : (
+              <label
+                className="
+                  flex
+                  min-h-[180px]
+                  cursor-pointer
+                  flex-col
+                  items-center
+                  justify-center
+                  gap-3
+                  rounded-xl
+                  border
+                  border-dashed
+                  border-gray-300
+                  bg-gray-50
+                  transition
+                  hover:border-purple-400
+                  hover:bg-purple-50
+                "
+              >
+                <FaImage className="text-4xl text-gray-300" />
+
+                <div className="text-center">
+                  <p className="text-sm font-medium text-gray-700">
+                    Choose Image
+                  </p>
+
+                  <p className="text-xs text-gray-400">JPG, PNG, WEBP</p>
+                </div>
+
+                <input
+                  hidden
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => handleUpload(e.target.files?.[0])}
+                />
+              </label>
+            )}
+          </div>
+        </>
       )}
     </div>
-  </div>
-</div>
- 
-
-);
+  );
 }

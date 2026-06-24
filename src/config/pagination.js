@@ -1,0 +1,12 @@
+export const PAGINATION = {
+  BLOG: 9,
+  SERVICE: 12,
+  PRODUCT: 16,
+  TOOL: 12,
+  TEMPLATE: 15,
+
+  ADMIN_BLOG: 10,
+  ADMIN_SERVICE: 10,
+  ADMIN_PRODUCT: 20,
+  ADMIN_USER: 25,
+};

@@ -2,37 +2,38 @@
 
 import BlockRenderer from "./BlockRenderer";
 
-const backgroundClasses = {
-  white: "bg-white",
-  soft: "bg-slate-50",
-  dark: "bg-slate-900 text-white",
-  brand: "bg-blue-50",
-  accent: "bg-purple-50",
-};
-
 export default function SectionRenderer({ section }) {
-  const bgClass = backgroundClasses[section.background] || "bg-white";
+  if (!section) return null;
+
+  const sectionId =
+    section.id ||
+    section.title
+      ?.toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/(^-|-$)+/g, "");
 
   return (
-    <section
-      className={`rounded-2xl p-8 md:p-10 border border-slate-100 ${bgClass}`}
-    >
+    <section className="space-y-8">
+      {/* SECTION TITLE */}
       {section.title && (
-        <h2
-          id={
-            section.id ||
-            section.title
-              .toLowerCase()
-              .replace(/[^a-z0-9]+/g, "-")
-              .replace(/(^-|-$)+/g, "")
-          }
-          className="text-3xl font-bold scroll-mt-32"
-        >
-          {section.title}
-        </h2>
+        <div>
+          <h2
+            id={sectionId}
+            className="
+              text-2xl
+              md:text-3xl
+              font-bold
+              tracking-tight
+              text-slate-900
+            "
+          >
+            {section.title}
+          </h2>
+        </div>
       )}
 
-      <div className="space-y-8">
+      {/* BLOCKS */}
+      <div className="space-y-10">
         {(section.blocks || []).map((block, index) => (
           <BlockRenderer key={block.id || index} block={block} />
         ))}

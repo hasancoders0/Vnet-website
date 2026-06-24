@@ -28,7 +28,7 @@ export default function WizardLayout({
       {/* HEADER */}
       <div className="sticky top-0 z-20 bg-white/95 backdrop-blur-md border-b border-gray-100">
         <div className="p-6">
-          <h2 className="text-xl font-semibold text-gray-900">
+          <h2 className="text-2xl font-bold tracking-tight text-gray-900">
             {title}
           </h2>
 

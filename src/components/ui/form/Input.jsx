@@ -6,16 +6,21 @@ export default function Input({
   type = "text",
   value,
   onChange,
+  onKeyDown,
+  onBlur,
   placeholder,
   className,
   disabled = false,
-  error = false, // ✅ NEW
+  error = false,
+  ...props
 }) {
   return (
     <input
       type={type}
       value={value || ""}
       onChange={onChange}
+      onKeyDown={onKeyDown}
+      onBlur={onBlur}
       placeholder={placeholder}
       disabled={disabled}
       className={cn(
@@ -25,19 +30,18 @@ export default function Input({
         "placeholder:text-gray-400",
         "outline-none transition",
 
-        // ✅ NORMAL
-        !error &&
-          "border border-gray-300 focus:ring-2 focus:ring-purple-500",
+        // Normal
+        !error && "border border-gray-300 focus:ring-2 focus:ring-purple-500",
 
-        // ❌ ERROR STATE
-        error &&
-          "border border-red-400 focus:ring-2 focus:ring-red-200",
+        // Error
+        error && "border border-red-400 focus:ring-2 focus:ring-red-200",
 
-        // DISABLED
+        // Disabled
         disabled && "opacity-50 cursor-not-allowed",
 
-        className
+        className,
       )}
+      {...props}
     />
   );
 }

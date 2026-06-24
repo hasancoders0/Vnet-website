@@ -7,24 +7,25 @@ import {
   FaAlignLeft,
   FaAlignRight,
   FaPlus,
+  FaImages,
+  FaTimes,
 } from "react-icons/fa";
 
 import Input from "@/components/ui/form/Input";
 import ImagePicker from "@/components/ui/ImagePicker";
 import RichTextEditor from "@/components/ui/form/RichTextEditor";
+import { useState } from "react";
 
 // ================= CONFIG =================
 const BLOCK_TYPES = [
-  { label: "Text", value: "text" },
+  { label: "Rich Text", value: "text" },
   { label: "List", value: "list" },
-  { label: "Image", value: "image" },
   { label: "Split", value: "split" },
   { label: "Gallery", value: "gallery" },
   { label: "Quote", value: "quote" },
   { label: "Divider", value: "divider" },
 ];
 
-const PALETTES = ["white", "soft", "dark", "brand", "accent"];
 const BUTTON_TYPES = ["primary", "outline", "ghost", "link"];
 
 // ✅ FIXED UID (IMPORTANT)
@@ -50,14 +51,13 @@ const createBlock = (type = "text") => ({
 const createSection = () => ({
   id: uid(),
   title: "",
-  palette: "white",
   blocks: [],
 });
 
 // ================= COMPONENT =================
 export default function BlogContentStep({ data, setData }) {
   const content = data.content || [];
-
+  const [listInputs, setListInputs] = useState({});
   const updateContent = (updater) => {
     setData((prev) => ({
       ...prev,
@@ -181,24 +181,6 @@ export default function BlogContentStep({ data, setData }) {
               </div>
             </div>
 
-            {/* PALETTE */}
-            <div className="flex gap-2 flex-wrap">
-              {PALETTES.map((p) => (
-                <button
-                  key={p}
-                  onClick={() => updateSection(section.id, "palette", p)}
-                  className={`px-3 py-1 text-xs rounded-full capitalize transition
-                  ${
-                    section.palette === p
-                      ? "bg-purple-600 text-white"
-                      : "bg-gray-100 text-gray-600"
-                  }`}
-                >
-                  {p}
-                </button>
-              ))}
-            </div>
-
             {/* TITLE */}
             <Input
               value={section.title}
@@ -246,56 +228,99 @@ export default function BlogContentStep({ data, setData }) {
 
                 {/* LIST */}
                 {block.type === "list" && (
-                  <div className="space-y-2">
-                    {(block.items || []).map((item, idx) => (
-                      <div key={idx} className="flex gap-2">
-                        <Input
-                          value={item}
-                          onChange={(e) => {
-                            const arr = [...block.items];
-                            arr[idx] = e.target.value;
-                            updateBlock(section.id, block.id, "items", arr);
-                          }}
-                        />
-                        <button
-                          onClick={() => {
-                            const arr = block.items.filter((_, i) => i !== idx);
-                            updateBlock(section.id, block.id, "items", arr);
-                          }}
-                          className="text-red-500 text-xs"
-                        >
-                          ✕
-                        </button>
-                      </div>
-                    ))}
+                  <div className="space-y-4">
+                    {/* ADD ITEM */}
+                    <div className="flex gap-2">
+                      <Input
+                        value={listInputs[block.id] || ""}
+                        placeholder="Enter list item..."
+                        onChange={(e) =>
+                          setListInputs((prev) => ({
+                            ...prev,
+                            [block.id]: e.target.value,
+                          }))
+                        }
+                        onKeyDown={(e) => {
+                          if (e.key !== "Enter") return;
 
-                    <button
-                      onClick={() =>
-                        updateBlock(section.id, block.id, "items", [
-                          ...(block.items || []),
-                          "",
-                        ])
-                      }
-                      className="text-xs text-purple-600 flex items-center gap-1"
-                    >
-                      <FaPlus /> Add Item
-                    </button>
+                          e.preventDefault();
+
+                          const value = listInputs[block.id]?.trim();
+
+                          if (!value) return;
+
+                          updateBlock(section.id, block.id, "items", [
+                            ...(block.items || []),
+                            value,
+                          ]);
+
+                          setListInputs((prev) => ({
+                            ...prev,
+                            [block.id]: "",
+                          }));
+                        }}
+                      />
+
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const value = listInputs[block.id]?.trim();
+
+                          if (!value) return;
+
+                          updateBlock(section.id, block.id, "items", [
+                            ...(block.items || []),
+                            value,
+                          ]);
+
+                          setListInputs((prev) => ({
+                            ...prev,
+                            [block.id]: "",
+                          }));
+                        }}
+                        className="px-4 rounded-lg bg-purple-600 text-white text-sm hover:bg-purple-700"
+                      >
+                        Add
+                      </button>
+                    </div>
+
+                    {/* ITEMS */}
+                    <div className="space-y-2">
+                      {(block.items || []).map((item, idx) => (
+                        <div
+                          key={idx}
+                          className="flex items-center justify-between rounded-xl border border-gray-200 bg-white px-4 py-3"
+                        >
+                          <div className="flex items-center gap-3">
+                            <div className="w-2 h-2 rounded-full bg-purple-500" />
+
+                            <span className="text-sm text-gray-700">
+                              {typeof item === "string"
+                                ? item
+                                : item?.text || ""}
+                            </span>
+                          </div>
+
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const arr = block.items.filter(
+                                (_, i) => i !== idx,
+                              );
+
+                              updateBlock(section.id, block.id, "items", arr);
+                            }}
+                            className="text-red-500 hover:text-red-600"
+                          >
+                            <FaTrash />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 )}
 
-                {/* IMAGE */}
-                {block.type === "image" && (
-                  <ImagePicker
-                    value={block.image}
-                    onChange={(url) =>
-                      updateBlock(section.id, block.id, "image", url)
-                    }
-                    folder="blogs"
-                  />
-                )}
-
                 {/* SPLIT */}
-
                 {block.type === "split" && (
                   <div className="space-y-5">
                     {/* LAYOUT SELECTOR */}
@@ -317,6 +342,7 @@ export default function BlogContentStep({ data, setData }) {
                           }`}
                         >
                           <div className="w-10 h-8 rounded bg-gray-200" />
+
                           <div className="w-12 h-8 flex flex-col gap-1">
                             <div className="h-2 bg-gray-300 rounded" />
                             <div className="h-2 bg-gray-300 rounded" />
@@ -346,146 +372,362 @@ export default function BlogContentStep({ data, setData }) {
                           <span className="text-sm">Image Right</span>
                         </button>
                       </div>
+
+                      <p className="mt-2 text-xs text-gray-500">
+                        Current Layout:
+                        <span className="ml-1 font-medium text-gray-700">
+                          {block.layout === "left"
+                            ? "Image Left"
+                            : "Image Right"}
+                        </span>
+                      </p>
                     </div>
 
                     {/* SPLIT EDITOR */}
                     <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
-                      {/* IMAGE SIDE */}
-                      <div className="lg:col-span-2">
-                        <div className="bg-white border border-gray-200 rounded-xl p-4 h-full">
-                          <h4 className="text-sm font-medium text-gray-700 mb-4">
-                            Image
-                          </h4>
+                      {block.layout === "right" ? (
+                        <>
+                          {/* CONTENT FIRST */}
+                          <div className="lg:col-span-3">
+                            <div className="bg-white border border-gray-200 rounded-xl p-4 space-y-4">
+                              <Input
+                                placeholder="Title"
+                                value={block.title}
+                                onChange={(e) =>
+                                  updateBlock(
+                                    section.id,
+                                    block.id,
+                                    "title",
+                                    e.target.value,
+                                  )
+                                }
+                              />
 
-                          <ImagePicker
-                            value={block.image}
-                            onChange={(url) =>
-                              updateBlock(section.id, block.id, "image", url)
-                            }
-                            folder="blogs"
-                          />
-                        </div>
-                      </div>
+                              <RichTextEditor
+                                value={block.description}
+                                onChange={(val) =>
+                                  updateBlock(
+                                    section.id,
+                                    block.id,
+                                    "description",
+                                    val,
+                                  )
+                                }
+                              />
 
-                      {/* CONTENT SIDE */}
-                      <div className="lg:col-span-3">
-                        <div className="bg-white border border-gray-200 rounded-xl p-4 space-y-4">
-                          <Input
-                            placeholder="Title"
-                            value={block.title}
-                            onChange={(e) =>
-                              updateBlock(
-                                section.id,
-                                block.id,
-                                "title",
-                                e.target.value,
-                              )
-                            }
-                          />
-
-                          <RichTextEditor
-                            value={block.description}
-                            onChange={(val) =>
-                              updateBlock(
-                                section.id,
-                                block.id,
-                                "description",
-                                val,
-                              )
-                            }
-                          />
-
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                            <Input
-                              placeholder="Button Text"
-                              value={block.buttonText}
-                              onChange={(e) =>
-                                updateBlock(
-                                  section.id,
-                                  block.id,
-                                  "buttonText",
-                                  e.target.value,
-                                )
-                              }
-                            />
-
-                            <Input
-                              placeholder="Button Link"
-                              value={block.buttonLink}
-                              onChange={(e) =>
-                                updateBlock(
-                                  section.id,
-                                  block.id,
-                                  "buttonLink",
-                                  e.target.value,
-                                )
-                              }
-                            />
-                          </div>
-
-                          <div>
-                            <label className="block text-xs font-medium text-gray-500 mb-2">
-                              Button Style
-                            </label>
-
-                            <div className="flex flex-wrap gap-2">
-                              {BUTTON_TYPES.map((t) => (
-                                <button
-                                  key={t}
-                                  type="button"
-                                  onClick={() =>
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                <Input
+                                  placeholder="Button Text"
+                                  value={block.buttonText}
+                                  onChange={(e) =>
                                     updateBlock(
                                       section.id,
                                       block.id,
-                                      "buttonType",
-                                      t,
+                                      "buttonText",
+                                      e.target.value,
                                     )
                                   }
-                                  className={`px-3 py-1.5 text-xs rounded-full capitalize transition ${
-                                    block.buttonType === t
-                                      ? "bg-purple-600 text-white"
-                                      : "bg-gray-100 text-gray-600"
-                                  }`}
-                                >
-                                  {t}
-                                </button>
-                              ))}
+                                />
+
+                                <Input
+                                  placeholder="Button Link"
+                                  value={block.buttonLink}
+                                  onChange={(e) =>
+                                    updateBlock(
+                                      section.id,
+                                      block.id,
+                                      "buttonLink",
+                                      e.target.value,
+                                    )
+                                  }
+                                />
+                              </div>
+
+                              <div>
+                                <label className="block text-xs font-medium text-gray-500 mb-2">
+                                  Button Style
+                                </label>
+
+                                <div className="flex flex-wrap gap-2">
+                                  {BUTTON_TYPES.map((t) => (
+                                    <button
+                                      key={t}
+                                      type="button"
+                                      onClick={() =>
+                                        updateBlock(
+                                          section.id,
+                                          block.id,
+                                          "buttonType",
+                                          t,
+                                        )
+                                      }
+                                      className={`px-3 py-1.5 text-xs rounded-full capitalize transition ${
+                                        block.buttonType === t
+                                          ? "bg-purple-600 text-white"
+                                          : "bg-gray-100 text-gray-600"
+                                      }`}
+                                    >
+                                      {t}
+                                    </button>
+                                  ))}
+                                </div>
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      </div>
+
+                          {/* IMAGE SECOND */}
+                          <div className="lg:col-span-2">
+                            <div className="bg-white border border-gray-200 rounded-xl p-4 h-full">
+                              <h4 className="text-sm font-medium text-gray-700 mb-4">
+                                Image
+                              </h4>
+
+                              <ImagePicker
+                                value={block.image}
+                                onChange={(url) =>
+                                  updateBlock(
+                                    section.id,
+                                    block.id,
+                                    "image",
+                                    url,
+                                  )
+                                }
+                                folder="blogs"
+                              />
+                            </div>
+                          </div>
+                        </>
+                      ) : (
+                        <>
+                          {/* IMAGE FIRST */}
+                          <div className="lg:col-span-2">
+                            <div className="bg-white border border-gray-200 rounded-xl p-4 h-full">
+                              <h4 className="text-sm font-medium text-gray-700 mb-4">
+                                Image
+                              </h4>
+
+                              <ImagePicker
+                                value={block.image}
+                                onChange={(url) =>
+                                  updateBlock(
+                                    section.id,
+                                    block.id,
+                                    "image",
+                                    url,
+                                  )
+                                }
+                                folder="blogs"
+                              />
+                            </div>
+                          </div>
+
+                          {/* CONTENT SECOND */}
+                          <div className="lg:col-span-3">
+                            <div className="bg-white border border-gray-200 rounded-xl p-4 space-y-4">
+                              <Input
+                                placeholder="Title"
+                                value={block.title}
+                                onChange={(e) =>
+                                  updateBlock(
+                                    section.id,
+                                    block.id,
+                                    "title",
+                                    e.target.value,
+                                  )
+                                }
+                              />
+
+                              <RichTextEditor
+                                value={block.description}
+                                onChange={(val) =>
+                                  updateBlock(
+                                    section.id,
+                                    block.id,
+                                    "description",
+                                    val,
+                                  )
+                                }
+                              />
+
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                <Input
+                                  placeholder="Button Text"
+                                  value={block.buttonText}
+                                  onChange={(e) =>
+                                    updateBlock(
+                                      section.id,
+                                      block.id,
+                                      "buttonText",
+                                      e.target.value,
+                                    )
+                                  }
+                                />
+
+                                <Input
+                                  placeholder="Button Link"
+                                  value={block.buttonLink}
+                                  onChange={(e) =>
+                                    updateBlock(
+                                      section.id,
+                                      block.id,
+                                      "buttonLink",
+                                      e.target.value,
+                                    )
+                                  }
+                                />
+                              </div>
+
+                              <div>
+                                <label className="block text-xs font-medium text-gray-500 mb-2">
+                                  Button Style
+                                </label>
+
+                                <div className="flex flex-wrap gap-2">
+                                  {BUTTON_TYPES.map((t) => (
+                                    <button
+                                      key={t}
+                                      type="button"
+                                      onClick={() =>
+                                        updateBlock(
+                                          section.id,
+                                          block.id,
+                                          "buttonType",
+                                          t,
+                                        )
+                                      }
+                                      className={`px-3 py-1.5 text-xs rounded-full capitalize transition ${
+                                        block.buttonType === t
+                                          ? "bg-purple-600 text-white"
+                                          : "bg-gray-100 text-gray-600"
+                                      }`}
+                                    >
+                                      {t}
+                                    </button>
+                                  ))}
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </>
+                      )}
                     </div>
                   </div>
                 )}
 
                 {/* GALLERY */}
                 {block.type === "gallery" && (
-                  <div className="space-y-2">
-                    {(block.images || []).map((img, idx) => (
-                      <div key={idx}>
-                        <ImagePicker
-                          value={img}
-                          onChange={(url) => {
-                            const arr = [...block.images];
-                            arr[idx] = url;
-                            updateBlock(section.id, block.id, "images", arr);
-                          }}
-                          folder="blogs"
-                        />
-                      </div>
-                    ))}
+                  <div className="space-y-5">
+                    {/* HEADER */}
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <h4 className="text-sm font-semibold text-gray-800">
+                          Gallery Images
+                        </h4>
 
-                    <button
-                      onClick={() =>
-                        updateBlock(section.id, block.id, "images", [
-                          ...(block.images || []),
-                          "",
-                        ])
-                      }
-                      className="text-xs text-purple-600 flex items-center gap-1"
-                    >
-                      <FaPlus /> Add Image
-                    </button>
+                        <p className="text-xs text-gray-500">
+                          Images will display in a 3-column grid.
+                        </p>
+                      </div>
+
+                      <button
+                        type="button"
+                        onClick={() =>
+                          updateBlock(section.id, block.id, "images", [
+                            ...(block.images || []),
+                            "",
+                          ])
+                        }
+                        className="flex items-center gap-2 px-3 py-2 rounded-lg bg-purple-50 text-purple-600 text-sm hover:bg-purple-100"
+                      >
+                        <FaPlus />
+                        Add Image
+                      </button>
+                    </div>
+
+                    {/* GRID */}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      {(block.images || []).map((img, idx) => (
+                        <div
+                          key={idx}
+                          className="relative rounded-xl overflow-hidden border border-gray-200 bg-white"
+                        >
+                          <div className="absolute top-2 left-2 z-10">
+                            <span className="px-2 py-1 text-xs rounded bg-black/70 text-white">
+                              {idx + 1}
+                            </span>
+                          </div>
+
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const arr = block.images.filter(
+                                (_, i) => i !== idx,
+                              );
+
+                              updateBlock(section.id, block.id, "images", arr);
+                            }}
+                            className="absolute top-2 right-2 z-10 w-8 h-8 rounded-full bg-white text-red-500 shadow"
+                          >
+                            <FaTimes className="mx-auto text-xs" />
+                          </button>
+
+                          <ImagePicker
+                            value={
+                              typeof img === "string" ? img : img?.url || ""
+                            }
+                            onChange={(url) => {
+                              const arr = [...block.images];
+
+                              arr[idx] =
+                                typeof arr[idx] === "string"
+                                  ? url
+                                  : {
+                                      ...arr[idx],
+                                      url,
+                                    };
+
+                              updateBlock(section.id, block.id, "images", arr);
+                            }}
+                            folder="blogs"
+                          />
+                        </div>
+                      ))}
+
+                      {/* ADD CARD */}
+                      <button
+                        type="button"
+                        onClick={() =>
+                          updateBlock(section.id, block.id, "images", [
+                            ...(block.images || []),
+                            "",
+                          ])
+                        }
+                        className="
+          h-full min-h-[220px]
+          rounded-xl
+          border-2
+          border-dashed
+          border-purple-300
+          bg-purple-50
+          flex
+          flex-col
+          items-center
+          justify-center
+          gap-3
+          text-purple-600
+          hover:bg-purple-100
+          transition
+        "
+                      >
+                        <FaImages className="text-3xl" />
+
+                        <span className="text-sm font-medium">Add Image</span>
+
+                        <span className="text-xs">
+                          Next position ({(block.images?.length || 0) + 1})
+                        </span>
+                      </button>
+                    </div>
                   </div>
                 )}
 

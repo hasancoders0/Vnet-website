@@ -5,7 +5,9 @@
   --font-heading: "Sora", sans-serif;
   --font-body: "DM Sans", sans-serif;
 }
-
+html {
+  scroll-behavior: smooth;
+}
 /* ================= BASE ================= */
 body {
   font-family: var(--font-body);
@@ -163,4 +165,33 @@ h1, h2, h3, h4, h5, h6 {
 
 .animate-slide-in {
   animation: slide-in 0.3s ease;
+}
+
+.prose ol {
+  list-style-type: decimal !important;
+  padding-left: 1.5rem !important;
+}
+
+.prose ul {
+  list-style-type: disc !important;
+  padding-left: 1.5rem !important;
+}
+
+.prose li {
+  display: list-item !important;
+}
+
+.prose a {
+  color: #7c3aed !important;
+  font-weight: 600 !important;
+
+  background: #f3e8ff !important;
+  padding: 0 4px !important;
+  border-radius: 4px !important;
+
+  text-decoration: none !important;
+}
+
+.prose a:hover {
+  background: #e9d5ff !important;
 }

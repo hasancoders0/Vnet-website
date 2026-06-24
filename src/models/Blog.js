@@ -10,7 +10,6 @@ const BlockSchema = new Schema(
       enum: [
         "text",
         "list",
-        "image",
         "split",
         "gallery",
         "quote",
@@ -51,12 +50,6 @@ const BlockSchema = new Schema(
 const SectionSchema = new Schema(
   {
     title: { type: String, default: "" },
-
-    palette: {
-      type: String,
-      enum: ["white", "soft", "dark", "brand", "accent"],
-      default: "white",
-    },
 
     blocks: {
       type: [BlockSchema],

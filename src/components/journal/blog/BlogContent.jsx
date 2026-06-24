@@ -1,18 +1,37 @@
 "use client";
-
+import Link from "next/link";
+import { FiArrowRight } from "react-icons/fi";
 import AppImage from "@/components/ui/AppImage";
 import { FaCheckCircle } from "react-icons/fa";
 import SectionRenderer from "./SectionRenderer";
+import RelatedArticles from "./RelatedArticles";
+import PostNavigation from "./PostNavigation";
+import * as FaIcons from "react-icons/fa";
 
-export default function BlogContent({ post }) {
+export default function BlogContent({
+  post,
+  relatedPosts = [],
+  adjacentPosts = {},
+}) {
+  const CategoryIcon = post.category?.icon && FaIcons[post.category.icon];
   return (
     <div className="space-y-8">
       {/* 🔗 BREADCRUMB */}
-      <p className="text-sm text-white/70">
-        Home <span className="mx-2">›</span> Journal{" "}
-        <span className="mx-2">›</span>
-        <span className="text-white/90">{post.title}</span>
-      </p>
+      <div className="flex flex-wrap items-center gap-2 text-sm text-white/70">
+        <Link href="/" className="hover:text-white transition-colors">
+          Home
+        </Link>
+
+        <span>›</span>
+
+        <Link href="/journal" className="hover:text-white transition-colors">
+          Journal
+        </Link>
+
+        <span>›</span>
+
+        <span className="text-white font-medium">{post.title}</span>
+      </div>
 
       {/* HEADER CARD */}
       <div className="bg-white rounded-2xl p-8 border border-gray-100 shadow-sm">
@@ -22,9 +41,13 @@ export default function BlogContent({ post }) {
         </span>
 
         {/* CATEGORY */}
-        <p className="text-sm text-purple-600 font-medium mb-2">
-          {post.category}
-        </p>
+        {post.category && (
+          <div className="flex items-center gap-2 text-sm text-purple-600 font-medium mb-2">
+            {CategoryIcon && <CategoryIcon className="text-sm" />}
+
+            <span>{post.category.name}</span>
+          </div>
+        )}
 
         {/* TITLE */}
         <h1 className="text-[34px] md:text-[42px] font-bold text-gray-900 leading-tight mb-4">
@@ -85,6 +108,12 @@ export default function BlogContent({ post }) {
             </button>
           </div>
         </div>
+        <PostNavigation
+          previous={adjacentPosts.previous}
+          next={adjacentPosts.next}
+        />
+        {/* RELATED ARTICLES */}
+        <RelatedArticles articles={relatedPosts} />
       </div>
     </div>
   );

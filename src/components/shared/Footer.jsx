@@ -18,19 +18,7 @@ gsap.registerPlugin(ScrollTrigger);
 
 export default function Footer() {
   const sectionRef = useRef(null);
-  const [showScrollTop, setShowScrollTop] = useState(false);
 
-  const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  };
-
-  useEffect(() => {
-    const handleScroll = () => {
-      setShowScrollTop(window.scrollY > 400);
-    };
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -238,19 +226,6 @@ export default function Footer() {
           </div>
         </div>
       </footer>
-
-      {/* ════════ STICKY SCROLL TO TOP ════════ */}
-      <button
-        onClick={scrollToTop}
-        aria-label="Scroll to top"
-        className={`fixed bottom-6 right-6 z-50 w-11 h-11 rounded-xl bg-gradient-to-r from-purple-500 to-blue-500 text-white flex items-center justify-center shadow-lg shadow-blue-500/20 hover:shadow-[0_8px_30px_rgba(99,102,241,0.45)] hover:scale-110 transition-all duration-300 ${
-          showScrollTop
-            ? "opacity-100 translate-y-0"
-            : "opacity-0 translate-y-4 pointer-events-none"
-        }`}
-      >
-        <FaArrowUp size={13} />
-      </button>
     </>
   );
 }

@@ -1,5 +1,6 @@
 import { Sora, DM_Sans } from "next/font/google";
 import "./globals.css";
+import BackToTop from "@/components/shared/BackToTop";
 
 // 🔥 IMPORT TOAST
 import ToastContainer from "@/components/ui/ToastContainer";
@@ -25,9 +26,8 @@ export default function RootLayout({ children }) {
       <body className="min-h-full flex flex-col">
 
         {children}
-
-        {/* 🔥 GLOBAL TOAST (IMPORTANT) */}
         <ToastContainer />
+        <BackToTop />
 
       </body>
     </html>

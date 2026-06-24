@@ -1,10 +1,8 @@
 "use client";
 
-export default function Pagination({
-  page,
-  totalPages,
-  onPageChange,
-}) {
+import Link from "next/link";
+
+export default function Pagination({ page, totalPages, baseQuery = "" }) {
   if (totalPages <= 1) return null;
 
   const pages = [];
@@ -13,51 +11,52 @@ export default function Pagination({
     pages.push(i);
   }
 
+  const buildUrl = (newPage) => {
+    const params = new URLSearchParams(baseQuery);
+
+    params.set("page", newPage);
+
+    return `?${params.toString()}#results`;
+  };
+
   return (
     <div className="flex items-center justify-between px-6 py-4 text-sm">
-
-      {/* INFO */}
+      {" "}
       <p className="text-gray-400">
-        Page {page} of {totalPages}
+        Page {page} of {totalPages}{" "}
       </p>
-
-      {/* BUTTONS */}
       <div className="flex items-center gap-2">
-
-        {/* PREV */}
-        <button
-          disabled={page === 1}
-          onClick={() => onPageChange(page - 1)}
-          className="px-3 py-1.5 rounded-lg bg-gray-100 hover:bg-gray-200 disabled:opacity-50"
+        <Link
+          href={buildUrl(Math.max(page - 1, 1))}
+          className={`px-3 py-1.5 rounded-lg bg-gray-100 hover:bg-gray-200 ${
+            page === 1 ? "pointer-events-none opacity-50" : ""
+          }`}
         >
           Prev
-        </button>
+        </Link>
 
-        {/* NUMBERS */}
         {pages.map((p) => (
-          <button
+          <Link
             key={p}
-            onClick={() => onPageChange(p)}
-            className={`px-3 py-1.5 rounded-lg text-sm transition
-              ${
-                p === page
-                  ? "bg-purple-600 text-white"
-                  : "bg-gray-100 hover:bg-gray-200"
-              }`}
+            href={buildUrl(p)}
+            className={`px-3 py-1.5 rounded-lg text-sm transition ${
+              p === page
+                ? "bg-purple-600 text-white"
+                : "bg-gray-100 hover:bg-gray-200"
+            }`}
           >
             {p}
-          </button>
+          </Link>
         ))}
 
-        {/* NEXT */}
-        <button
-          disabled={page === totalPages}
-          onClick={() => onPageChange(page + 1)}
-          className="px-3 py-1.5 rounded-lg bg-gray-100 hover:bg-gray-200 disabled:opacity-50"
+        <Link
+          href={buildUrl(Math.min(page + 1, totalPages))}
+          className={`px-3 py-1.5 rounded-lg bg-gray-100 hover:bg-gray-200 ${
+            page === totalPages ? "pointer-events-none opacity-50" : ""
+          }`}
         >
           Next
-        </button>
-
+        </Link>
       </div>
     </div>
   );

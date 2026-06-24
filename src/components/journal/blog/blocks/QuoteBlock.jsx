@@ -14,14 +14,14 @@ export default function QuoteBlock({ block }) {
         border-purple-500
         bg-purple-50
         px-8
-        py-6
+        py-8
       "
     >
       <FaQuoteLeft
         className="
           absolute
-          top-5
-          right-5
+          top-6
+          right-6
           text-purple-200
           text-4xl
         "
@@ -33,19 +33,14 @@ export default function QuoteBlock({ block }) {
           md:text-xl
           leading-9
           italic
-          text-slate-800
           font-medium
+          text-slate-800
           pr-10
+          mb-0
         "
       >
         {block.quote}
       </p>
-
-      {block.author && (
-        <div className="mt-4 text-sm text-slate-500">
-          — {block.author}
-        </div>
-      )}
     </div>
   );
 }
