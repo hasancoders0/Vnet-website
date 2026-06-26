@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useEffect, useState } from "react";
+import CommonBackground from "@/components/ui/CommonBackground";
 import {
   FaShieldAlt,
   FaUser,
@@ -22,12 +23,18 @@ import {
   FaBan,
   FaGavel,
   FaExclamationTriangle,
-  FaCopy,
+  FaDownload,
+  FaCode,
+  FaArchive,
+  FaBalanceScale,
+  FaCopyright,
+  FaCopy,              // ✅ Add this
 } from "react-icons/fa";
-import CommonBackground from "@/components/ui/CommonBackground";
+
 
 /* ================= ICON MAP ================= */
 const iconMap = {
+  // Privacy
   shield: FaShieldAlt,
   user: FaUser,
   chart: FaChartLine,
@@ -37,16 +44,25 @@ const iconMap = {
   userCheck: FaUserCheck,
   sync: FaSync,
   mail: FaEnvelope,
+
+  // Refund
   undo: FaUndo,
   check: FaCheckCircle,
   times: FaTimesCircle,
   clock: FaClock,
   money: FaMoneyBillWave,
+  download: FaDownload,
+  code: FaCode,
+  archive: FaArchive,
+
+  // Terms
   contract: FaFileContract,
   userShield: FaUserShield,
   ban: FaBan,
   gavel: FaGavel,
   warning: FaExclamationTriangle,
+  scale: FaBalanceScale,
+  copyright: FaCopyright,
 };
 
 export default function LegalLayout({
@@ -124,7 +140,6 @@ export default function LegalLayout({
       <CommonBackground>
         <section className="relative min-h-[460px] md:min-h-[560px] flex items-center pt-28 md:pt-32 pb-20 overflow-hidden">
           <div className="max-w-[1280px] mx-auto w-full px-6 grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
-            
             {/* LEFT */}
             <div className="text-white max-w-[600px]">
               <span className="inline-flex items-center gap-2 text-[11px] px-4 py-1.5 rounded-full bg-white/[0.07] border border-white/[0.1] backdrop-blur-sm text-white/80 uppercase tracking-wider font-medium mb-8">
@@ -154,7 +169,6 @@ export default function LegalLayout({
                 className="object-contain"
               />
             </div>
-
           </div>
         </section>
       </CommonBackground>
@@ -162,7 +176,6 @@ export default function LegalLayout({
       {/* ================= CONTENT ================= */}
       <section className="py-16 md:py-24 px-6 bg-[#f8fafc]">
         <div className="max-w-[1280px] mx-auto">
-
           {/* MOBILE TABS */}
           <div className="lg:hidden mb-8 overflow-x-auto flex gap-2.5 pb-2">
             {sections.map((item) => (
@@ -181,7 +194,6 @@ export default function LegalLayout({
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-[260px_1fr] gap-8">
-
             {/* SIDEBAR */}
             <div className="hidden lg:block bg-white rounded-2xl border border-slate-200/70 shadow-sm p-5 h-fit sticky top-28">
               <p className="text-[13px] font-semibold text-slate-900 mb-4">
@@ -219,7 +231,11 @@ export default function LegalLayout({
                 const Icon = iconMap[item.icon];
 
                 return (
-                  <div key={item.id} id={item.id} className="group scroll-mt-28 pb-10">
+                  <div
+                    key={item.id}
+                    id={item.id}
+                    className="group scroll-mt-28 pb-10"
+                  >
                     <div className="flex gap-4 items-start">
                       {/* ICON */}
                       <div className="w-12 h-12 rounded-2xl border border-blue-200/60 bg-blue-50 flex items-center justify-center flex-shrink-0 text-blue-600">
@@ -255,7 +271,6 @@ export default function LegalLayout({
                 );
               })}
             </div>
-
           </div>
         </div>
       </section>

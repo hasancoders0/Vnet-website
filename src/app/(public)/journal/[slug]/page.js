@@ -113,11 +113,11 @@ const mapPost = (blog) => {
     image:
       blog.featuredImage ||
       blog.metaImage ||
-      "/website-components/default-image.png",
+      "/website-components/author.jpg",
 
     author: {
       name: "VNet Team",
-      image: "/website-components/default-image.png",
+      image: "/website-components/author.jpg",
     },
 
     sections,
@@ -172,7 +172,7 @@ async function getRelatedPosts(categoryId, currentSlug) {
     image:
       post.featuredImage ||
       post.metaImage ||
-      "/website-components/default-image.png",
+      "/website-components/author.jpg",
 
     date: formatDate(post.createdAt),
   }));

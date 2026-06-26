@@ -32,7 +32,7 @@ export const SITE_CONFIG = {
     icon: "/website-components/logo-icon.png",
   },
 
-  favicon: "/favicon.ico",
+  favicon: "/website-components/favicon.png",
 
   ogImage: "/website-components/og-image.jpg",
 

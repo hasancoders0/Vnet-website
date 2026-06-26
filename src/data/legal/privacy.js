@@ -1,79 +1,98 @@
 export const privacyData = {
   title: "Privacy Policy",
-  badge: "YOUR PRIVACY MATTERS",
-  description:
-    "Your trust is important to us. This Privacy Policy explains how we collect, use, and protect your personal information.",
-  lastUpdated: "May 20, 2024",
 
-  // 🔥 BACKGROUND (hero bg)
+  badge: "YOUR PRIVACY MATTERS",
+
+  description:
+    "At Visionary Network, we value your trust and are committed to protecting your personal information. This Privacy Policy explains how we collect, use, store, and safeguard your data when you interact with our website, products, and services.",
+
+  lastUpdated: "June 26, 2026",
+
+  // 🔥 BACKGROUND (Hero Background)
   bgImage: "/website-components/top-bg.png",
 
-  // 🔥 RIGHT IMAGE (hero illustration)
+  // 🔥 HERO ILLUSTRATION
   rightImage: "/website-components/privacy-top.png",
 
   sections: [
     {
-      id: "intro",
+      id: "introduction",
       title: "Introduction",
       icon: "shield",
       content:
-        "Welcome to Visionary Network. We respect your privacy and are committed to protecting your personal data. This Privacy Policy explains how we handle your information when you use our services.",
+        "Welcome to Visionary Network. We respect your privacy and are committed to protecting your personal information. This Privacy Policy outlines how we collect, use, disclose, and safeguard your data when you use our website, products, and services.",
     },
+
     {
-      id: "collect",
+      id: "information-collection",
       title: "Information We Collect",
       icon: "user",
       content:
-        "We may collect personal information such as your name, email address, and usage data. This includes how you interact with our website, pages visited, and time spent on our platform.",
+        "We may collect personal information including your name, email address, phone number, company details, and any information you voluntarily provide through contact forms, service inquiries, or account interactions. We also collect non-personal data such as browser type, device information, IP address, and website usage statistics.",
     },
+
     {
-      id: "use",
-      title: "How We Use Your Data",
+      id: "data-usage",
+      title: "How We Use Your Information",
       icon: "chart",
       content:
-        "We use your data to provide and improve our services, personalize your experience, communicate updates, and analyze performance to enhance user satisfaction.",
+        "Your information is used to provide and improve our services, communicate with you, process inquiries, personalize user experiences, maintain website security, analyze performance metrics, and comply with legal obligations.",
     },
+
     {
       id: "cookies",
-      title: "Cookies",
+      title: "Cookies & Tracking Technologies",
       icon: "cookie",
       content:
-        "We use cookies to enhance your browsing experience. Cookies help us understand user behavior, remember preferences, and improve our services. You can manage cookies through your browser settings.",
+        "We use cookies and similar technologies to enhance functionality, remember preferences, analyze traffic patterns, and improve our website experience. You may control or disable cookies through your browser settings, although some features may become unavailable.",
     },
+
     {
-      id: "third",
+      id: "third-party-services",
       title: "Third-Party Services",
       icon: "link",
       content:
-        "We may use third-party services such as analytics tools, payment gateways, and hosting providers. These services may collect information according to their own privacy policies.",
+        "We may work with trusted third-party providers such as analytics platforms, payment processors, hosting companies, email services, and customer support tools. These providers process information according to their own privacy policies and applicable regulations.",
     },
+
     {
-      id: "security",
+      id: "data-security",
       title: "Data Security",
       icon: "lock",
       content:
-        "We implement appropriate technical and organizational measures to protect your personal data from unauthorized access, disclosure, or destruction.",
+        "We implement industry-standard administrative, technical, and organizational safeguards to protect your information against unauthorized access, alteration, disclosure, or destruction. However, no internet-based transmission method can guarantee absolute security.",
     },
+
     {
-      id: "rights",
-      title: "Your Rights",
+      id: "user-rights",
+      title: "Your Privacy Rights",
       icon: "userCheck",
       content:
-        "You have the right to access, update, or delete your personal data. You may also withdraw consent at any time by contacting us.",
+        "Depending on your jurisdiction, you may have the right to access, update, correct, export, or request deletion of your personal information. You may also object to certain processing activities or withdraw previously granted consent at any time.",
     },
+
     {
-      id: "changes",
-      title: "Changes to This Policy",
+      id: "data-retention",
+      title: "Data Retention",
+      icon: "archive",
+      content:
+        "We retain personal information only for as long as necessary to fulfill the purposes described in this policy, comply with legal obligations, resolve disputes, and enforce our agreements and business operations.",
+    },
+
+    {
+      id: "policy-updates",
+      title: "Changes to This Privacy Policy",
       icon: "sync",
       content:
-        "We may update this Privacy Policy from time to time. Any changes will be posted on this page with an updated revision date.",
+        "We may revise this Privacy Policy periodically to reflect updates to our practices, technologies, or legal requirements. Any modifications will be published on this page along with the updated revision date.",
     },
+
     {
       id: "contact",
-      title: "Contact Us",
+      title: "Contact Information",
       icon: "mail",
       content:
-        "If you have any questions or concerns about this Privacy Policy, please contact us through our official contact page.",
+        "If you have any questions, concerns, or requests regarding this Privacy Policy or the handling of your personal data, please contact us through our official support channels or visit our Contact page.",
     },
   ],
 };

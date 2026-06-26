@@ -11,7 +11,7 @@ const fallbackArticle = {
     "Explore the top trends, tools, and technologies that are redefining how we build websites and web applications today.",
   date: "May 12, 2024",
   readTime: "8 min read",
-  image: "/website-components/default-image.png",
+  image: "/website-components/author.jpg",
 };
 
 export default function FeaturedArticle({ article }) {
@@ -57,7 +57,7 @@ export default function FeaturedArticle({ article }) {
           {/* IMAGE */}
           <div className="relative w-full h-[260px] md:h-full min-h-[320px]">
             <AppImage
-              src={data.image || "/website-components/default-image.png"}
+              src={data.image || "/website-components/author.jpg"}
               alt={data.title}
               fill
               className="object-cover transition-transform duration-700 group-hover:scale-105"
@@ -87,7 +87,7 @@ export default function FeaturedArticle({ article }) {
             <div className="mt-8">
               <div className="flex items-center gap-3 border-t border-slate-100 pt-5">
                 <AppImage
-                  src="/website-components/default-image.png"
+                  src="/website-components/author.jpg"
                   alt="VNet Team"
                   width={40}
                   height={40}

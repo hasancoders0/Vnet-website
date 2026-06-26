@@ -4,7 +4,7 @@ export const reviews = [
     productId: "p1",
 
     name: "John Doe",
-    avatar: "/website-components/default-image.png",
+    avatar: "/website-components/author.jpg",
 
     rating: 5,
     comment:
@@ -17,7 +17,7 @@ export const reviews = [
     productId: "p1",
 
     name: "Sarah Johnson",
-    avatar: "/website-components/default-image.png",
+    avatar: "/website-components/author.jpg",
 
     rating: 4,
     comment:
@@ -30,7 +30,7 @@ export const reviews = [
     productId: "p1",
 
     name: "Michael Lee",
-    avatar: "/website-components/default-image.png",
+    avatar: "/website-components/author.jpg",
 
     rating: 5,
     comment:
@@ -43,7 +43,7 @@ export const reviews = [
     productId: "p1",
 
     name: "Emily Carter",
-    avatar: "/website-components/default-image.png",
+    avatar: "/website-components/author.jpg",
 
     rating: 4,
     comment:

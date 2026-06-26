@@ -12,7 +12,7 @@ export const blogPosts = [
 
     author: {
       name: "John Doe",
-      image: "/website-components/default-image.png",
+      image: "/website-components/author.jpg",
     },
 
     // ✅ MAIN CONTENT (CMS STYLE)
