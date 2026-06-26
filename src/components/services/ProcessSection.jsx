@@ -5,6 +5,7 @@ import {
   FaRocket,
   FaCheckCircle,
 } from "react-icons/fa";
+import { FiArrowRight } from "react-icons/fi";
 
 const steps = [
   {
@@ -12,114 +13,137 @@ const steps = [
     title: "Discuss & Plan",
     desc: "We understand your goals, requirements and create a clear plan.",
     icon: FaDesktop,
-    color: "bg-blue-100 text-blue-600",
-    badge: "bg-blue-500",
+    iconStyle: "bg-blue-50 border-blue-200/60 text-blue-600",
   },
   {
     id: "02",
     title: "Design & Strategy",
     desc: "We create a strategy and design that aligns with your brand.",
     icon: FaPencilRuler,
-    color: "bg-purple-100 text-purple-600",
-    badge: "bg-purple-500",
+    iconStyle: "bg-purple-50 border-purple-200/60 text-purple-600",
   },
   {
     id: "03",
     title: "Develop & Build",
     desc: "Our team develops your solution with clean and scalable code.",
     icon: FaCode,
-    color: "bg-teal-100 text-teal-600",
-    badge: "bg-teal-500",
+    iconStyle: "bg-emerald-50 border-emerald-200/60 text-emerald-600",
   },
   {
     id: "04",
     title: "Test & Optimize",
     desc: "We test everything thoroughly and optimize for performance.",
     icon: FaRocket,
-    color: "bg-pink-100 text-pink-600",
-    badge: "bg-pink-500",
+    iconStyle: "bg-orange-50 border-orange-200/60 text-orange-600",
   },
   {
     id: "05",
     title: "Deliver & Support",
     desc: "We deliver the final product and provide ongoing support.",
     icon: FaCheckCircle,
-    color: "bg-orange-100 text-orange-600",
-    badge: "bg-orange-500",
+    iconStyle: "bg-pink-50 border-pink-200/60 text-pink-600",
   },
 ];
 
 export default function ProcessSection() {
   return (
     <section className="py-20 px-4 md:px-6 bg-[#f8fafc]">
-
       <div className="max-w-[1200px] mx-auto text-center">
-
         {/* HEADER */}
-        <span className="text-xs px-4 py-1.5 rounded-full bg-purple-100 text-purple-600 font-medium">
-          OUR PROCESS
+        <span className="text-[11px] px-4 py-1.5 rounded-full bg-slate-100 text-slate-600 font-medium uppercase tracking-wider">
+          Our Process
         </span>
 
-        <h2 className="text-[30px] md:text-[38px] font-bold mt-4">
+        <h2 className="text-[30px] md:text-[38px] font-bold mt-4 text-slate-900 tracking-tight">
           Our Simple Process
         </h2>
 
-        <p className="text-gray-500 mt-3 text-sm">
-          A proven process that ensures quality, transparency and on-time delivery.
+        <p className="text-slate-500 mt-3 text-sm max-w-md mx-auto leading-relaxed">
+          A proven process that ensures quality, transparency, and on-time delivery.
         </p>
 
-        {/* PROCESS */}
-        <div className="mt-16 grid md:grid-cols-5 gap-6 items-center">
-
+        {/* PROCESS GRID */}
+        <div className="mt-16 grid grid-cols-2 md:grid-cols-5 gap-4 md:gap-6 items-center">
           {steps.map((step, index) => {
             const Icon = step.icon;
 
             return (
               <div key={index} className="relative flex flex-col items-center">
-
-                {/* STEP BADGE */}
-                <div className={`absolute -top-5 text-white text-xs w-8 h-8 flex items-center justify-center rounded-full ${step.badge}`}>
-                  {step.id}
-                </div>
-
                 {/* CARD */}
-                <div className="w-full bg-white rounded-[30px] p-6 shadow-sm border border-gray-100 hover:shadow-md transition">
+                <div
+                  className="
+                    w-full
+                    bg-white
+                    rounded-2xl
+                    border border-slate-200/70
+                    p-6
+                    transition-all duration-300
+                    hover:shadow-md
+                    hover:-translate-y-1
+                    group
+                    h-full
+                    text-center
+                  "
+                >
+                  {/* Step Number */}
+                  <span className="text-[11px] font-mono text-slate-400 font-semibold tracking-widest">
+                    STEP {step.id}
+                  </span>
 
-                  {/* ICON WRAPPER (BIG SOFT CIRCLE) */}
-                  <div className="flex justify-center mb-5">
-                    <div className="w-16 h-16 rounded-full bg-gray-50 flex items-center justify-center relative">
-
-                      <div className={`w-12 h-12 rounded-full flex items-center justify-center ${step.color}`}>
-                        <Icon />
-                      </div>
-
-                    </div>
+                  {/* Icon */}
+                  <div
+                    className={`
+                      w-12 h-12
+                      rounded-2xl
+                      border
+                      flex items-center justify-center
+                      text-lg
+                      mx-auto
+                      mt-4
+                      transition-transform duration-300
+                      group-hover:scale-110
+                      ${step.iconStyle}
+                    `}
+                  >
+                    <Icon />
                   </div>
 
-                  {/* CONTENT */}
-                  <h3 className="font-semibold text-gray-900">
+                  {/* Content */}
+                  <h3 className="font-semibold text-slate-900 mt-4 text-[15px] leading-snug">
                     {step.title}
                   </h3>
 
-                  <p className="text-gray-500 text-sm mt-2 leading-relaxed">
+                  <p className="text-slate-500 text-[13px] mt-2 leading-[1.65]">
                     {step.desc}
                   </p>
-
                 </div>
 
-                {/* ARROW (DESKTOP ONLY) */}
-                {index !== steps.length - 1 && (
-                  <div className="hidden md:block absolute right-[-18px] top-1/2 -translate-y-1/2 text-gray-300 text-xl">
-                    →
+                {/* CONNECTING ARROW (Desktop Only) */}
+                {index < steps.length - 1 && (
+                  <div
+                    className="
+                      hidden md:flex
+                      absolute
+                      -right-3
+                      top-1/2
+                      -translate-y-1/2
+                      z-10
+                      w-6 h-6
+                      bg-slate-50
+                      border border-slate-200
+                      rounded-full
+                      items-center
+                      justify-center
+                      text-slate-400
+                    "
+                  >
+                    <FiArrowRight className="w-3 h-3" />
                   </div>
                 )}
-
               </div>
             );
           })}
-
         </div>
-
       </div>
     </section>
   );

@@ -13,19 +13,13 @@ export default function SectionRenderer({ section }) {
       .replace(/(^-|-$)+/g, "");
 
   return (
-    <section className="space-y-8">
+    <section className="scroll-mt-28">
       {/* SECTION TITLE */}
       {section.title && (
-        <div>
+        <div className="mb-8 pb-5 border-b border-slate-100">
           <h2
             id={sectionId}
-            className="
-              text-2xl
-              md:text-3xl
-              font-bold
-              tracking-tight
-              text-slate-900
-            "
+            className="text-[26px] md:text-[32px] font-bold tracking-tight text-slate-900"
           >
             {section.title}
           </h2>
@@ -33,7 +27,7 @@ export default function SectionRenderer({ section }) {
       )}
 
       {/* BLOCKS */}
-      <div className="space-y-10">
+      <div className="space-y-8">
         {(section.blocks || []).map((block, index) => (
           <BlockRenderer key={block.id || index} block={block} />
         ))}

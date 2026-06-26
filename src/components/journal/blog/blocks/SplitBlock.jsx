@@ -15,12 +15,13 @@ export default function SplitBlock({ block }) {
         <h3
           id={block.id}
           className="
-            text-1xl
-            lg:text-2xl
+            text-xl
+            lg:text-[24px]
             font-bold
             text-slate-900
+            leading-tight
             mb-5
-            scroll-mt-32
+            scroll-mt-28
           "
         >
           {block.title}
@@ -32,9 +33,10 @@ export default function SplitBlock({ block }) {
           className="
             prose
             prose-slate
-            lg:prose-lg
             max-w-none
             mb-8
+            text-slate-600
+            leading-relaxed
           "
           dangerouslySetInnerHTML={{
             __html: block.description,
@@ -56,31 +58,34 @@ export default function SplitBlock({ block }) {
   const ImageSection = block.image && (
     <div
       className="
-          relative
-          aspect-[4/3]
-          overflow-hidden
-          rounded-2xl
-          border
-          border-slate-200
-          shadow-sm
-        "
+        group
+        relative
+        aspect-[4/3]
+        overflow-hidden
+        rounded-2xl
+        border
+        border-slate-200/70
+        bg-slate-100
+        shadow-sm
+      "
     >
       <AppImage
         src={block.image}
         alt={block.title || "Split Image"}
         fill
         className="
-            object-cover
-            transition-transform
-            duration-500
-            hover:scale-105
-          "
+          object-cover
+          transition-transform
+          duration-700
+          group-hover:scale-105
+        "
       />
     </div>
   );
 
   return (
-    <section className="py-4">
+    // scroll-mt-28 acts as a fallback safe-guard for TOC anchor links
+    <section className="scroll-mt-28">
       <div className="grid lg:grid-cols-2 gap-12 items-center">
         {block.layout === "right" ? (
           <>

@@ -22,8 +22,9 @@ import {
   FaBan,
   FaGavel,
   FaExclamationTriangle,
-  FaLink as FaCopy,
+  FaCopy,
 } from "react-icons/fa";
+import CommonBackground from "@/components/ui/CommonBackground";
 
 /* ================= ICON MAP ================= */
 const iconMap = {
@@ -36,13 +37,11 @@ const iconMap = {
   userCheck: FaUserCheck,
   sync: FaSync,
   mail: FaEnvelope,
-
   undo: FaUndo,
   check: FaCheckCircle,
   times: FaTimesCircle,
   clock: FaClock,
   money: FaMoneyBillWave,
-
   contract: FaFileContract,
   userShield: FaUserShield,
   ban: FaBan,
@@ -56,7 +55,7 @@ export default function LegalLayout({
   description,
   lastUpdated,
   bgImage,
-  rightImage, // ✅ important
+  rightImage,
   sections,
 }) {
   const [active, setActive] = useState(sections[0]?.id);
@@ -115,79 +114,65 @@ export default function LegalLayout({
 
   return (
     <main>
-      {/* 🔥 SCROLL PROGRESS */}
+      {/* SCROLL PROGRESS */}
       <div
-        className="fixed top-0 left-0 h-[3px] bg-gradient-to-r from-purple-500 to-blue-500 z-50"
+        className="fixed top-0 left-0 h-[3px] bg-gradient-to-r from-blue-500 to-cyan-400 z-50 transition-all duration-150"
         style={{ width: `${progress}%` }}
       />
 
       {/* ================= HERO ================= */}
-      <section className="relative min-h-[460px] md:min-h-[560px] flex items-center overflow-hidden">
+      <CommonBackground>
+        <section className="relative min-h-[460px] md:min-h-[560px] flex items-center pt-28 md:pt-32 pb-20 overflow-hidden">
+          <div className="max-w-[1280px] mx-auto w-full px-6 grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+            
+            {/* LEFT */}
+            <div className="text-white max-w-[600px]">
+              <span className="inline-flex items-center gap-2 text-[11px] px-4 py-1.5 rounded-full bg-white/[0.07] border border-white/[0.1] backdrop-blur-sm text-white/80 uppercase tracking-wider font-medium mb-8">
+                {badge}
+              </span>
 
-        {/* BG */}
-        <div className="absolute inset-0 -z-10">
-          <Image
-            src={bgImage}
-            alt={title}
-            fill
-            priority
-            className="object-cover"
-          />
-        </div>
+              <h1 className="text-[40px] md:text-[56px] lg:text-[64px] font-bold text-white leading-[1.1] tracking-tight mb-6">
+                {title}
+              </h1>
 
-        <div className="max-w-[1280px] mx-auto w-full px-4 md:px-6 grid md:grid-cols-2 gap-10 items-center">
+              <p className="text-lg text-white/60 leading-relaxed mb-8">
+                {description}
+              </p>
 
-          {/* LEFT */}
-          <div className="text-white max-w-[600px]">
+              <p className="text-sm text-white/50">
+                Last Updated: {lastUpdated}
+              </p>
+            </div>
 
-            <span className="inline-block text-xs px-4 py-1.5 rounded-full bg-white/10 mb-6 backdrop-blur">
-              {badge}
-            </span>
-
-            <h1 className="text-[36px] md:text-[48px] font-bold mb-4 leading-tight">
-              {title}
-            </h1>
-
-            <p className="text-white/70 mb-6 leading-relaxed">
-              {description}
-            </p>
-
-            <p className="text-white/60 text-sm">
-              📅 Last Updated: {lastUpdated}
-            </p>
-
-          </div>
-
-          {/* RIGHT IMAGE */}
-          <div className="relative w-full h-[260px] md:h-[340px]">
-
-            <Image
-              src={rightImage}
-              alt={title}
-              fill
-              className="object-contain drop-shadow-[0_25px_50px_rgba(0,0,0,0.4)]"
-              priority
-            />
+            {/* RIGHT IMAGE */}
+            <div className="relative w-full h-[260px] md:h-[340px]">
+              <Image
+                src={rightImage}
+                alt={title}
+                fill
+                priority
+                className="object-contain"
+              />
+            </div>
 
           </div>
-
-        </div>
-      </section>
+        </section>
+      </CommonBackground>
 
       {/* ================= CONTENT ================= */}
-      <section className="py-16 px-4 md:px-6 bg-gradient-to-b from-gray-50 to-white">
+      <section className="py-16 md:py-24 px-6 bg-[#f8fafc]">
         <div className="max-w-[1280px] mx-auto">
 
           {/* MOBILE TABS */}
-          <div className="lg:hidden mb-6 overflow-x-auto flex gap-2 pb-2">
+          <div className="lg:hidden mb-8 overflow-x-auto flex gap-2.5 pb-2">
             {sections.map((item) => (
               <button
                 key={item.id}
                 onClick={() => scrollTo(item.id)}
-                className={`whitespace-nowrap px-4 py-2 rounded-full text-xs font-medium transition ${
+                className={`whitespace-nowrap px-5 py-2.5 rounded-full text-[13px] font-medium transition-all duration-200 ${
                   active === item.id
-                    ? "bg-gradient-to-r from-purple-500 to-blue-500 text-white shadow"
-                    : "bg-white border border-gray-200 text-gray-600"
+                    ? "bg-slate-900 text-white shadow-sm"
+                    : "bg-white border border-slate-200/70 text-slate-600 hover:bg-slate-50"
                 }`}
               >
                 {item.title}
@@ -195,12 +180,11 @@ export default function LegalLayout({
             ))}
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-[260px_1fr] gap-8">
 
             {/* SIDEBAR */}
-            <div className="hidden lg:block bg-white/70 backdrop-blur border rounded-2xl p-5 h-fit sticky top-6 shadow-md">
-
-              <p className="text-sm font-semibold mb-4 text-gray-800">
+            <div className="hidden lg:block bg-white rounded-2xl border border-slate-200/70 shadow-sm p-5 h-fit sticky top-28">
+              <p className="text-[13px] font-semibold text-slate-900 mb-4">
                 On this page
               </p>
 
@@ -208,10 +192,10 @@ export default function LegalLayout({
                 <button
                   key={item.id}
                   onClick={() => scrollTo(item.id)}
-                  className={`w-full text-left px-4 py-2.5 rounded-lg text-sm transition ${
+                  className={`w-full text-left px-4 py-2.5 rounded-xl text-[13px] font-medium transition-all duration-200 mb-1.5 ${
                     active === item.id
-                      ? "bg-gradient-to-r from-purple-500 to-blue-500 text-white shadow"
-                      : "text-gray-600 hover:bg-gray-100"
+                      ? "bg-slate-900 text-white shadow-sm"
+                      : "text-slate-600 hover:bg-slate-50"
                   }`}
                 >
                   {item.title}
@@ -219,67 +203,57 @@ export default function LegalLayout({
               ))}
 
               {/* INFO CARD */}
-              <div className="mt-6 p-4 rounded-xl bg-gray-50 border text-center">
-                <div className="w-10 h-10 mx-auto mb-3 rounded-full bg-purple-100 flex items-center justify-center">
-                  🔒
+              <div className="mt-6 p-4 rounded-xl bg-slate-50 border border-slate-200/70 flex items-start gap-3.5">
+                <div className="w-10 h-10 rounded-xl border border-blue-200/60 bg-blue-50 flex items-center justify-center text-blue-600 flex-shrink-0">
+                  <FaShieldAlt className="text-sm" />
                 </div>
-                <p className="text-xs text-gray-600">
+                <p className="text-[12px] text-slate-500 leading-relaxed">
                   Your data is protected with industry standards.
                 </p>
               </div>
-
             </div>
 
             {/* CONTENT */}
-            <div className="lg:col-span-3 bg-white/90 backdrop-blur border rounded-2xl p-6 md:p-8 space-y-10 shadow-md">
-
+            <div className="bg-white rounded-2xl border border-slate-200/70 shadow-sm p-6 md:p-10 space-y-10">
               {sections.map((item, i) => {
                 const Icon = iconMap[item.icon];
 
                 return (
-                  <div key={item.id} id={item.id} className="pb-6 group">
-
+                  <div key={item.id} id={item.id} className="group scroll-mt-28 pb-10">
                     <div className="flex gap-4 items-start">
-
                       {/* ICON */}
-                      <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-100 to-blue-100 flex items-center justify-center">
-                        {Icon && (
-                          <Icon className="text-purple-600 text-lg" />
-                        )}
+                      <div className="w-12 h-12 rounded-2xl border border-blue-200/60 bg-blue-50 flex items-center justify-center flex-shrink-0 text-blue-600">
+                        {Icon && <Icon className="text-lg" />}
                       </div>
 
                       {/* TEXT */}
-                      <div className="flex-1">
+                      <div className="flex-1 min-w-0">
                         <div className="flex items-center justify-between">
-
-                          <h3 className="font-semibold text-gray-900 text-base">
+                          <h3 className="text-[16px] font-semibold text-slate-900 leading-snug">
                             {i + 1}. {item.title}
                           </h3>
 
                           <button
                             onClick={() => copyLink(item.id)}
-                            className="opacity-0 group-hover:opacity-100 transition text-gray-400 hover:text-purple-600"
+                            className="opacity-0 group-hover:opacity-100 transition-colors text-slate-400 hover:text-blue-600"
+                            aria-label="Copy link"
                           >
                             <FaCopy size={14} />
                           </button>
-
                         </div>
 
-                        <p className="text-sm text-gray-600 mt-1 leading-relaxed">
+                        <p className="text-[14px] text-slate-500 leading-[1.7] mt-2">
                           {item.content}
                         </p>
                       </div>
-
                     </div>
 
                     {i !== sections.length - 1 && (
-                      <div className="mt-6 border-t border-gray-200" />
+                      <div className="mt-10 border-t border-slate-100" />
                     )}
-
                   </div>
                 );
               })}
-
             </div>
 
           </div>

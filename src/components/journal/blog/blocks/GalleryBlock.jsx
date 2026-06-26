@@ -8,24 +8,15 @@ export default function GalleryBlock({ block }) {
   if (!images.length) return null;
 
   return (
-    <section className="my-10">
+    <div>
       {/* HEADER */}
       {block.title && (
         <div className="mb-6">
-          <h3
-            className="
-              text-2xl
-              lg:text-3xl
-              font-bold
-              text-slate-900
-            "
-          >
+          <h3 className="text-xl lg:text-[24px] font-bold text-slate-900 leading-tight">
             {block.title}
           </h3>
-
-          <p className="mt-2 text-sm text-slate-500">
-            {images.length} image
-            {images.length > 1 ? "s" : ""}
+          <p className="mt-1.5 text-[13px] text-slate-400 font-medium">
+            {images.length} image{images.length > 1 ? "s" : ""}
           </p>
         </div>
       )}
@@ -42,10 +33,10 @@ export default function GalleryBlock({ block }) {
                 group
                 relative
                 overflow-hidden
-                rounded-3xl
+                rounded-2xl
                 border
-                border-slate-200
-                bg-slate-50
+                border-slate-200/70
+                bg-slate-100
                 aspect-[4/3]
               "
             >
@@ -56,34 +47,36 @@ export default function GalleryBlock({ block }) {
                 className="
                   object-cover
                   transition-transform
-                  duration-500
+                  duration-700
                   group-hover:scale-105
                 "
               />
 
-              {/* IMAGE NUMBER */}
-              <div
+              {/* IMAGE NUMBER PILL */}
+              <span
                 className="
                   absolute
                   top-3
                   left-3
                   z-10
                   rounded-full
-                  bg-black/60
+                  bg-white/80
+                  backdrop-blur-sm
+                  border
+                  border-white/50
                   px-2.5
                   py-1
-                  text-xs
-                  font-medium
-                  text-white
-                  backdrop-blur
+                  text-[11px]
+                  font-semibold
+                  text-slate-700
                 "
               >
                 {index + 1}
-              </div>
+              </span>
             </div>
           );
         })}
       </div>
-    </section>
+    </div>
   );
 }

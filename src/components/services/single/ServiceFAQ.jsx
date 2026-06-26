@@ -11,26 +11,26 @@ export default function ServiceFAQ({ faq = [] }) {
   };
 
   return (
-    <section className="py-16 md:py-24 bg-slate-50">
+    <section className="py-16 md:py-24 bg-[#f8fafc]">
       <div className="max-w-[900px] mx-auto px-5 md:px-6">
         {/* HEADER */}
-        <div className="text-center mb-10 md:mb-14">
-          <span className="inline-flex items-center px-4 py-1.5 rounded-full bg-blue-50 text-blue-600 text-xs font-semibold mb-4">
+        <div className="text-center mb-12">
+          <span className="text-[11px] px-4 py-1.5 rounded-full bg-slate-100 text-slate-600 font-medium uppercase tracking-wider mb-4 inline-block">
             FAQ
           </span>
 
-          <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">
+          <h2 className="text-[30px] md:text-[38px] font-bold text-slate-900 tracking-tight mb-3">
             Frequently Asked Questions
           </h2>
 
-          <p className="text-slate-500 max-w-2xl mx-auto text-sm md:text-base">
-            Everything you need to know about this service. If you still have
-            questions, feel free to contact us.
+          <p className="text-sm text-slate-500 max-w-md mx-auto leading-relaxed">
+            Everything you need to know about this service. Can&apos;t find the
+            answer? Feel free to contact us.
           </p>
         </div>
 
         {/* FAQ ITEMS */}
-        <div className="space-y-4">
+        <div className="space-y-3">
           {faq.map((item, index) => {
             const isActive = active === index;
 
@@ -38,69 +38,51 @@ export default function ServiceFAQ({ faq = [] }) {
               <div
                 key={index}
                 className={`
-                  rounded-3xl
+                  rounded-2xl
                   border
-                  overflow-hidden
+                  bg-white
                   transition-all
                   duration-300
                   ${
                     isActive
-                      ? "bg-white border-blue-200 shadow-md"
-                      : "bg-white border-slate-200 hover:border-slate-300"
+                      ? "border-slate-200 shadow-[0_4px_20px_rgba(0,0,0,0.06)]"
+                      : "border-slate-200/70 hover:border-slate-300"
                   }
                 `}
               >
                 {/* QUESTION */}
                 <button
                   onClick={() => toggle(index)}
-                  className="
-                    w-full
-                    flex
-                    items-center
-                    justify-between
-                    gap-4
-                    px-5
-                    md:px-6
-                    py-5
-                    md:py-6
-                    text-left
-                  "
+                  className="w-full flex items-center justify-between gap-4 px-5 md:px-6 py-5 text-left"
                 >
                   <h3
-                    className={`
-                      text-base
-                      md:text-lg
-                      font-semibold
-                      leading-7
-                      transition-colors
-                      ${isActive ? "text-slate-900" : "text-slate-800"}
-                    `}
+                    className={`text-[15px] md:text-[16px] font-semibold leading-snug transition-colors ${
+                      isActive ? "text-slate-900" : "text-slate-700"
+                    }`}
                   >
                     {item.question}
                   </h3>
 
+                  {/* TOGGLE ICON */}
                   <div
                     className={`
                       w-8 h-8
-                      md:w-9 md:h-9
-                      rounded-full
-                      flex
-                      items-center
-                      justify-center
+                      rounded-xl
+                      flex items-center justify-center
                       flex-shrink-0
-                      transition-all
-                      duration-300
+                      border
+                      transition-all duration-300
                       ${
                         isActive
-                          ? "bg-blue-50 text-blue-600"
-                          : "bg-slate-100 text-slate-500"
+                          ? "bg-blue-50 border-blue-200/60 text-blue-600"
+                          : "bg-slate-50 border-slate-200/70 text-slate-400"
                       }
                     `}
                   >
                     {isActive ? (
-                      <FaMinus className="text-[10px] md:text-xs" />
+                      <FaMinus className="text-[10px]" />
                     ) : (
-                      <FaPlus className="text-[10px] md:text-xs" />
+                      <FaPlus className="text-[10px]" />
                     )}
                   </div>
                 </button>
@@ -121,8 +103,8 @@ export default function ServiceFAQ({ faq = [] }) {
                 >
                   <div className="overflow-hidden">
                     <div className="px-5 md:px-6 pb-5 md:pb-6">
-                      <div className="border-t border-slate-100 pt-4 md:pt-5">
-                        <p className="text-sm md:text-base text-slate-600 leading-6 md:leading-7">
+                      <div className="border-t border-slate-100 pt-4">
+                        <p className="text-[14px] text-slate-500 leading-[1.7]">
                           {item.answer}
                         </p>
                       </div>

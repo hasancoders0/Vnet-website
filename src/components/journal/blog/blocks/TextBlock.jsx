@@ -11,6 +11,7 @@ export default function TextBlock({ block }) {
         lg:prose-lg
         max-w-none
 
+        /* --- Headings --- */
         prose-headings:font-bold
         prose-headings:text-slate-900
         prose-headings:tracking-tight
@@ -35,23 +36,26 @@ export default function TextBlock({ block }) {
         prose-h4:mt-8
         prose-h4:mb-3
 
-        prose-p:text-slate-700
+        /* --- Paragraphs & Strong --- */
+        prose-p:text-slate-600
         prose-p:leading-8
         prose-p:mb-6
 
         prose-strong:font-semibold
         prose-strong:text-slate-900
 
-        prose-a:text-purple-600
+        /* --- Links --- */
+        prose-a:text-blue-600
         prose-a:font-semibold
         prose-a:underline
         prose-a:decoration-2
         prose-a:underline-offset-4
-        prose-a:decoration-purple-500
+        prose-a:decoration-blue-400
 
-        hover:prose-a:text-purple-700
-        hover:prose-a:decoration-purple-700
+        hover:prose-a:text-blue-700
+        hover:prose-a:decoration-blue-600
 
+        /* --- Lists --- */
         prose-ul:list-disc
         prose-ul:pl-6
         prose-ul:my-6
@@ -60,10 +64,10 @@ export default function TextBlock({ block }) {
         prose-ol:pl-6
         prose-ol:my-6
 
-        prose-li:text-slate-700
+        prose-li:text-slate-600
         prose-li:my-2
 
-        prose-li:marker:text-slate-500
+        prose-li:marker:text-slate-400
         prose-li:marker:font-medium
 
         [&_ul_ul]:mt-2
@@ -75,19 +79,21 @@ export default function TextBlock({ block }) {
 
         [&_li>p]:m-0
         [&_li>p]:leading-7
-        [&_li>p]:text-slate-700
+        [&_li>p]:text-slate-600
 
+        /* --- Blockquotes --- */
         prose-blockquote:border-l-4
-        prose-blockquote:border-purple-500
-        prose-blockquote:bg-purple-50
+        prose-blockquote:border-blue-500
+        prose-blockquote:bg-blue-50/50
         prose-blockquote:px-6
         prose-blockquote:py-4
         prose-blockquote:rounded-r-2xl
         prose-blockquote:italic
         prose-blockquote:text-slate-700
 
-        prose-code:text-purple-700
-        prose-code:bg-purple-50
+        /* --- Inline Code --- */
+        prose-code:text-blue-700
+        prose-code:bg-blue-50/50
         prose-code:px-1.5
         prose-code:py-1
         prose-code:rounded-md
@@ -95,19 +101,26 @@ export default function TextBlock({ block }) {
         prose-code:before:content-none
         prose-code:after:content-none
 
-        prose-pre:bg-slate-950
-        prose-pre:text-slate-100
+        /* --- Code Blocks --- */
+        prose-pre:bg-slate-900
+        prose-pre:text-slate-200
+        prose-pre:border
+        prose-pre:border-slate-800
         prose-pre:rounded-2xl
         prose-pre:p-6
+        prose-pre:shadow-lg
         prose-pre:overflow-x-auto
 
+        /* --- Images --- */
         prose-img:rounded-2xl
         prose-img:shadow-sm
         prose-img:my-10
 
+        /* --- Horizontal Rule --- */
         prose-hr:my-12
         prose-hr:border-slate-200
 
+        /* --- Tables --- */
         prose-table:w-full
         prose-table:border-collapse
         prose-table:block
@@ -125,6 +138,7 @@ export default function TextBlock({ block }) {
         prose-td:px-4
         prose-td:py-3
 
+        /* --- Figures --- */
         prose-figure:my-10
 
         prose-figcaption:text-center

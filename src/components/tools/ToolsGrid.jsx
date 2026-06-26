@@ -1,3 +1,6 @@
+"use client";
+
+import { FaCode, FaImage, FaChartLine, FaLock } from "react-icons/fa";
 import ToolCard from "./ToolCard";
 
 const tools = [
@@ -6,53 +9,55 @@ const tools = [
     desc: "Format and validate JSON data instantly.",
     category: "Development",
     type: "Free",
-    icon: "{ }",
+    icon: <FaCode />,
   },
   {
     title: "Image Compressor",
     desc: "Compress images without losing quality.",
     category: "Utilities",
     type: "Free",
-    icon: "🖼️",
+    icon: <FaImage />,
   },
   {
     title: "SEO Analyzer",
     desc: "Analyze and improve SEO performance.",
     category: "SEO",
     type: "Freemium",
-    icon: "📊",
+    icon: <FaChartLine />,
   },
   {
     title: "Password Generator",
     desc: "Generate strong secure passwords.",
     category: "Security",
     type: "Free",
-    icon: "🔐",
+    icon: <FaLock />,
   },
 ];
 
 export default function ToolsGrid() {
   return (
-    <section className="py-16 px-4">
+    <section className="py-16 md:py-24 px-6 bg-[#f8fafc]">
       <div className="max-w-[1200px] mx-auto">
-
-        <div className="text-center mb-10">
-          <span className="text-xs px-4 py-1 bg-purple-100 text-purple-600 rounded-full">
+        
+        {/* HEADER */}
+        <div className="text-center mb-12">
+          <span className="text-[11px] px-4 py-1.5 rounded-full bg-slate-100 text-slate-600 font-medium uppercase tracking-wider mb-4 inline-block">
             Our Collection
           </span>
 
-          <h2 className="text-3xl font-semibold mt-4">
+          <h2 className="text-[30px] md:text-[38px] font-bold text-slate-900 tracking-tight mb-3">
             Browse All Tools
           </h2>
 
-          <p className="text-gray-500 text-sm mt-2">
+          <p className="text-sm text-slate-500 max-w-md mx-auto leading-relaxed">
             Find the perfect tool to solve your problems.
           </p>
         </div>
 
+        {/* GRID */}
         <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-6">
-          {tools.map((t, i) => (
-            <ToolCard key={i} tool={t} />
+          {tools.map((tool, i) => (
+            <ToolCard key={i} tool={tool} />
           ))}
         </div>
 

@@ -1,44 +1,75 @@
 "use client";
 
-import { useEffect, useRef } from "react";
-import Image from "next/image";
+import { useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { FaArrowRight, FaCalendarAlt, FaTag } from "react-icons/fa";
+import { FaBookOpen } from "react-icons/fa";
+import { FiArrowRight } from "react-icons/fi";
+
+import CardSlider from "@/components/ui/CardSlider";
+import ArticleCard from "@/components/journal/ArticleCard";
 
 gsap.registerPlugin(ScrollTrigger);
 
 export default function Journal() {
   const sectionRef = useRef(null);
+  const sliderRef = useRef(null);
+  const [articles, setArticles] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const blogs = [
-    {
-      title: "The Future of Web Development in 2024",
-      desc: "Explore the upcoming trends, frameworks, and technologies shaping the digital landscape this year.",
-      date: "Oct 15, 2024",
-      tag: "Technology",
-      gradient: "from-blue-600/40 to-cyan-600/20",
-      icon: "TD",
-    },
-    {
-      title: "How to Increase E-commerce Sales Fast",
-      desc: "Proven strategies and UI tweaks that can boost your online store revenue by up to 40%.",
-      date: "Oct 10, 2024",
-      tag: "Marketing",
-      gradient: "from-purple-600/40 to-pink-600/20",
-      icon: "EC",
-    },
-    {
-      title: "Why UI/UX is Crucial for Startups",
-      desc: "Learn why investing in user experience early on can save you thousands in development costs.",
-      date: "Oct 05, 2024",
-      tag: "Design",
-      gradient: "from-orange-600/40 to-red-600/20",
-      icon: "UX",
-    },
-  ];
-
+  // Fetch API Data
   useEffect(() => {
+    const fetchArticles = async () => {
+      try {
+        const res = await fetch("/api/blogs");
+        const data = await res.json();
+
+        // FIXED: Check for both `data.blogs` (used in ArticlesGrid) and `data.data`
+        const rawBlogs = data.blogs || data.data || [];
+
+        if (Array.isArray(rawBlogs)) {
+          const formattedBlogs = rawBlogs.slice(0, 10).map((blog) => ({
+            slug: blog.slug || "",
+            title: blog.title || "Untitled Article",
+            description:
+              blog.shortDescription ||
+              blog.description ||
+              blog.excerpt ||
+              "Read this insightful article to learn more.",
+            category: {
+              name: blog.category?.name || blog.category || "General",
+              slug: blog.category?.slug || "",
+            },
+            date: blog.createdAt
+              ? new Date(blog.createdAt).toLocaleDateString("en-US", {
+                  month: "short",
+                  day: "numeric",
+                  year: "numeric",
+                })
+              : "Oct 10, 2024",
+            readTime: blog.readTime || "5 min read",
+            image: blog.featuredImage || blog.image || "",
+          }));
+
+          setArticles(formattedBlogs);
+        } else {
+          console.error("API returned unexpected format:", data);
+        }
+      } catch (error) {
+        console.error("Failed to fetch articles:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchArticles();
+  }, []);
+
+  // GSAP Animations
+  useEffect(() => {
+    if (loading) return;
+
     const ctx = gsap.context(() => {
       const tl = gsap.timeline({
         scrollTrigger: {
@@ -46,7 +77,7 @@ export default function Journal() {
           start: "top 85%",
           toggleActions: "play none none none",
         },
-        defaults: { ease: "power3.out", clearProps: "all" },
+        defaults: { ease: "power3.out" },
       });
 
       tl.from(".journal-anim", {
@@ -55,126 +86,141 @@ export default function Journal() {
         duration: 0.7,
         stagger: 0.12,
       }).from(
-        ".journal-card",
+        sliderRef.current,
         {
-          y: 60,
+          x: 60,
           opacity: 0,
-          scale: 0.95,
-          duration: 0.7,
-          stagger: 0.12,
+          duration: 0.9,
         },
-        "-=0.4"
+        "-=0.6",
       );
     }, sectionRef);
 
     return () => ctx.revert();
-  }, []);
+  }, [loading]);
+
+  // Fallback data in case the API fails or isn't connected yet
+  const fallbackArticles = [
+    {
+      slug: "future-web-dev-2024",
+      title: "The Future of Web Development in 2024",
+      description:
+        "Explore the upcoming trends, frameworks, and technologies shaping the digital landscape this year.",
+      category: { name: "Technology", slug: "technology" },
+      date: "Oct 15, 2024",
+      readTime: "6 min read",
+      image: "",
+    },
+    {
+      slug: "increase-ecommerce-sales",
+      title: "How to Increase E-commerce Sales Fast",
+      description:
+        "Proven strategies and UI tweaks that can boost your online store revenue by up to 40%.",
+      category: { name: "Marketing", slug: "marketing" },
+      date: "Oct 10, 2024",
+      readTime: "5 min read",
+      image: "",
+    },
+    {
+      slug: "ui-ux-startups",
+      title: "Why UI/UX is Crucial for Startups",
+      description:
+        "Learn why investing in user experience early on can save you thousands in development costs.",
+      category: { name: "Design", slug: "design" },
+      date: "Oct 05, 2024",
+      readTime: "7 min read",
+      image: "",
+    },
+    {
+      slug: "react-best-practices",
+      title: "React Performance Best Practices",
+      description:
+        "Optimize your React applications with these essential performance patterns and hooks.",
+      category: { name: "Development", slug: "development" },
+      date: "Sep 28, 2024",
+      readTime: "8 min read",
+      image: "",
+    },
+  ];
+
+  // Use fetched articles or fallback
+  const displayArticles =
+    loading || articles.length === 0 ? fallbackArticles : articles;
 
   return (
-    <section ref={sectionRef} className="relative py-24 px-6 overflow-hidden bg-[#050816]">
-      
-      {/* BACKGROUND */}
-      <div className="absolute inset-0 -z-10">
-        <div className="absolute inset-0 bg-gradient-to-b from-[#060b1f] via-[#050816] to-[#050816]" />
-        <div className="absolute top-0 left-1/4 w-[700px] h-[500px] bg-blue-600/[0.04] rounded-full blur-[150px]" />
-        <div className="absolute bottom-0 right-1/4 w-[600px] h-[500px] bg-purple-600/[0.04] rounded-full blur-[150px]" />
-      </div>
-
-      {/* MAIN LAYOUT */}
-      <div className="max-w-[1400px] mx-auto flex flex-col lg:flex-row items-start gap-12 lg:gap-16">
-
+    <section
+      ref={sectionRef}
+      className="relative py-20 md:py-24 px-6 bg-[#f8fafc]"
+    >
+      <div className="max-w-[1280px] mx-auto lg:grid lg:grid-cols-[380px_1fr] lg:gap-12 lg:items-center">
         {/* ================= LEFT SIDE ================= */}
-        <div className="w-full lg:w-[35%] shrink-0 lg:sticky lg:top-32 text-center lg:text-left">
-          
-          <span className="journal-anim inline-block text-[10px] px-4 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.06] text-white/50 tracking-[0.15em] uppercase font-medium mb-5">
-            LATEST ARTICLES
+        <div className="w-full lg:sticky lg:top-32 text-center lg:text-left mb-10 lg:mb-0">
+          {/* Badge */}
+          <span className="journal-anim inline-flex items-center gap-2 text-[11px] px-4 py-1.5 rounded-full bg-slate-100 text-slate-600 font-medium uppercase tracking-wider mb-6">
+            <FaBookOpen className="w-3 h-3 text-blue-500" />
+            Latest Articles
           </span>
 
-          <h2 className="journal-anim text-[32px] md:text-[38px] font-bold text-white mb-4 leading-tight">
+          {/* Title */}
+          <h2 className="journal-anim text-[30px] md:text-[38px] font-bold text-slate-900 leading-[1.1] tracking-tight mb-4">
             Our <br />
-            <span className="bg-gradient-to-r from-blue-400 to-purple-400 text-transparent bg-clip-text">
+            <span className="bg-gradient-to-r from-blue-600 to-cyan-500 text-transparent bg-clip-text">
               Journal
             </span>
           </h2>
 
-          <p className="journal-anim text-white/40 text-[15px] leading-relaxed mb-8 max-w-[340px] mx-auto lg:mx-0">
-            Stay updated with the latest insights on design, development, and digital marketing.
+          {/* Description */}
+          <p className="journal-anim text-sm text-slate-500 leading-relaxed mb-8 max-w-sm mx-auto lg:mx-0">
+            Stay updated with the latest insights on design, development, and
+            digital marketing.
           </p>
 
-          <button className="journal-anim inline-flex items-center gap-2 px-6 py-3 rounded-full text-sm font-medium bg-gradient-to-r from-blue-500 to-purple-600 hover:shadow-[0_8px_30px_rgba(99,102,241,0.35)] hover:scale-[1.03] transition-all duration-300">
-            Read All Articles <FaArrowRight className="text-xs" />
-          </button>
+          {/* CTA Button */}
+          <Link
+            href="/journal"
+            className="
+              journal-anim inline-flex items-center gap-2.5 
+              px-7 py-3.5 rounded-full 
+              text-sm font-semibold 
+              bg-slate-900 text-white 
+              hover:bg-slate-800
+              shadow-[0_10px_30px_rgba(0,0,0,0.15)]
+              hover:shadow-[0_15px_40px_rgba(0,0,0,0.2)]
+              hover:scale-[1.03]
+              transition-all duration-300
+            "
+          >
+            Read All Articles
+            <FiArrowRight className="w-4 h-4" />
+          </Link>
         </div>
 
-        {/* ================= RIGHT SIDE (CARDS GRID) ================= */}
-        <div className="w-full lg:w-[65%] min-w-0">
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-1 xl:grid-cols-3 gap-6">
-            {blogs.map((blog, i) => (
-              <div key={i} className="journal-card group relative h-full">
-                {/* Gradient border on hover */}
-                <div
-                  className={`absolute -inset-[1px] rounded-2xl bg-gradient-to-br ${blog.gradient} opacity-0 group-hover:opacity-100 transition-opacity duration-500`}
-                />
-
-                {/* Card */}
-                <div className="relative h-full bg-[#0a0f2e]/60 border border-white/[0.06] rounded-2xl overflow-hidden transition-all duration-500 hover:-translate-y-1 hover:bg-[#0c1235]/80 flex flex-col">
-                  
-                  {/* Image Area */}
-                  <div className="relative w-full h-[200px] overflow-hidden">
-                    <div className={`absolute inset-0 bg-gradient-to-br ${blog.gradient}`} />
-                    <Image
-                      src="/website-components/default-image.png"
-                      alt={blog.title}
-                      fill
-                      className="object-cover relative z-10 opacity-90 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700"
-                    />
-                    <div className="absolute inset-0 z-0 flex items-center justify-center pointer-events-none">
-                      <div className="w-14 h-14 rounded-2xl bg-white/[0.08] backdrop-blur-sm border border-white/[0.1] flex items-center justify-center text-lg font-bold text-white/30">
-                        {blog.icon}
-                      </div>
-                    </div>
-                    <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-[#0a0f2e] to-transparent z-20 pointer-events-none" />
-                  </div>
-
-                  {/* Content */}
-                  <div className="p-5 flex flex-col flex-grow">
-                    {/* Meta */}
-                    <div className="flex items-center gap-3 mb-3">
-                      <div className="flex items-center gap-1.5 text-[11px] text-white/30">
-                        <FaCalendarAlt className="text-[9px]" />
-                        {blog.date}
-                      </div>
-                      <div className="flex items-center gap-1.5 text-[11px] text-blue-400/70">
-                        <FaTag className="text-[9px]" />
-                        {blog.tag}
-                      </div>
-                    </div>
-
-                    {/* Title */}
-                    <h3 className="text-white font-semibold text-[15px] leading-snug mb-2 group-hover:text-blue-300 transition-colors">
-                      {blog.title}
-                    </h3>
-
-                    {/* Desc */}
-                    <p className="text-[12px] text-white/40 leading-relaxed flex-grow mb-4">
-                      {blog.desc}
-                    </p>
-
-                    {/* Link - Shows on Hover */}
-                    <button className="text-[13px] text-blue-400 flex items-center gap-1.5 opacity-0 translate-y-2 group-hover:opacity-70 group-hover:translate-y-0 transition-all duration-500">
-                      Read More
-                      <span className="group-hover:translate-x-1 transition-transform duration-300 text-[10px]">
-                        →
-                      </span>
-                    </button>
-                  </div>
-
-                </div>
-              </div>
-            ))}
-          </div>
-
+        {/* ================= RIGHT SIDE SLIDER ================= */}
+        <div ref={sliderRef} className="min-w-0">
+          <CardSlider
+            items={displayArticles}
+            renderItem={(article) => (
+              <ArticleCard
+                slug={article.slug}
+                title={article.title}
+                description={article.description}
+                category={article.category}
+                date={article.date}
+                readTime={article.readTime}
+                image={article.image}
+              />
+            )}
+            desktop={2}
+            tablet={1}
+            mobile={1}
+            loop
+            autoplay
+            navigation
+            pagination={false}
+            centered={false}
+            grabCursor
+            className="px-2 lg:px-8"
+          />
         </div>
       </div>
     </section>

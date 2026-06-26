@@ -1,6 +1,8 @@
-// src/components/tools/ToolsHero.jsx
+"use client";
 
 import AppImage from "@/components/ui/AppImage";
+import CommonBackground from "@/components/ui/CommonBackground";
+import { FaBolt } from "react-icons/fa";
 
 const categories = [
   "All Tools",
@@ -15,80 +17,71 @@ const categories = [
 
 export default function ToolsHero() {
   return (
-    <section className="relative w-full overflow-hidden">
+    <CommonBackground>
+      <section className="relative overflow-hidden pt-28 md:pt-32 pb-32 lg:pb-40">
+        <div className="max-w-[1280px] mx-auto px-6 grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
 
-      {/* 🔥 BACKGROUND */}
-      <div className="absolute inset-0 -z-10">
-        <AppImage
-          src="/website-components/top-bg.png"
-          alt="background"
-          fill
-          priority
-          sizes="100vw"
-          className="object-cover object-right"
-        />
-      </div>
-
-      <div className="max-w-[1280px] mx-auto px-6 pt-24 pb-36 md:pb-44 grid md:grid-cols-2 gap-12 items-center">
-
-        {/* ================= LEFT ================= */}
-        <div className="text-white">
-
-          {/* Badge */}
-          <span className="inline-block text-xs px-4 py-1.5 rounded-full bg-white/10 backdrop-blur mb-6">
-            Powerful Tools
-          </span>
-
-          {/* Title */}
-          <h1 className="text-[38px] md:text-[52px] font-bold leading-tight">
-            Powerful Tools for <br />
-            Developers &{" "}
-            <span className="text-blue-400">
-              Creators
+          {/* ================= LEFT ================= */}
+          <div className="text-white">
+            {/* Badge */}
+            <span className="inline-flex items-center gap-2 text-[11px] px-4 py-1.5 rounded-full bg-white/[0.07] border border-white/[0.1] backdrop-blur-sm text-white/80 uppercase tracking-wider font-medium mb-8">
+              <FaBolt className="w-3 h-3 text-cyan-400" />
+              Powerful Tools
             </span>
-          </h1>
 
-          {/* Description */}
-          <p className="text-white/70 mt-5 max-w-[520px] leading-relaxed">
-            Explore our curated collection of powerful tools designed to boost
-            productivity, automate workflows, and simplify development tasks.
-          </p>
+            {/* Title */}
+            <h1 className="text-[40px] md:text-[56px] lg:text-[64px] font-bold text-white leading-[1.1] tracking-tight mb-6">
+              Powerful Tools for <br />
+              <span className="bg-gradient-to-r from-blue-400 to-cyan-300 bg-clip-text text-transparent">
+                Developers & Creators
+              </span>
+            </h1>
 
-          {/* CATEGORY PILLS */}
-          <div className="flex flex-wrap gap-2 mt-8">
-            {categories.map((item, i) => (
-              <button
-                key={i}
-                className="px-4 py-1.5 text-xs rounded-full 
-                bg-white/10 hover:bg-white/20 
-                transition duration-200"
-              >
-                {item}
-              </button>
-            ))}
+            {/* Description */}
+            <p className="text-lg text-white/60 leading-relaxed max-w-[520px] mb-10">
+              Explore our curated collection of powerful tools designed to boost
+              productivity, automate workflows, and simplify development tasks.
+            </p>
+
+            {/* Category Pills */}
+            <div className="flex flex-wrap gap-2.5">
+              {categories.map((item, i) => (
+                <button
+                  key={i}
+                  className="
+                    px-4 py-2 
+                    text-[12px] rounded-full 
+                    text-white/70 font-medium 
+                    bg-white/[0.05] 
+                    border border-white/[0.1] 
+                    hover:bg-white/[0.1] 
+                    hover:border-white/20 
+                    hover:text-white/90
+                    transition-colors duration-200
+                  "
+                >
+                  {item}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* ================= RIGHT ================= */}
+          <div className="w-full flex justify-center lg:justify-end">
+            <div className="w-full max-w-[580px]">
+              <AppImage
+                src="/website-components/tools-top.png"
+                alt="tools illustration"
+                width={580}
+                height={480}
+                priority
+                className="w-full h-auto object-contain"
+              />
+            </div>
           </div>
 
         </div>
-
-        {/* ================= RIGHT IMAGE ================= */}
-        <div className="w-full flex justify-center md:justify-end">
-
-          <div className="w-full max-w-[620px]">
-
-            <AppImage
-              src="/website-components/tools-top.png"
-              alt="tools illustration"
-              width={620}
-              height={520}
-              priority
-              className="w-full h-auto object-contain"
-            />
-
-          </div>
-
-        </div>
-
-      </div>
-    </section>
+      </section>
+    </CommonBackground>
   );
 }

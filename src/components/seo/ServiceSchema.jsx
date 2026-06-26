@@ -13,7 +13,7 @@ export default function ServiceSchema({ service }) {
     image: service.heroImage,
 
     provider: {
-      "@type": "Organization",
+      "@type": "ProfessionalService",
       name: "Visionary Network",
       url: "https://vnet-it.com",
     },

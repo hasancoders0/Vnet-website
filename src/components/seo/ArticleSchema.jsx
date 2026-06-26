@@ -23,7 +23,7 @@ export default function ArticleSchema({ post }) {
     },
 
     publisher: {
-      "@type": "Organization",
+      "@type": "ProfessionalService",
       name: "Visionary Network",
       logo: {
         "@type": "ImageObject",

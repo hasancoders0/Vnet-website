@@ -1,16 +1,18 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import {
-  FaCode,
-  FaChartLine,
-  FaComments,
-  FaShoppingBag,
-  FaDesktop,
-} from "react-icons/fa";
-
+  Monitor,
+  Code2,
+  TrendingUp,
+  MessageSquare,
+  ShoppingBag,
+  ArrowRight,
+  Sparkles,
+} from "lucide-react";
 gsap.registerPlugin(ScrollTrigger);
 
 export default function Services() {
@@ -20,12 +22,14 @@ export default function Services() {
   const subRef = useRef(null);
   const cardsRef = useRef(null);
   const btnRef = useRef(null);
+  const cardRefs = useRef([]);
+  const [activeCard, setActiveCard] = useState(null);
 
   const services = [
     {
       title: "Website Development",
       desc: "Modern, responsive websites that represent your brand and drive results.",
-      icon: <FaDesktop />,
+      icon: <Monitor />,
       gradient: "from-blue-500 to-cyan-400",
       iconBg: "bg-blue-500/10 border-blue-500/20",
       iconColor: "text-blue-400",
@@ -33,7 +37,7 @@ export default function Services() {
     {
       title: "Web Application",
       desc: "Scalable and secure web applications tailored to your business needs.",
-      icon: <FaCode />,
+      icon: <Code2 />,
       gradient: "from-purple-500 to-pink-400",
       iconBg: "bg-purple-500/10 border-purple-500/20",
       iconColor: "text-purple-400",
@@ -41,7 +45,7 @@ export default function Services() {
     {
       title: "Digital Marketing",
       desc: "SEO, social media, ads, and content strategies that get real results.",
-      icon: <FaChartLine />,
+      icon: <TrendingUp />,
       gradient: "from-green-500 to-emerald-400",
       iconBg: "bg-green-500/10 border-green-500/20",
       iconColor: "text-green-400",
@@ -49,7 +53,7 @@ export default function Services() {
     {
       title: "Consultation",
       desc: "Expert advice and strategic guidance to take your business forward.",
-      icon: <FaComments />,
+      icon: <MessageSquare />,
       gradient: "from-orange-500 to-red-400",
       iconBg: "bg-orange-500/10 border-orange-500/20",
       iconColor: "text-orange-400",
@@ -57,7 +61,7 @@ export default function Services() {
     {
       title: "Shopify & WordPress",
       desc: "Custom Shopify stores and WordPress solutions that convert.",
-      icon: <FaShoppingBag />,
+      icon: <ShoppingBag />,
       gradient: "from-pink-500 to-purple-500",
       iconBg: "bg-pink-500/10 border-pink-500/20",
       iconColor: "text-pink-400",
@@ -135,6 +139,22 @@ export default function Services() {
         });
       }
 
+      if (window.matchMedia("(max-width: 1023px)").matches) {
+        cardRefs.current.forEach((card, index) => {
+          if (!card) return;
+
+          const trigger = ScrollTrigger.create({
+            trigger: card,
+            start: "top 55%",
+            end: "bottom 45%",
+            onEnter: () => setActiveCard(index),
+            onEnterBack: () => setActiveCard(index),
+          });
+
+          return () => ctx.revert();
+        });
+      }
+
       // Button
       gsap.from(btnRef.current, {
         y: 20,
@@ -153,26 +173,30 @@ export default function Services() {
   }, []);
 
   return (
-    <section ref={sectionRef} className="relative pt-14 pb-20 px-6 overflow-hidden">
-
+    <section
+      ref={sectionRef}
+      className="relative pt-14 pb-20 px-6 overflow-hidden"
+    >
       {/* BACKGROUND - Only Image */}
       <div className="absolute inset-0 -z-10">
         <div
           className="absolute inset-0 bg-cover bg-center"
-          style={{ backgroundImage: "url('/website-components/servicebg.png')" }}
+          style={{
+            backgroundImage: "url('/website-components/servicebg.jpg')",
+          }}
         />
       </div>
 
       {/* MAIN CONTAINER */}
       <div className="service-container relative max-w-[1280px] mx-auto rounded-[32px] border border-white/[0.05] bg-white/[0.02] backdrop-blur-xl px-5 md:px-8 lg:px-10 py-12 lg:py-14">
-
         {/* Badge */}
         <div className="flex justify-center mb-4">
           <span
             ref={badgeRef}
-            className="text-[10px] px-4 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.06] text-white/50 tracking-[0.15em] uppercase font-medium"
+            className="inline-flex items-center gap-2 text-[10px] px-4 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.06] text-white/50 tracking-[0.15em] uppercase font-medium"
           >
-            ✨ What We Do
+            <Sparkles className="w-3 h-3 text-violet-400" />
+            What We Do
           </span>
         </div>
 
@@ -201,14 +225,39 @@ export default function Services() {
           className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 lg:gap-3.5"
         >
           {services.map((service, i) => (
-            <div key={i} className="group relative">
+            <Link
+              key={i}
+              href="/services"
+              ref={(el) => (cardRefs.current[i] = el)}
+              className="group relative block"
+            >
               {/* Gradient border on hover */}
               <div
-                className={`absolute -inset-[1px] rounded-2xl bg-gradient-to-br ${service.gradient} opacity-0 group-hover:opacity-100 transition-opacity duration-500`}
+                className={`
+                  absolute -inset-[1px] 
+                  rounded-2xl bg-gradient-to-br 
+                  ${service.gradient} ${
+                    activeCard === i
+                      ? "opacity-100"
+                      : "opacity-0 group-hover:opacity-100"
+                  }                 transition-opacity 
+                  duration-500`}
               />
 
               {/* Card */}
-              <div className="relative h-full rounded-2xl bg-[#0a0f2e]/60 border border-white/[0.06] p-5 flex flex-col transition-all duration-500 hover:-translate-y-1 hover:bg-[#0c1235]/80">
+              <div
+                className={`relative h-full rounded-2xl border border-white/[0.06] p-5 flex flex-col transition-all duration-500
+
+                    ${
+                      activeCard === i
+                        ? "bg-[#0c1235]/80 shadow-[0_0_50px_rgba(168,85,247,0.25)] -translate-y-1"
+                        : "bg-[#0a0f2e]/60"
+                    }
+
+                    hover:-translate-y-1.5
+                    hover:bg-[#0c1235]/80
+                `}
+              >
                 {/* ICON */}
                 <div
                   className={`w-10 h-10 flex items-center justify-center rounded-xl mb-4 border ${service.iconBg} ${service.iconColor} text-[15px] transition-all duration-500 group-hover:scale-110`}
@@ -226,28 +275,34 @@ export default function Services() {
                   {service.desc}
                 </p>
 
-                {/* LINK - Shows on Hover */}
-                <button
-                  className={`text-[12px] ${service.iconColor} flex items-center gap-1.5 opacity-0 translate-y-2 group-hover:opacity-70 group-hover:translate-y-0 transition-all duration-500`}
+                <div
+                  className={`text-[12px] ${service.iconColor} flex items-center gap-1.5 
+                  ${
+                    activeCard === i
+                      ? "opacity-70 translate-y-0"
+                      : "opacity-0 translate-y-2 group-hover:opacity-70 group-hover:translate-y-0"
+                  }
+                  transition-all duration-500`}
                 >
                   Learn More
-                  <span className="group-hover:translate-x-1 transition-transform duration-300 text-[10px]">
-                    →
-                  </span>
-                </button>
+                  <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform duration-300" />
+                </div>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
 
         {/* BUTTON */}
         <div className="flex justify-center mt-10">
-          <button
-            ref={btnRef}
-            className="px-6 py-2.5 rounded-full border border-white/[0.08] text-white/60 text-[13px] bg-white/[0.02] hover:bg-white/[0.06] hover:border-white/[0.15] hover:text-white/80 transition-all duration-300"
-          >
-            View All Services →
-          </button>
+          <div ref={btnRef}>
+            <Link
+              href="/services"
+              className="px-6 py-2.5 rounded-full border border-white/[0.08] text-white/60 text-[13px] bg-white/[0.02] hover:bg-white/[0.06] hover:border-white/[0.15] hover:text-white/80 transition-all duration-300 inline-flex items-center gap-2"
+            >
+              View All Services
+              <ArrowRight className="w-4 h-4" />
+            </Link>
+          </div>
         </div>
       </div>
     </section>

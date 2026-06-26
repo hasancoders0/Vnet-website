@@ -5,7 +5,11 @@ import ProcessSection from "@/components/services/ProcessSection";
 import WhyChooseUs from "@/components/services/WhyChooseUs";
 import { connectDB } from "@/lib/db";
 import Service from "@/models/Service";
-
+import { generatePageMetadata } from "@/lib/seo/generatePageMetadata";
+export const metadata = generatePageMetadata(
+  "services",
+  "/services",
+);
 export const dynamic = "force-dynamic";
 
 const serializeService = (service) => ({

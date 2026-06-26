@@ -1,3 +1,5 @@
+import { SITE_CONFIG } from "@/config/site";
+
 export default function robots() {
   return {
     rules: [
@@ -5,14 +7,14 @@ export default function robots() {
         userAgent: "*",
         allow: "/",
         disallow: [
-          "/administrator/",
-          "/api/",
+          "/administrator",
+          "/api",
         ],
       },
     ],
 
-    sitemap: "https://vnet-it.com/sitemap.xml",
+    sitemap: `${SITE_CONFIG.url}/sitemap.xml`,
 
-    host: "https://vnet-it.com",
+    host: SITE_CONFIG.url,
   };
 }

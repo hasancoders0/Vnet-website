@@ -1,17 +1,50 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
+import AppImage from "@/components/ui/AppImage";
 import { useEffect, useRef } from "react";
 import gsap from "gsap";
+
 import {
-  FaArrowRight,
-  FaPlay,
-  FaBriefcase,
-  FaUsers,
-  FaRocket,
-  FaUserTie,
-} from "react-icons/fa";
+  ArrowRight,
+  Play,
+  BriefcaseBusiness,
+  Users,
+  Rocket,
+  ShieldCheck,
+  Layers3,
+} from "lucide-react";
+
+const heroStats = [
+  {
+    icon: BriefcaseBusiness,
+    num: 120,
+    suffix: "+",
+    label: "Projects Delivered",
+    color: "text-cyan-400",
+  },
+  {
+    icon: Users,
+    num: 80,
+    suffix: "+",
+    label: "Happy Clients",
+    color: "text-violet-400",
+  },
+  {
+    icon: Rocket,
+    num: 5,
+    suffix: "+",
+    label: "Years Experience",
+    color: "text-pink-400",
+  },
+  {
+    icon: ShieldCheck,
+    num: 100,
+    suffix: "%",
+    label: "Client Satisfaction",
+    color: "text-emerald-400",
+  },
+];
 
 export default function Hero() {
   const sectionRef = useRef(null);
@@ -20,6 +53,7 @@ export default function Hero() {
   const descRef = useRef(null);
   const dividerRef = useRef(null);
   const statsRef = useRef(null);
+  const statRefs = useRef([]);
   const cardMainRef = useRef(null);
   const cardTopRef = useRef(null);
   const cardRightRef = useRef(null);
@@ -28,11 +62,11 @@ export default function Hero() {
 
   useEffect(() => {
     const ctx = gsap.context(() => {
-      const tl = gsap.timeline({ 
-        defaults: { 
+      const tl = gsap.timeline({
+        defaults: {
           ease: "power3.out",
-          clearProps: "all" // <--- PREVENTS GETTING STUCK INVISIBLE
-        } 
+          clearProps: "all",
+        },
       });
 
       tl.from(badgeRef.current, {
@@ -47,7 +81,7 @@ export default function Hero() {
             opacity: 0,
             duration: 1,
           },
-          "-=0.4"
+          "-=0.4",
         )
         .from(
           descRef.current,
@@ -56,9 +90,8 @@ export default function Hero() {
             opacity: 0,
             duration: 0.8,
           },
-          "-=0.5"
+          "-=0.5",
         )
-        // Changed from btnsRef.current.children to explicit class
         .from(
           ".hero-btn",
           {
@@ -67,7 +100,7 @@ export default function Hero() {
             duration: 0.7,
             stagger: 0.15,
           },
-          "-=0.4"
+          "-=0.4",
         )
         .from(
           dividerRef.current,
@@ -76,7 +109,7 @@ export default function Hero() {
             opacity: 0,
             duration: 0.6,
           },
-          "-=0.2"
+          "-=0.2",
         )
         .from(
           ".stat-item",
@@ -86,28 +119,8 @@ export default function Hero() {
             duration: 0.5,
             stagger: 0.1,
           },
-          "-=0.2"
+          "-=0.2",
         );
-
-      // Number counter animation
-      document.querySelectorAll(".stat-number").forEach((el) => {
-        const target = parseInt(el.getAttribute("data-target"));
-        const suffix = el.getAttribute("data-suffix") || "";
-        gsap.fromTo(
-          el,
-          { innerText: "0" },
-          {
-            innerText: target,
-            duration: 1.8,
-            ease: "power2.out",
-            snap: { innerText: 1 },
-            delay: 1.2,
-            onUpdate: function () {
-              el.textContent = Math.ceil(parseFloat(el.textContent)) + suffix;
-            },
-          }
-        );
-      });
 
       // Right side cards
       gsap.from(cardMainRef.current, {
@@ -159,6 +172,26 @@ export default function Hero() {
         delay: 1.8,
         ease: "power2.out",
       });
+      heroStats.forEach((item, index) => {
+        const el = statRefs.current[index];
+
+        if (!el) return;
+
+        gsap.to(
+          { value: 0 },
+          {
+            value: item.num,
+            duration: 2,
+            ease: "power2.out",
+            delay: 1.2 + index * 0.1,
+            onUpdate() {
+              const current = Math.floor(this.targets()[0].value);
+
+              el.textContent = `${current}${item.suffix}`;
+            },
+          },
+        );
+      });
     }, sectionRef);
 
     return () => ctx.revert();
@@ -167,20 +200,16 @@ export default function Hero() {
   return (
     <section
       ref={sectionRef}
-      className="relative min-h-screen overflow-hidden text-white"
+      className="relative min-h-[100svh] overflow-hidden text-white"
     >
       {/* ================= BACKGROUND ================= */}
       <div className="absolute inset-0 -z-10">
-        <Image
-          src="/website-components/home-hero-desktop.png"
+        <AppImage
+          src="/website-components/home-hero-desktop.jpg"
           alt="bg"
           fill
           priority
-          className="
-            object-cover 
-            object-[75%_0%] 
-            sm:object-center
-          "
+          sizes="100vw"
         />
       </div>
 
@@ -233,28 +262,30 @@ export default function Hero() {
             mb-8
           "
           >
-            From stunning websites to powerful web applications, digital marketing
-            to consultation — we deliver results that help your business scale
-            faster.
+            Professional services, premium templates, digital products, growth
+            tools, and expert support — everything you need to launch and scale
+            online.
           </p>
 
           {/* Buttons */}
-          <div className="
+          <div
+            className="
             flex flex-col sm:flex-row gap-4
             justify-center lg:justify-start
             mb-10
-          ">
+          "
+          >
             <Link
               href="/services"
               className="
-                hero-btn
-                flex items-center justify-center gap-2
-                px-6 py-3 rounded-full text-sm font-medium
-                bg-gradient-to-r from-purple-500 to-blue-500
-                hover:scale-105 transition
-              "
+              hero-btn
+              flex items-center justify-center gap-2
+              px-6 py-3 rounded-full text-sm font-medium
+              bg-gradient-to-r from-purple-500 to-blue-500
+              hover:-translate-y-1 transition-all
+            "
             >
-              Explore Services <FaArrowRight />
+              Explore Services <ArrowRight className="w-4 h-4" />
             </Link>
             <Link
               href="/contact"
@@ -265,7 +296,7 @@ export default function Hero() {
                 border border-white/20 hover:bg-white/10 transition
               "
             >
-              View Our Work <FaPlay />
+              Get Free Consultation <Play className="w-4 h-4 fill-current" />
             </Link>
           </div>
 
@@ -279,32 +310,35 @@ export default function Hero() {
           <div
             ref={statsRef}
             className="
-            grid grid-cols-2 sm:grid-cols-4
-            gap-6 sm:gap-10
-            text-center lg:text-left
-          "
+            grid grid-cols-2 lg:grid-cols-4
+            gap-4 lg:gap-6
+            "
           >
-            {[
-              { icon: FaBriefcase, num: 120, suffix: "+", label: "Projects Completed", color: "text-blue-400" },
-              { icon: FaUsers, num: 80, suffix: "+", label: "Happy Clients", color: "text-purple-400" },
-              { icon: FaRocket, num: 5, suffix: "+", label: "Years Experience", color: "text-pink-400" },
-              { icon: FaUserTie, num: 10, suffix: "+", label: "Expert Members", color: "text-green-400" },
-            ].map((item, i) => (
+            {heroStats.map((item, i) => (
               <div
                 key={i}
-                className="stat-item flex flex-col items-center lg:items-start gap-1.5"
+                className="
+                stat-item
+                flex flex-col
+                items-center lg:items-start
+                gap-2
+                rounded-2xl
+                border border-white/10
+                bg-white/[0.03]
+                backdrop-blur-sm
+                p-4
+                "
               >
                 <item.icon className={`${item.color} text-base`} />
                 <p
-                  className="stat-number text-lg font-semibold"
-                  data-target={item.num}
-                  data-suffix={item.suffix}
+                  ref={(el) => {
+                    statRefs.current[i] = el;
+                  }}
+                  className="stat-number text-2xl font-bold tracking-tight"
                 >
                   0{item.suffix}
                 </p>
-                <p className="text-[11px] text-white/50 leading-tight">
-                  {item.label}
-                </p>
+                <p className="text-xs text-white/60">{item.label}</p>
               </div>
             ))}
           </div>
@@ -324,12 +358,12 @@ export default function Hero() {
             ref={cardMainRef}
             className="
             absolute left-10 top-24 w-[360px] p-6 rounded-2xl
-            backdrop-blur-2xl border border-white/10
+            backdrop-blur-lg border border-white/10
             shadow-[0_20px_60px_rgba(0,0,0,0.6)]
           "
           >
-            <p className="text-lg mb-4">Business Analytics</p>
-            <Image
+            <p className="text-lg mb-4">Business Growth Ecosystem</p>
+            <AppImage
               src="/website-components/home-hero-graph.png"
               alt="graph"
               width={300}
@@ -337,7 +371,7 @@ export default function Hero() {
               className="mx-auto"
             />
             <p className="text-green-400 text-sm mt-4">
-              +25.6% Growth this month
+              Built for growth-driven businesses
             </p>
           </div>
 
@@ -355,7 +389,7 @@ export default function Hero() {
             </div>
             <div className="flex -space-x-2 mt-3">
               {["user4.jpg", "user5.jpg"].map((img, i) => (
-                <Image
+                <AppImage
                   key={i}
                   src={`/website-components/${img}`}
                   alt="user"
@@ -379,7 +413,7 @@ export default function Hero() {
             <p className="text-2xl font-bold mb-3">120+</p>
             <div className="flex -space-x-2">
               {["user1.jpg", "user2.jpg", "user3.jpg"].map((img, i) => (
-                <Image
+                <AppImage
                   key={i}
                   src={`/website-components/${img}`}
                   alt="user"
@@ -395,28 +429,18 @@ export default function Hero() {
           <div
             ref={cardBottomRef}
             className="
-            absolute bottom-2 right-16 w-[260px] p-4 rounded-xl
-            bg-white/10 backdrop-blur-xl border border-white/10 text-sm
-          "
+              absolute bottom-2 right-16 w-[260px] p-4 rounded-xl
+              bg-white/10 backdrop-blur-xl border border-white/10
+              "
           >
-            ✨ We turn ideas into powerful digital solutions
+            <div className="flex items-center gap-3">
+              <Layers3 className="w-5 h-5 text-cyan-400" />
+              <p className="text-sm font-medium">
+                One Platform. Endless Possibilities.
+              </p>
+            </div>
           </div>
         </div>
-      </div>
-
-      {/* ================= SCROLL ================= */}
-      <div
-        ref={scrollRef}
-        className="
-        absolute bottom-20 left-1/2 -translate-x-1/2
-        flex flex-col items-center gap-2
-        text-xs text-white/60
-      "
-      >
-        <div className="w-5 h-9 border border-white/30 rounded-full flex justify-center p-1">
-          <div className="w-1 h-2 bg-white rounded-full animate-bounce" />
-        </div>
-        Scroll
       </div>
     </section>
   );

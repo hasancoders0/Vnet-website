@@ -26,10 +26,9 @@ export default function ServicesTabs() {
 
   const containerRef = useRef(null);
   const activeRef = useRef(null);
-
   const [slider, setSlider] = useState({ left: 0, width: 0 });
 
-  /* ================= SLIDER ================= */
+  /* ================= SLIDER CALCULATION ================= */
   useEffect(() => {
     const container = containerRef.current;
     const activeEl = activeRef.current;
@@ -45,59 +44,59 @@ export default function ServicesTabs() {
     });
   }, [active]);
 
-  /* ================= HOVER GLOW ================= */
+  /* ================= SUBTLE GLOW FOLLOW ================= */
   const handleMouseMove = (e) => {
     const rect = containerRef.current.getBoundingClientRect();
     const x = e.clientX - rect.left;
-
     containerRef.current.style.setProperty("--x", `${x}px`);
   };
 
+  // Get active icon safely for mobile
+  const ActiveIcon = tabs.find((t) => t.name === active)?.icon || FaThLarge;
+
   return (
     <section className="relative z-20 -mt-16 px-4">
-
       <div className="max-w-[1100px] mx-auto">
 
-        {/* ================= DESKTOP ================= */}
+        {/* ================= DESKTOP TABS ================= */}
         <div
           ref={containerRef}
           onMouseMove={handleMouseMove}
-          className="hidden md:flex relative items-center gap-2 
-          bg-white/70 backdrop-blur-2xl border border-white/30 
-          rounded-full p-2 shadow-[0_15px_40px_rgba(0,0,0,0.15)] overflow-hidden group"
+          className="
+            hidden md:flex relative items-center gap-1.5 
+            bg-white/80 backdrop-blur-xl border border-white/50 
+            rounded-full p-1.5 
+            shadow-[0_10px_35px_rgba(0,0,0,0.08)]
+            group
+          "
         >
-
-          {/* 🔥 HOVER GLOW TRACK */}
+          {/* Subtle Hover Glow Track */}
           <div
-            className="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition"
+            className="
+              pointer-events-none absolute inset-0 
+              opacity-0 group-hover:opacity-100 transition-opacity duration-300
+            "
             style={{
               background:
-                "radial-gradient(300px at var(--x) center, rgba(139,92,246,0.15), transparent)",
+                "radial-gradient(300px circle at var(--x) center, rgba(59,130,246,0.08), transparent)",
             }}
           />
 
-          {/* 🔥 ACTIVE SLIDER */}
+          {/* Active Background Slider */}
           <span
-            className="absolute top-2 bottom-2 rounded-full 
-            bg-gradient-to-r from-purple-500 to-blue-500 
-            transition-all duration-300 shadow-lg"
+            className="
+              absolute top-1.5 bottom-1.5 rounded-full 
+              bg-blue-600 text-white
+              transition-all duration-300 ease-out
+              shadow-[0_4px_15px_rgba(37,99,235,0.3)]
+            "
             style={{
               left: slider.left,
               width: slider.width,
             }}
           />
 
-          {/* 🔥 ACTIVE GLOW */}
-          <span
-            className="absolute top-2 bottom-2 rounded-full blur-xl opacity-40
-            bg-gradient-to-r from-purple-500 to-blue-500 
-            transition-all duration-300"
-            style={{
-              left: slider.left,
-              width: slider.width,
-            }}
-          />
-
+          {/* Tab Buttons */}
           {tabs.map((tab) => {
             const Icon = tab.icon;
             const isActive = active === tab.name;
@@ -107,73 +106,79 @@ export default function ServicesTabs() {
                 key={tab.name}
                 ref={isActive ? activeRef : null}
                 onClick={() => setActive(tab.name)}
-                className={`relative z-10 flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-medium transition-all duration-300
-                  ${
-                    isActive
-                      ? "text-white"
-                      : "text-gray-600 hover:text-gray-900"
-                  }`}
+                className={`
+                  relative z-10 flex items-center gap-2 px-5 py-2.5 rounded-full 
+                  text-[13px] font-medium transition-colors duration-200
+                  ${isActive ? "text-white" : "text-slate-500 hover:text-slate-800"}
+                `}
               >
-                <Icon className="text-[13px]" />
+                <Icon className="text-xs" />
                 {tab.name}
               </button>
             );
           })}
         </div>
 
-        {/* ================= MOBILE ================= */}
+        {/* ================= MOBILE DROPDOWN ================= */}
         <div className="md:hidden relative">
-
-          {/* Selected */}
+          {/* Trigger Button */}
           <button
             onClick={() => setOpen(!open)}
-            className="w-full flex items-center justify-between px-5 py-3 rounded-full 
-              bg-white/90 backdrop-blur border shadow-lg text-sm font-medium"
+            className="
+              w-full flex items-center justify-between 
+              px-4 py-3.5 rounded-xl 
+              bg-white border border-slate-200/70 
+              shadow-sm text-sm font-medium text-slate-700
+              transition-all duration-200
+              hover:border-slate-300
+            "
           >
-            <span className="flex items-center gap-2">
-              {tabs.find((t) => t.name === active)?.icon &&
-                (() => {
-                  const Icon = tabs.find((t) => t.name === active).icon;
-                  return <Icon className="text-sm" />;
-                })()}
+            <span className="flex items-center gap-2.5">
+              <ActiveIcon className="text-blue-600 text-sm" />
               {active}
             </span>
 
             <FaChevronDown
-              className={`transition ${open ? "rotate-180" : ""}`}
+              className={`text-slate-400 text-xs transition-transform duration-300 ${open ? "rotate-180" : ""}`}
             />
           </button>
 
-          {/* Dropdown */}
-          {open && (
-            <div className="absolute w-full mt-2 bg-white rounded-2xl shadow-xl border p-2 z-50">
+          {/* Dropdown List */}
+          <div
+            className={`
+              absolute w-full mt-2 
+              bg-white border border-slate-200/70 rounded-2xl shadow-xl 
+              p-2 z-50 overflow-hidden
+              transition-all duration-300 origin-top
+              ${open ? "opacity-100 scale-100" : "opacity-0 scale-95 pointer-events-none"}
+            `}
+          >
+            {tabs.map((tab) => {
+              const Icon = tab.icon;
+              const isActive = active === tab.name;
 
-              {tabs.map((tab) => {
-                const Icon = tab.icon;
-                const isActive = active === tab.name;
-
-                return (
-                  <button
-                    key={tab.name}
-                    onClick={() => {
-                      setActive(tab.name);
-                      setOpen(false);
-                    }}
-                    className={`w-full flex items-center gap-2 px-4 py-2 rounded-lg text-sm transition
-                      ${
-                        isActive
-                          ? "bg-gradient-to-r from-purple-500 to-blue-500 text-white"
-                          : "text-gray-700 hover:bg-gray-100"
-                      }`}
-                  >
-                    <Icon className="text-xs" />
-                    {tab.name}
-                  </button>
-                );
-              })}
-
-            </div>
-          )}
+              return (
+                <button
+                  key={tab.name}
+                  onClick={() => {
+                    setActive(tab.name);
+                    setOpen(false);
+                  }}
+                  className={`
+                    w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm transition-colors duration-200
+                    ${
+                      isActive
+                        ? "bg-blue-50 text-blue-600 font-medium"
+                        : "text-slate-600 hover:bg-slate-50"
+                    }
+                  `}
+                >
+                  <Icon className={`text-xs ${isActive ? "text-blue-500" : "text-slate-400"}`} />
+                  {tab.name}
+                </button>
+              );
+            })}
+          </div>
         </div>
 
       </div>

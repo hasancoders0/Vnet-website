@@ -9,12 +9,12 @@ export default function QuoteBlock({ block }) {
     <div
       className="
         relative
-        rounded-3xl
+        rounded-2xl
         border-l-4
-        border-purple-500
-        bg-purple-50
+        border-blue-500
+        bg-blue-50/40
         px-8
-        py-8
+        py-7
       "
     >
       <FaQuoteLeft
@@ -22,7 +22,7 @@ export default function QuoteBlock({ block }) {
           absolute
           top-6
           right-6
-          text-purple-200
+          text-blue-200
           text-4xl
         "
       />
@@ -34,9 +34,8 @@ export default function QuoteBlock({ block }) {
           leading-9
           italic
           font-medium
-          text-slate-800
+          text-slate-700
           pr-10
-          mb-0
         "
       >
         {block.quote}

@@ -9,6 +9,7 @@ import { connectDB } from "@/lib/db";
 import Blog from "@/models/Blog";
 import "@/models/Category";
 import BlogCollectionSchema from "@/components/seo/BlogCollectionSchema";
+import { generatePageMetadata } from "@/lib/seo/generatePageMetadata";
 
 const PAGE_SIZE = PAGINATION.BLOG;
 export const dynamic = "force-dynamic";
@@ -200,44 +201,7 @@ async function getArticles({
     totalArticles,
   };
 }
-export async function generateMetadata() {
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://vnet-it.com";
-
-  return {
-    title: "Journal | Web Development, SEO & Digital Marketing Insights",
-
-    description:
-      "Explore expert articles, guides, tutorials, SEO strategies, web development insights, and digital marketing resources from Visionary Network.",
-
-    alternates: {
-      canonical: `${siteUrl}/journal`,
-    },
-
-    openGraph: {
-      title: "Journal | Visionary Network",
-
-      description:
-        "Explore expert articles, guides, tutorials, SEO strategies, web development insights, and digital marketing resources.",
-
-      url: `${siteUrl}/journal`,
-
-      type: "website",
-    },
-
-    twitter: {
-      card: "summary_large_image",
-      title: "Journal | Visionary Network",
-
-      description:
-        "Explore expert articles, guides, tutorials, SEO strategies, web development insights, and digital marketing resources.",
-    },
-
-    robots: {
-      index: true,
-      follow: true,
-    },
-  };
-}
+export const metadata = generatePageMetadata("journal", "/journal");
 export default async function JournalPage({ searchParams }) {
   const params = await searchParams;
 

@@ -2,102 +2,126 @@
 
 import { useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
+import { FaPlus, FaMinus } from "react-icons/fa";
+import { FiArrowRight } from "react-icons/fi";
+
+const faqs = [
+  {
+    q: "How quickly will you respond to my message?",
+    a: "We typically respond within 24 hours during business days. For urgent inquiries, you can also reach out to us via live chat.",
+  },
+  {
+    q: "Do you offer custom solutions for businesses?",
+    a: "Yes! We specialize in custom solutions tailored exactly to your specific business needs and goals.",
+  },
+  {
+    q: "Where are you located?",
+    a: "Our primary office is in New York, but we work with clients worldwide thanks to our remote-first approach.",
+  },
+];
 
 export default function ContactFAQ() {
-  const [open, setOpen] = useState(0);
-
-  const faqs = [
-    {
-      q: "How quickly will you respond to my message?",
-      a: "We typically respond within 24 hours during business days.",
-    },
-    {
-      q: "Do you offer custom solutions for businesses?",
-      a: "Yes! We specialize in custom solutions tailored to your needs.",
-    },
-    {
-      q: "Where are you located?",
-      a: "Our office is in New York, but we work with clients worldwide.",
-    },
-  ];
+  const [activeIndex, setActiveIndex] = useState(null);
 
   return (
-    <section className="py-16 px-6 bg-[#f8fafc]">
-      <div className="max-w-[1200px] mx-auto bg-white border border-gray-200 rounded-2xl px-6 md:px-10 py-8 md:py-10">
+    <section className="py-16 md:py-24 px-6 bg-[#f8fafc]">
+      <div className="max-w-[1200px] mx-auto bg-white rounded-2xl border border-slate-200/70 shadow-sm p-6 md:p-10">
+        
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-
-          {/* LEFT */}
+          {/* LEFT - ACCORDION */}
           <div>
-
-            {/* HEADER */}
+            {/* Header */}
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-lg md:text-xl font-semibold text-gray-900">
+              <h2 className="text-[18px] font-bold text-slate-900 tracking-tight">
                 Frequently Asked Questions
               </h2>
 
-              <button className="text-sm text-indigo-600 font-medium hover:underline">
-                View All FAQs →
-              </button>
+              <Link
+                href="/faq"
+                className="inline-flex items-center gap-1.5 text-[13px] font-medium text-blue-600 hover:text-blue-700 transition-colors group"
+              >
+                View All FAQs
+                <FiArrowRight className="w-3.5 h-3.5 transition-transform duration-300 group-hover:translate-x-1" />
+              </Link>
             </div>
 
-            {/* ACCORDION */}
-            <div className="border border-gray-200 rounded-xl overflow-hidden bg-white">
+            {/* Accordion Container */}
+            <div className="rounded-2xl border border-slate-200/70 overflow-hidden">
+              {faqs.map((item, i) => {
+                const isActive = activeIndex === i;
 
-              {faqs.map((item, i) => (
-                <div
-                  key={i}
-                  className={`px-5 py-4 ${
-                    i !== faqs.length - 1 ? "border-b border-gray-100" : ""
-                  }`}
-                >
+                return (
+                  <div key={i} className={`${i !== faqs.length - 1 ? "border-b border-slate-100" : ""}`}>
+                    {/* Question Button */}
+                    <button
+                      onClick={() => setActiveIndex(isActive ? null : i)}
+                      className="w-full flex items-center justify-between py-5 px-6 text-left"
+                    >
+                      <span className="text-[14px] font-medium text-slate-800 pr-4">
+                        {item.q}
+                      </span>
 
-                  {/* QUESTION */}
-                  <button
-                    onClick={() => setOpen(open === i ? -1 : i)}
-                    className="w-full flex items-center justify-between text-left"
-                  >
-                    <p className="text-sm font-medium text-gray-800">
-                      {item.q}
-                    </p>
+                      {/* Toggle Icon */}
+                      <div
+                        className={`
+                          w-8 h-8 rounded-xl border flex items-center justify-center flex-shrink-0
+                          transition-all duration-300
+                          ${
+                            isActive
+                              ? "bg-blue-50 border-blue-200/60 text-blue-600 rotate-0"
+                              : "bg-slate-50 border-slate-200/70 text-slate-400 rotate-180"
+                          }
+                        `}
+                      >
+                        {isActive ? (
+                          <FaMinus className="text-[10px]" />
+                        ) : (
+                          <FaPlus className="text-[10px]" />
+                        )}
+                      </div>
+                    </button>
 
-                    <span className="text-gray-400 text-lg leading-none">
-                      {open === i ? "×" : "+"}
-                    </span>
-                  </button>
-
-                  {/* ANSWER */}
-                  <div
-                    className={`transition-all duration-300 ease-in-out ${
-                      open === i ? "mt-2 opacity-100" : "max-h-0 opacity-0 overflow-hidden"
-                    }`}
-                  >
-                    <p className="text-sm text-gray-500 leading-relaxed">
-                      {item.a}
-                    </p>
+                    {/* Answer (Smooth Grid Animation) */}
+                    <div
+                      className={`
+                        grid
+                        transition-all
+                        duration-300
+                        ease-in-out
+                        ${
+                          isActive
+                            ? "grid-rows-[1fr] opacity-100"
+                            : "grid-rows-[0fr] opacity-0"
+                        }
+                      `}
+                    >
+                      <div className="overflow-hidden">
+                        <p className="text-[13px] text-slate-500 leading-[1.7] px-6 pb-5">
+                          {item.a}
+                        </p>
+                      </div>
+                    </div>
                   </div>
-
-                </div>
-              ))}
-
+                );
+              })}
             </div>
-
           </div>
 
-          {/* RIGHT IMAGE */}
+          {/* RIGHT - IMAGE */}
           <div className="flex justify-center lg:justify-end">
-            <div className="relative w-[260px] md:w-[320px] h-[260px] md:h-[320px]">
+            <div className="relative w-[280px] md:w-[320px] aspect-square bg-slate-100 rounded-2xl overflow-hidden">
               <Image
                 src="/website-components/faq-img.png"
-                alt="faq"
+                alt="faq illustration"
                 fill
-                className="object-contain"
+                className="object-contain p-8"
               />
             </div>
           </div>
 
         </div>
-
       </div>
     </section>
   );

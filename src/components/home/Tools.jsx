@@ -10,7 +10,9 @@ import {
   FaPalette,
   FaImage,
   FaChartLine,
+  FaWrench,
 } from "react-icons/fa";
+import { ArrowRight } from "lucide-react";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -76,7 +78,8 @@ export default function Tools() {
           start: "top 85%",
           toggleActions: "play none none none",
         },
-        defaults: { ease: "power3.out", clearProps: "all" },
+        // FIX: Removed clearProps: "all" to prevent breaking React hover states
+        defaults: { ease: "power3.out" }, 
       });
 
       tl.from(".tool-anim", {
@@ -113,9 +116,9 @@ export default function Tools() {
   return (
     <section
       ref={sectionRef}
-      className="relative py-24 px-6 overflow-hidden"
+      className="relative py-20 md:py-24 px-6 overflow-hidden"
     >
-      {/* ✅ Background Image */}
+      {/* Background Image */}
       <div
         className="absolute inset-0 -z-10 bg-cover bg-center"
         style={{
@@ -123,7 +126,7 @@ export default function Tools() {
         }}
       />
 
-      {/* ✅ Gradient Borders */}
+      {/* Gradient Borders */}
       <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent" />
       <div className="pointer-events-none absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
 
@@ -131,18 +134,19 @@ export default function Tools() {
       <div className="max-w-[1280px] mx-auto">
         {/* Header */}
         <div className="text-center mb-14">
-          <span className="tool-anim inline-block text-[10px] px-4 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.06] text-white/50 tracking-[0.15em] uppercase font-medium mb-5">
-            🛠️ Useful Tools
+          <span className="tool-anim inline-flex items-center gap-2 text-[11px] px-4 py-1.5 rounded-full bg-white/[0.07] border border-white/[0.1] text-white/80 uppercase tracking-wider font-medium mb-6">
+            <FaWrench className="w-3 h-3 text-blue-400" />
+            Useful Tools
           </span>
 
-          <h2 className="tool-anim text-[28px] md:text-[36px] lg:text-[40px] font-bold text-white mb-3">
+          <h2 className="tool-anim text-[36px] md:text-[44px] lg:text-[52px] font-bold text-white leading-[1.1] tracking-tight mb-4">
             Free Online{" "}
             <span className="bg-gradient-to-r from-blue-400 to-purple-400 text-transparent bg-clip-text">
               Tools
             </span>
           </h2>
 
-          <p className="tool-anim text-white/40 max-w-md mx-auto text-[14px] leading-relaxed">
+          <p className="tool-anim text-white/50 max-w-md mx-auto text-[15px] leading-relaxed">
             Boost your workflow with our premium suite of free developer and marketer tools.
           </p>
         </div>
@@ -156,10 +160,10 @@ export default function Tools() {
                 className={`absolute -inset-[1px] rounded-2xl bg-gradient-to-br ${tool.gradient} opacity-0 group-hover:opacity-100 transition-opacity duration-500`}
               />
 
-              <div className="relative h-full rounded-2xl bg-[#0a0f2e]/60 border border-white/[0.06] p-6 flex flex-col transition-all duration-500 hover:-translate-y-1 hover:bg-[#0c1235]/80">
+              <div className="relative h-full rounded-2xl bg-[#0a0f2e]/60 border border-white/[0.06] p-6 flex flex-col transition-all duration-500 hover:-translate-y-1.5 hover:bg-[#0c1235]/80">
                 <div className="flex items-start justify-between mb-4">
                   <div
-                    className={`w-11 h-11 flex items-center justify-center rounded-xl border ${tool.iconBg} ${tool.iconColor} text-[16px] transition-all duration-500 group-hover:scale-110`}
+                    className={`w-11 h-11 flex items-center justify-center rounded-xl border ${tool.iconBg} ${tool.iconColor} text-[16px] transition-transform duration-300 group-hover:scale-110`}
                   >
                     {tool.icon}
                   </div>
@@ -169,21 +173,19 @@ export default function Tools() {
                   </span>
                 </div>
 
-                <h3 className="text-white font-semibold text-[16px] mb-2">
+                <h3 className="text-white font-semibold text-[15px] mb-2 leading-snug">
                   {tool.title}
                 </h3>
 
-                <p className="text-[13px] text-white/40 leading-relaxed mb-5 flex-grow group-hover:text-white/55 transition-colors">
+                <p className="text-[13px] text-white/40 leading-[1.65] mb-5 flex-grow group-hover:text-white/60 transition-colors">
                   {tool.desc}
                 </p>
 
                 <button
-                  className={`text-[13px] ${tool.iconColor} flex items-center gap-1.5 opacity-0 translate-y-2 group-hover:opacity-70 group-hover:translate-y-0 transition-all duration-500`}
+                  className={`text-[12px] font-medium ${tool.iconColor} flex items-center gap-1.5 opacity-0 translate-y-2 group-hover:opacity-80 group-hover:translate-y-0 transition-all duration-500`}
                 >
                   Try Now
-                  <span className="group-hover:translate-x-1 transition-transform duration-300 text-[10px]">
-                    →
-                  </span>
+                  <ArrowRight  className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform duration-300" />
                 </button>
               </div>
             </div>
@@ -192,8 +194,9 @@ export default function Tools() {
 
         {/* Button */}
         <div className="flex justify-center mt-12">
-          <button className="tools-btn-anim px-6 py-2.5 rounded-full border border-white/[0.06] text-white/60 text-[13px] bg-white/[0.02] hover:bg-white/[0.06] hover:border-white/[0.1] hover:text-white/80 transition-all duration-300">
-            Explore All Tools →
+          <button className="tools-btn-anim inline-flex items-center gap-2.5 px-6 py-3 rounded-full border border-white/10 text-white/70 text-[13px] font-medium bg-white/[0.05] hover:bg-white/[0.1] hover:border-white/20 hover:text-white transition-all duration-300">
+            Explore All Tools
+            <ArrowRight  className="w-4 h-4" />
           </button>
         </div>
       </div>

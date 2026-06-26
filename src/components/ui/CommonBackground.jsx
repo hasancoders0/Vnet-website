@@ -4,32 +4,34 @@ export default function CommonBackground({
   children,
   className = "",
   image = true,
-  overlay = false, // default OFF
+  overlay = false,
+  priority = false,
   imageSrc = "/website-components/common-bg.jpg",
 }) {
   return (
     <section
       className={`relative overflow-hidden ${className}`}
     >
-      {/* Fallback Background (visible while image loads) */}
+      {/* Gradient Base */}
       <div className="absolute inset-0 bg-gradient-to-br from-slate-950 via-slate-900 to-blue-950" />
 
-      {/* Background Image */}
+      {/* Desktop Background */}
       {image && (
-        <div className="absolute inset-0">
+        <div className="absolute inset-0 hidden md:block">
           <AppImage
             src={imageSrc}
-            alt="Background"
+            alt=""
             fill
-            priority
+            priority={priority}
+            sizes="100vw"
             className="object-cover"
           />
         </div>
       )}
 
-      {/* Optional Overlay */}
-      {image && overlay && (
-        <div className="absolute inset-0 bg-gradient-to-br from-slate-950/95 via-slate-900/85 to-blue-950/80" />
+      {/* Overlay */}
+      {overlay && (
+        <div className="absolute inset-0 bg-slate-950/60" />
       )}
 
       {/* Content */}

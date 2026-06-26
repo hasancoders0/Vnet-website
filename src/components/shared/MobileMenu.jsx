@@ -1,62 +1,72 @@
 "use client";
 
 import Link from "next/link";
-import {
-  FaHome,
-  FaCogs,
-  FaBoxOpen,
-  FaNewspaper,
-  FaTools,
-  FaInfoCircle,
-  FaEnvelope,
-  FaTimes,
-} from "react-icons/fa";
+import { useEffect } from "react";
+import { navigation } from "@/config/navigation";
+import { FiX } from "react-icons/fi";
 
 export default function MobileMenu({ open, setOpen, pathname }) {
-  const navItems = [
-    { label: "Home", href: "/", icon: FaHome },
-    { label: "Services", href: "/services", icon: FaCogs },
-    { label: "Products", href: "/products", icon: FaBoxOpen },
-    { label: "Journal", href: "/journal", icon: FaNewspaper },
-    { label: "Tools", href: "/tools", icon: FaTools },
-    { label: "About", href: "/about", icon: FaInfoCircle },
-    { label: "Contact", href: "/contact", icon: FaEnvelope },
-  ];
+  // Prevent body scroll when menu is open
+  useEffect(() => {
+    document.body.style.overflow = open ? "hidden" : "auto";
+    return () => {
+      document.body.style.overflow = "auto";
+    };
+  }, [open]);
+
+  // Close on Escape key press
+  useEffect(() => {
+    const handleEsc = (e) => {
+      if (e.key === "Escape") setOpen(false);
+    };
+    window.addEventListener("keydown", handleEsc);
+    return () => window.removeEventListener("keydown", handleEsc);
+  }, [setOpen]);
 
   return (
     <>
       {/* BACKDROP */}
       <div
         onClick={() => setOpen(false)}
-        className={`fixed inset-0 z-40 transition-all duration-300 ${
+        className={`fixed inset-0 z-40 bg-black/50 backdrop-blur-sm transition-all duration-300 ${
           open ? "opacity-100 visible" : "opacity-0 invisible"
-        } bg-black/60 backdrop-blur-md`}
+        }`}
       />
 
       {/* PANEL */}
       <div
-        className={`fixed top-0 right-0 h-full w-[88%] max-w-sm z-50
+        className={`fixed top-0 right-0 h-full w-[85%] max-w-sm z-50 
         transform transition-transform duration-500 ease-out
         ${open ? "translate-x-0" : "translate-x-full"}`}
       >
-        {/* Premium gradient background */}
-        <div className="h-full bg-gradient-to-br from-[#0a0f2c] via-[#0b1235] to-[#0a0a0a] backdrop-blur-2xl border-l border-white/10">
-
+        <div className="h-full bg-slate-950 border-l border-white/[0.1] backdrop-blur-xl flex flex-col">
+          
           {/* HEADER */}
-          <div className="flex items-center justify-between px-6 py-5 border-b border-white/10">
-            <span className="text-lg font-semibold text-white">Menu</span>
-
+          <div className="flex items-center justify-between px-5 py-4 border-b border-white/[0.06]">
+            <span className="text-[15px] font-semibold text-white tracking-tight">
+              Menu
+            </span>
             <button
               onClick={() => setOpen(false)}
-              className="w-10 h-10 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 transition"
+              aria-label="Close menu"
+              className="
+                w-10 h-10 flex items-center justify-center 
+                rounded-xl 
+                border border-white/10 
+                bg-white/[0.05] 
+                text-white/60 
+                hover:text-white hover:bg-white/[0.1] 
+                active:scale-95
+                transition-all duration-200
+              "
             >
-              <FaTimes />
+              <FiX className="text-lg" />
             </button>
           </div>
 
-          {/* NAV */}
-          <div className="p-6 space-y-3">
-            {navItems.map((item) => {
+          {/* NAVIGATION LINKS */}
+          <nav className="flex-1 overflow-y-auto p-4 space-y-1.5">
+            {navigation.map((item) => {
               const active = pathname === item.href;
               const Icon = item.icon;
 
@@ -65,29 +75,39 @@ export default function MobileMenu({ open, setOpen, pathname }) {
                   key={item.href}
                   href={item.href}
                   onClick={() => setOpen(false)}
-                  className={`flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-300
-                  ${
-                    active
-                      ? "bg-gradient-to-r from-purple-500/20 to-blue-500/20 text-white"
-                      : "text-white/70 hover:text-white hover:bg-white/5"
-                  }`}
+                  className={`
+                    flex items-center gap-3.5 px-4 py-3 rounded-xl border transition-all duration-200
+                    ${
+                      active
+                        ? "bg-blue-500/10 text-blue-400 border-blue-500/20 font-medium"
+                        : "border-transparent text-slate-400 hover:text-white hover:bg-white/[0.05]"
+                    }
+                  `}
                 >
-                  <Icon className="text-lg" />
-                  <span className="font-medium">{item.label}</span>
+                  <Icon className="text-[18px] w-5 text-center" />
+                  <span className="text-[15px]">{item.label}</span>
                 </Link>
               );
             })}
+          </nav>
 
-            {/* CTA */}
-            <div className="pt-6 border-t border-white/10">
-              <Link
-                href="/contact"
-                className="block text-center px-5 py-3 rounded-xl 
-                bg-gradient-to-r from-purple-500 to-blue-500 font-medium"
-              >
-                Get Started
-              </Link>
-            </div>
+          {/* CTA BUTTON */}
+          <div className="p-5 border-t border-white/[0.06]">
+            <Link
+              href="/contact"
+              onClick={() => setOpen(false)}
+              className="
+                flex items-center justify-center gap-2 
+                w-full px-5 py-3.5 rounded-xl 
+                bg-blue-600 text-white text-[14px] font-medium
+                hover:bg-blue-700 
+                active:scale-[0.98]
+                shadow-[0_4px_15px_rgba(37,99,235,0.3)]
+                transition-all duration-200
+              "
+            >
+              Get Started
+            </Link>
           </div>
         </div>
       </div>

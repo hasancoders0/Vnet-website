@@ -2,6 +2,11 @@ import ContactHero from "@/components/contact/ContactHero";
 import ContactForm from "@/components/contact/ContactForm";
 import ContactInfo from "@/components/contact/ContactInfo";
 import ContactFAQ from "@/components/contact/ContactFAQ";
+import { generatePageMetadata } from "@/lib/seo/generatePageMetadata";
+export const metadata = generatePageMetadata(
+  "contact",
+  "/contact",
+);
 
 export default function ContactPage() {
   return (

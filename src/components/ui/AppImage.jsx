@@ -7,8 +7,10 @@ export default function AppImage({
   width,
   height,
   priority = false,
+  quality = 75,
+  loading,
   className = "",
-  sizes,
+  sizes = "100vw",
 }) {
   return (
     <Image
@@ -18,14 +20,9 @@ export default function AppImage({
       width={!fill ? width : undefined}
       height={!fill ? height : undefined}
       priority={priority}
-      sizes={
-        sizes ||
-        (fill
-          ? "(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-          : undefined)
-      }
-      placeholder="blur"
-      blurDataURL="/website-components/placeholder.png"
+      quality={quality}
+      loading={priority ? undefined : loading}
+      sizes={sizes}
       className={`object-cover ${className}`}
     />
   );

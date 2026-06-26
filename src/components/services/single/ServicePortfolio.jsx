@@ -27,19 +27,19 @@ export default function ServicePortfolio() {
     <section className="py-16 md:py-24 bg-white">
       <div className="max-w-[1240px] mx-auto px-5 md:px-6">
         {/* HEADER */}
-        <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6 mb-10 md:mb-14">
+        <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6 mb-12">
           <div>
-            <span className="inline-flex items-center px-4 py-1.5 rounded-full bg-blue-50 text-blue-600 text-xs font-semibold mb-4">
-              PORTFOLIO
+            <span className="text-[11px] px-4 py-1.5 rounded-full bg-slate-100 text-slate-600 font-medium uppercase tracking-wider mb-4 inline-block">
+              Portfolio
             </span>
 
-            <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">
+            <h2 className="text-[30px] md:text-[38px] font-bold text-slate-900 tracking-tight mb-3">
               Recent Projects We've Delivered
             </h2>
 
-            <p className="text-slate-500 max-w-2xl leading-7">
+            <p className="text-sm text-slate-500 max-w-lg leading-relaxed">
               Explore some of our recent work crafted with performance,
-              usability and modern design principles.
+              usability, and modern design principles.
             </p>
           </div>
 
@@ -52,21 +52,23 @@ export default function ServicePortfolio() {
           </Button>
         </div>
 
-        {/* PROJECTS */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+        {/* PROJECTS GRID */}
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           {portfolio.map((item, index) => (
             <article
               key={index}
               className="
                 group
+                relative
                 bg-white
-                rounded-3xl
-                border border-slate-200
+                rounded-2xl
+                border border-slate-200/70
                 overflow-hidden
                 transition-all
-                duration-300
-                hover:-translate-y-1
-                hover:shadow-xl
+                duration-500
+                hover:-translate-y-1.5
+                hover:shadow-[0_25px_60px_rgba(59,130,246,0.18)]
+                flex flex-col
               "
             >
               {/* IMAGE */}
@@ -78,47 +80,58 @@ export default function ServicePortfolio() {
                   className="object-cover transition-transform duration-700 group-hover:scale-105"
                 />
 
-                <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-black/5 to-transparent" />
+                {/* Overlay */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
 
-                <div className="absolute top-5 left-5">
-                  <span className="inline-flex items-center px-3 py-1 rounded-full bg-white/90 backdrop-blur text-slate-700 text-xs font-medium">
+                {/* Category Pill */}
+                <div className="absolute top-4 left-4">
+                  <span className="inline-flex items-center px-2.5 py-1 rounded-full bg-white/90 backdrop-blur-sm border border-white/50 text-slate-700 text-[11px] font-medium">
                     {item.category}
                   </span>
                 </div>
 
-                <div className="absolute top-5 right-5 text-white/80 text-sm font-semibold">
+                {/* Image Number */}
+                <span className="absolute top-4 right-4 text-[11px] font-mono text-white/60 font-semibold tracking-widest">
                   {String(index + 1).padStart(2, "0")}
-                </div>
+                </span>
               </div>
 
               {/* CONTENT */}
-              <div className="p-6">
-                <h3 className="text-xl font-semibold text-slate-900 mb-3">
+              <div className="p-5 flex flex-col flex-grow">
+                <h3 className="text-[15px] font-semibold text-gray-800 leading-snug mb-1.5">
                   {item.title}
                 </h3>
 
-                <p className="text-sm text-slate-500 leading-6 mb-6">
-                  Modern, scalable and performance-focused solution built to
-                  achieve business goals.
+                <p className="text-[13px] text-gray-500 leading-[1.65] flex-grow group-hover:text-gray-600 transition-colors">
+                  Modern, scalable, and performance-focused solution built to
+                  achieve specific business goals.
                 </p>
 
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-slate-500">Case Study</span>
+                {/* FOOTER */}
+                <div className="mt-5 flex items-center justify-between border-t border-slate-100 pt-5">
+                  <span className="text-[11px] text-slate-400 uppercase tracking-wider font-medium">
+                    Case Study
+                  </span>
 
+                  {/* Sliding CTA */}
                   <div
                     className="
-                      w-10 h-10
-                      rounded-full
-                      bg-slate-100
-                      flex items-center justify-center
-                      text-slate-700
+                      inline-flex
+                      items-center
+                      gap-2
+                      text-[12px]
+                      font-semibold
+                      text-blue-600
+                      opacity-0
+                      translate-y-2
+                      group-hover:opacity-100
+                      group-hover:translate-y-0
                       transition-all
-                      duration-300
-                      group-hover:bg-blue-600
-                      group-hover:text-white
+                      duration-500
                     "
                   >
-                    <FiArrowRight />
+                    View Project
+                    <FiArrowRight className="w-3.5 h-3.5 transition-transform duration-300 group-hover:translate-x-1" />
                   </div>
                 </div>
               </div>

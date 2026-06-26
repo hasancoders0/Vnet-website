@@ -7,29 +7,29 @@ export default function PostNavigation({ previous, next }) {
   if (!previous && !next) return null;
 
   return (
-    <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
+    <div className="bg-white rounded-2xl p-5 border border-slate-200/70 shadow-sm">
       <div className="grid md:grid-cols-2 gap-4">
-        {/* PREVIOUS */}
+        {/* PREVIOUS ARTICLE */}
         {previous ? (
           <Link
             href={`/journal/${previous.slug}`}
             className="
               group
-              rounded-xl
-              border
-              border-gray-100
+              flex flex-col
               p-5
-              hover:border-purple-200
-              hover:bg-purple-50/30
-              transition-all
+              rounded-xl
+              border border-slate-100
+              hover:border-slate-200
+              hover:bg-slate-50/50
+              transition-all duration-200
             "
           >
-            <div className="flex items-center gap-2 text-sm text-purple-600 mb-3">
-              <FiArrowLeft />
-              Previous Article
-            </div>
+            <span className="flex items-center gap-2 text-xs font-medium text-slate-400 mb-3 group-hover:text-blue-600 transition-colors">
+              <FiArrowLeft className="text-sm" />
+              Previous
+            </span>
 
-            <h3 className="font-semibold text-gray-900 group-hover:text-purple-600 transition-colors">
+            <h3 className="font-semibold text-slate-800 text-[15px] leading-snug group-hover:text-blue-600 transition-colors line-clamp-2">
               {previous.title}
             </h3>
           </Link>
@@ -37,28 +37,27 @@ export default function PostNavigation({ previous, next }) {
           <div />
         )}
 
-        {/* NEXT */}
+        {/* NEXT ARTICLE */}
         {next ? (
           <Link
             href={`/journal/${next.slug}`}
             className="
               group
-              rounded-xl
-              border
-              border-gray-100
+              flex flex-col items-end text-right
               p-5
-              text-right
-              hover:border-purple-200
-              hover:bg-purple-50/30
-              transition-all
+              rounded-xl
+              border border-slate-100
+              hover:border-slate-200
+              hover:bg-slate-50/50
+              transition-all duration-200
             "
           >
-            <div className="flex items-center justify-end gap-2 text-sm text-purple-600 mb-3">
-              Next Article
-              <FiArrowRight />
-            </div>
+            <span className="flex items-center gap-2 text-xs font-medium text-slate-400 mb-3 group-hover:text-blue-600 transition-colors">
+              Next
+              <FiArrowRight className="text-sm" />
+            </span>
 
-            <h3 className="font-semibold text-gray-900 group-hover:text-purple-600 transition-colors">
+            <h3 className="font-semibold text-slate-800 text-[15px] leading-snug group-hover:text-blue-600 transition-colors line-clamp-2">
               {next.title}
             </h3>
           </Link>

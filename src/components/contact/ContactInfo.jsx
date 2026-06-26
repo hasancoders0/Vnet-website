@@ -1,87 +1,147 @@
 "use client";
+import { SITE_CONFIG } from "@/config/site";
+import Link from "next/link";
+import {
+  FaEnvelope,
+  FaPhoneAlt,
+  FaMapMarkerAlt,
+  FaComments,
+} from "react-icons/fa";
 
-import { FaEnvelope, FaPhoneAlt, FaMapMarkerAlt, FaComments } from "react-icons/fa";
+const contactMethods = [
+  {
+    icon: <FaEnvelope className="text-base" />,
+    title: "Email Us",
+
+    value: SITE_CONFIG.email,
+
+    sub: "We will respond within 24 hours",
+
+    iconStyle: "bg-purple-50 border-purple-200/60 text-purple-600",
+  },
+
+  {
+    icon: <FaPhoneAlt className="text-base" />,
+    title: "Call Us",
+
+    value: SITE_CONFIG.phone,
+
+    sub: SITE_CONFIG.businessHours,
+
+    iconStyle: "bg-emerald-50 border-emerald-200/60 text-emerald-600",
+  },
+
+  {
+    icon: <FaMapMarkerAlt className="text-base" />,
+    title: "Our Office",
+
+    value: SITE_CONFIG.address.line1,
+
+    sub: SITE_CONFIG.address.line2,
+
+    iconStyle: "bg-orange-50 border-orange-200/60 text-orange-600",
+  },
+
+  {
+    icon: <FaComments className="text-base" />,
+    title: "Live Chat",
+
+    value: "Available on our website",
+
+    sub: SITE_CONFIG.businessHours,
+
+    isChat: true,
+
+    iconStyle: "bg-blue-50 border-blue-200/60 text-blue-600",
+  },
+
+];
 
 export default function ContactInfo() {
   return (
-    <div className="bg-white border border-gray-200 rounded-2xl p-6 md:p-8 shadow-sm">
-
-      <h3 className="text-xl font-semibold text-gray-900 mb-2">
+    <div className="bg-white rounded-2xl border border-slate-200/70 shadow-sm p-6 md:p-8 h-full flex flex-col">
+      {/* Header */}
+      <h3 className="text-[18px] font-bold text-slate-900 tracking-tight mb-1.5">
         Get in Touch
       </h3>
-      <p className="text-gray-500 text-sm mb-8">
+      <p className="text-[13px] text-slate-500 leading-relaxed mb-8">
         Choose the best way to reach us.
       </p>
 
-      <div className="space-y-6">
+      {/* Methods List */}
+      <div className="space-y-6 flex-grow">
+        {contactMethods.map((item, i) => (
+          <div key={i} className="flex items-start gap-4">
+            {/* Icon */}
+            <div
+              className={`
+                w-12 h-12 
+                rounded-2xl 
+                border 
+                flex items-center justify-center 
+                flex-shrink-0
+                transition-transform duration-300
+                hover:scale-110
+                ${item.iconStyle}
+              `}
+            >
+              {item.icon}
+            </div>
 
-        {/* Email */}
-        <div className="flex items-start gap-4">
-          <div className="w-12 h-12 rounded-full bg-purple-100 flex items-center justify-center">
-            <FaEnvelope className="text-purple-500 text-sm" />
-          </div>
-          <div>
-            <p className="text-gray-900 font-medium text-sm">Email Us</p>
-            <p className="text-gray-500 text-xs">
-              support@visionarynetwork.com
-            </p>
-            <p className="text-gray-400 text-xs">
-              We will respond within 24 hours
-            </p>
-          </div>
-        </div>
+            {/* Text */}
+            <div className="min-w-0">
+              <p className="text-[14px] font-medium text-slate-900 mb-0.5">
+                {item.title}
+              </p>
+              {item.type === "email" ? (
+                <a
+                  href={`mailto:${item.value}`}
+                  className="text-[13px] text-slate-600 hover:text-blue-600 transition-colors"
+                >
+                  {item.value}
+                </a>
+              ) : item.type === "phone" ? (
+                <a
+                  href={`tel:${item.value}`}
+                  className="text-[13px] text-slate-600 hover:text-emerald-600 transition-colors"
+                >
+                  {item.value}
+                </a>
+              ) : (
+                <p className="text-[13px] text-slate-600 leading-snug">
+                  {item.value}
+                </p>
+              )}
+              <p className="text-[12px] text-slate-400 mt-1">{item.sub}</p>
 
-        {/* Phone */}
-        <div className="flex items-start gap-4">
-          <div className="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center">
-            <FaPhoneAlt className="text-green-500 text-sm" />
+              {/* Chat Action Button */}
+              {item.isChat && (
+                <Link
+                  href="/coming-soon"
+                  className="
+                    inline-block
+                    mt-3
+                    text-[12px]
+                    font-medium
+                    px-4
+                    py-2
+                    rounded-full
+                    border border-slate-200/70
+                    text-slate-600
+                    hover:bg-slate-50
+                    hover:border-slate-300
+                    hover:text-slate-800
+                    active:scale-95
+                    transition-all duration-200
+                  "
+                >
+                  Live Chat Coming Soon →
+                </Link>
+              )}
+            </div>
           </div>
-          <div>
-            <p className="text-gray-900 font-medium text-sm">Call Us</p>
-            <p className="text-gray-500 text-xs">+1 (123) 456-7890</p>
-            <p className="text-gray-400 text-xs">
-              Mon - Fri, 9AM - 6PM
-            </p>
-          </div>
-        </div>
-
-        {/* Office */}
-        <div className="flex items-start gap-4">
-          <div className="w-12 h-12 rounded-full bg-pink-100 flex items-center justify-center">
-            <FaMapMarkerAlt className="text-pink-500 text-sm" />
-          </div>
-          <div>
-            <p className="text-gray-900 font-medium text-sm">Our Office</p>
-            <p className="text-gray-500 text-xs">
-              123 Innovation Drive <br />
-              Suite 500, Tech City <br />
-              New York, NY 10001, USA
-            </p>
-          </div>
-        </div>
-
-        {/* Chat */}
-        <div className="flex items-start gap-4">
-          <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center">
-            <FaComments className="text-blue-500 text-sm" />
-          </div>
-          <div>
-            <p className="text-gray-900 font-medium text-sm">Live Chat</p>
-            <p className="text-gray-500 text-xs">
-              Available on our website
-            </p>
-            <p className="text-gray-400 text-xs mb-2">
-              Mon - Fri, 9AM - 6PM
-            </p>
-
-            <button className="text-xs px-4 py-2 rounded-full border border-gray-300 text-gray-700 hover:bg-gray-100 transition">
-              Start Chat →
-            </button>
-          </div>
-        </div>
-
+        ))}
       </div>
-
     </div>
   );
 }
