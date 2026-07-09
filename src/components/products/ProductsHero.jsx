@@ -4,7 +4,7 @@ import AppImage from "@/components/ui/AppImage";
 import CommonBackground from "@/components/ui/CommonBackground";
 import { FaBagShopping  } from "react-icons/fa6";
 import { FiArrowRight } from "react-icons/fi";
-import Link from "next/link";
+import Link from "@/components/ui/AppLink";
 
 export default function ProductsHero() {
   return (

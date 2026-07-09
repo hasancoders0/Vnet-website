@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { FaUpload, FaSpinner, FaImage, FaTrash, FaLink } from "react-icons/fa";
+import AppImage from "@/components/ui/AppImage";
 
 export default function ImagePicker({ value, onChange, folder = "general" }) {
   const [mode, setMode] = useState("upload");
@@ -22,6 +23,7 @@ export default function ImagePicker({ value, onChange, folder = "general" }) {
 
     try {
       setLoading(true);
+      setPreview("");
 
       const formData = new FormData();
       formData.append("file", file);
@@ -35,7 +37,7 @@ export default function ImagePicker({ value, onChange, folder = "general" }) {
       const data = await res.json();
 
       if (!res.ok) {
-        throw new Error(data.message || "Upload failed");
+        throw new Error(data.error || "Upload failed");
       }
 
       setPreview(data.url);
@@ -56,20 +58,34 @@ export default function ImagePicker({ value, onChange, folder = "general" }) {
   return (
     <div className="overflow-hidden rounded-xl border border-gray-200 bg-white">
       {/* IMAGE EXISTS */}
-      {preview ? (
+      {preview || loading ? (
         <>
           <div className="relative aspect-[4/3] bg-gray-50">
-            <img
-              src={preview}
-              alt="Preview"
-              className="h-full w-full object-cover"
-            />
+            {preview ? (
+              <AppImage
+                src={preview}
+                alt="Preview"
+                fill
+                className="object-cover"
+              />
+            ) : (
+              <div className="flex h-full w-full items-center justify-center">
+                <div className="flex flex-col items-center gap-3">
+                  <FaSpinner className="text-4xl text-purple-500 animate-spin" />
+                  <span className="text-sm text-gray-500">
+                    Uploading image...
+                  </span>
+                </div>
+              </div>
+            )}
 
             {loading && (
               <div className="absolute inset-0 flex items-center justify-center bg-black/40 backdrop-blur-sm">
                 <div className="flex flex-col items-center gap-3 text-white">
-                  <FaSpinner className="animate-spin text-2xl" />
-                  <span className="text-sm">Uploading...</span>
+                  <FaSpinner className="text-2xl animate-spin" />
+                  <span className="text-sm font-medium">
+                    Uploading image...
+                  </span>
                 </div>
               </div>
             )}
@@ -78,8 +94,26 @@ export default function ImagePicker({ value, onChange, folder = "general" }) {
           <div className="p-3">
             <button
               type="button"
+              disabled={loading}
               onClick={removeImage}
-              className="w-full flex items-center justify-center gap-2 rounded-lg bg-red-50 px-4 py-2 text-sm font-medium text-red-600 hover:bg-red-100 transition"
+              className="
+              w-full
+              flex
+              items-center
+              justify-center
+              gap-2
+              rounded-lg
+              bg-red-50
+              px-4
+              py-2
+              text-sm
+              font-medium
+              text-red-600
+              transition
+              hover:bg-red-100
+              disabled:opacity-50
+              disabled:cursor-not-allowed
+            "
             >
               <FaTrash className="text-xs" />
               Remove Image
@@ -92,6 +126,7 @@ export default function ImagePicker({ value, onChange, folder = "general" }) {
           <div className="flex gap-2 border-b border-gray-100 p-3">
             <button
               type="button"
+              disabled={loading}
               onClick={() => setMode("upload")}
               className={`rounded-lg px-3 py-2 text-sm transition ${
                 mode === "upload"
@@ -104,6 +139,7 @@ export default function ImagePicker({ value, onChange, folder = "general" }) {
 
             <button
               type="button"
+              disabled={loading}
               onClick={() => setMode("url")}
               className={`rounded-lg px-3 py-2 text-sm transition ${
                 mode === "url"
@@ -173,6 +209,7 @@ export default function ImagePicker({ value, onChange, folder = "general" }) {
 
                 <input
                   hidden
+                  disabled={loading}
                   type="file"
                   accept="image/*"
                   onChange={(e) => handleUpload(e.target.files?.[0])}

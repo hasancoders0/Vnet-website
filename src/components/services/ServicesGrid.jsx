@@ -1,4 +1,4 @@
-import Link from "next/link";
+import Link from "@/components/ui/AppLink";
 import { FaCheck } from "react-icons/fa";
 import { FiArrowRight } from "react-icons/fi";
 import Icon from "@/components/ui/Icon";

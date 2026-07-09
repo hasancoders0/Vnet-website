@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import Link from "@/components/ui/AppLink";
 
 export default function Pagination({ page, totalPages, baseQuery = "" }) {
   if (totalPages <= 1) return null;

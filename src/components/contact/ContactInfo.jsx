@@ -1,6 +1,6 @@
 "use client";
 import { SITE_CONFIG } from "@/config/site";
-import Link from "next/link";
+import Link from "@/components/ui/AppLink";
 import {
   FaEnvelope,
   FaPhoneAlt,

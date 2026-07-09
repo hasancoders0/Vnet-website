@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import Link from "@/components/ui/AppLink";
 import CommonBackground from "@/components/ui/CommonBackground";
 import { FaPaperPlane } from "react-icons/fa";
 import { FiArrowRight } from "react-icons/fi";

@@ -2,62 +2,43 @@ import { NextResponse } from "next/server";
 import fs from "fs";
 import path from "path";
 
+const ALLOWED_FOLDERS = [
+  "services",
+  "products",
+  "blogs",
+  "templates",
+  "tools",
+  "general",
+];
+
 export async function POST(req) {
   try {
     const formData = await req.formData();
+
     const file = formData.get("file");
     const folder = formData.get("folder") || "general";
 
+    // ================= VALIDATION =================
     if (!file) {
-      return NextResponse.json(
-        { error: "No file uploaded" },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "No file uploaded" }, { status: 400 });
     }
 
-    // 🔐 Allowed folders
-    const allowedFolders = [
-      "services",
-      "products",
-      "blogs",
-      "templates",
-      "tools",
-      "general",
-    ];
-
-    if (!allowedFolders.includes(folder)) {
-      return NextResponse.json(
-        { error: "Invalid folder" },
-        { status: 400 }
-      );
+    if (!ALLOWED_FOLDERS.includes(folder)) {
+      return NextResponse.json({ error: "Invalid folder" }, { status: 400 });
     }
 
-    // ================= ENV DETECTION =================
-    const isProd = process.env.NODE_ENV === "production";
+    // ================= UPLOAD DIRECTORY =================
+    // Works both locally and on any cPanel server
+    const uploadDir = path.join(process.cwd(), "public", "uploads", folder);
 
-    let uploadDir;
-
-    if (isProd) {
-      // ✅ CPANEL PATH (UPDATE THIS)
-      uploadDir = `/home/YOUR_USERNAME/public_html/uploads/${folder}`;
-    } else {
-      // ✅ LOCAL DEV
-      uploadDir = path.join(
-        process.cwd(),
-        "public",
-        "uploads",
-        folder
-      );
-    }
-
-    // ensure folder exists
+    // Create folder if it doesn't exist
     fs.mkdirSync(uploadDir, { recursive: true });
 
-    // convert file
+    // ================= FILE PROCESSING =================
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
 
-    // 🔒 sanitize filename
+    // Clean filename
     const cleanName = file.name
       .replace(/\s+/g, "-")
       .replace(/[^a-zA-Z0-9.-]/g, "");
@@ -66,17 +47,25 @@ export async function POST(req) {
 
     const filePath = path.join(uploadDir, fileName);
 
-    // save file
+    // Save file
     fs.writeFileSync(filePath, buffer);
 
-    // return public URL
+    // Public URL
     const fileUrl = `/uploads/${folder}/${fileName}`;
 
-    return NextResponse.json({ url: fileUrl });
-  } catch (err) {
+    return NextResponse.json({
+      success: true,
+      url: fileUrl,
+    });
+  } catch (error) {
+    console.error("Upload Error:", error);
+
     return NextResponse.json(
-      { error: err.message },
-      { status: 500 }
+      {
+        success: false,
+        error: error.message || "Upload failed",
+      },
+      { status: 500 },
     );
   }
 }

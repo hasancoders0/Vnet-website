@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import Link from "@/components/ui/AppLink";
 import { useEffect } from "react";
 import { FaExclamationTriangle, FaHome } from "react-icons/fa";
 

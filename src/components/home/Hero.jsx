@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import Link from "@/components/ui/AppLink";
 import AppImage from "@/components/ui/AppImage";
 import { useEffect, useRef } from "react";
 import gsap from "gsap";

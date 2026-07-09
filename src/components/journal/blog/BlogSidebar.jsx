@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import Link from "@/components/ui/AppLink";
 import { toast } from "@/hooks/useToast";
 import AppImage from "@/components/ui/AppImage";
 import {

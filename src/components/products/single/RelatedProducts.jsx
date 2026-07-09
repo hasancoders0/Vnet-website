@@ -1,7 +1,7 @@
 "use client";
 
 import AppImage from "@/components/ui/AppImage";
-import Link from "next/link";
+import Link from "@/components/ui/AppLink";
 
 const relatedProducts = [
   {

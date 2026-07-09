@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import Link from "@/components/ui/AppLink";
 import AppImage from "@/components/ui/AppImage";
 import * as FaIcons from "react-icons/fa";
 import SectionRenderer from "./SectionRenderer";

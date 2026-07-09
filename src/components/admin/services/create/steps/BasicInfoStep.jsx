@@ -144,17 +144,16 @@ export default function BasicInfoStep({ data, setData, errors = {} }) {
           <ImagePicker
             value={data.featuredImage}
             onChange={(url) => {
-              handleChange("featuredImage", url);
-
               setData((prev) => ({
                 ...prev,
+                featuredImage: url,
                 seo: {
                   ...prev.seo,
                   metaImage: prev.seo?.metaImage || url,
                 },
               }));
             }}
-            folder="blogs"
+            folder="services"
           />
         </FormField>
 

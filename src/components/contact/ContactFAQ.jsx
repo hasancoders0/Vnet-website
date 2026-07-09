@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import Link from "next/link";
+import Link from "@/components/ui/AppLink";
 import { FaPlus, FaMinus } from "react-icons/fa";
 import { FiArrowRight } from "react-icons/fi";
 

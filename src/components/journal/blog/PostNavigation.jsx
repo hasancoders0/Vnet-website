@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import Link from "@/components/ui/AppLink";
 import { FiArrowLeft, FiArrowRight } from "react-icons/fi";
 
 export default function PostNavigation({ previous, next }) {

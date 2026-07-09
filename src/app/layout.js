@@ -3,7 +3,7 @@ import "./globals.css";
 
 import BackToTop from "@/components/shared/BackToTop";
 import ToastContainer from "@/components/ui/ToastContainer";
-
+import NavigationLoader from "@/components/ui/NavigationLoader";
 import { SITE_CONFIG } from "@/config/site";
 
 const sora = Sora({
@@ -86,6 +86,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en" className={`${sora.variable} ${dmSans.variable}`}>
       <body className="min-h-full flex flex-col">
+        <NavigationLoader />
         {children}
 
         <ToastContainer />
